@@ -1,6 +1,6 @@
 package examples.functions;
 
-import it.sijinn.perceptron.functions.IFunctionApplied;
+import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 
 public class XORSigmoid implements IFunctionApplied {
 	private static final long serialVersionUID = 1L;

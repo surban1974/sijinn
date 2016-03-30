@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import it.sijinn.perceptron.functions.IFunctionApplied;
+import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.IDataReader;

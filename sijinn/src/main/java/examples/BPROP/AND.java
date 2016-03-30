@@ -7,8 +7,8 @@ import java.util.List;
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.BPROP;
-import it.sijinn.perceptron.errorfunctions.MSE;
-import it.sijinn.perceptron.functions.SimpleThereshold;
+import it.sijinn.perceptron.functions.applied.SimpleThereshold;
+import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 

@@ -1,27 +1,30 @@
-package it.sijinn.perceptron.functions;
+package it.sijinn.perceptron.functions.applied;
 
-public class SimpleSigmoidFermi implements IFunctionApplied {
+public class SimpleLinear implements IFunctionApplied {
+
 	private static final long serialVersionUID = 1L;
+	private float slope=0;
 	
-	public SimpleSigmoidFermi(){
+	public SimpleLinear(float _slope){
 		super();
+		this.slope = _slope;
 	}
-
+	
 	@Override
 	public float derivative(float delta, float[] param) {
 		if(param.length>0)
-			return param[0]*(1-param[0]);
+			return slope;
 		return 0;
 	}
 
 	@Override
 	public float execution(float[] param) {
 		if(param.length>0)
-			return new Float(1/(1+Math.pow(Math.E, -1*param[0]))).floatValue();
+			return (slope*param[0]);
 		return 0;
 	}
 	@Override
 	public String toSaveString(){
-		return this.getClass().getName();
+		return this.getClass().getName()+"{"+slope+"}";
 	}
 }

@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.algorithms.RPROP;
-import it.sijinn.perceptron.errorfunctions.MSE;
+import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 import it.sijinn.perceptron.utils.ResourceStreamWrapper;

@@ -1,7 +1,7 @@
 package it.sijinn.perceptron.algorithms;
 
 import it.sijinn.perceptron.Network;
-import it.sijinn.perceptron.deferredaggregatefunctions.IDAFloatFunction;
+import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
 
 public interface ITrainingAlgorithm {
 	final int SYNC_WEIGHT_DELTA = 1;

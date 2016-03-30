@@ -1,4 +1,4 @@
-package it.sijinn.perceptron.functions;
+package it.sijinn.perceptron.functions.applied;
 
 public class SimpleGaussian implements IFunctionApplied {
 	private static final long serialVersionUID = 1L;

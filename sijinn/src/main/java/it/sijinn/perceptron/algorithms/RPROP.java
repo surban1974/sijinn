@@ -5,7 +5,7 @@ package it.sijinn.perceptron.algorithms;
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.Synapse;
-import it.sijinn.perceptron.deferredaggregatefunctions.IDAFloatFunction;
+import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
 public class RPROP implements ITrainingAlgorithm {

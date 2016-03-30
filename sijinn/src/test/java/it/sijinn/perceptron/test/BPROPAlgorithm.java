@@ -16,8 +16,8 @@ import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.Synapse;
 import it.sijinn.perceptron.algorithms.BPROP;
-import it.sijinn.perceptron.errorfunctions.MSE;
-import it.sijinn.perceptron.functions.IFunctionApplied;
+import it.sijinn.perceptron.functions.applied.IFunctionApplied;
+import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 

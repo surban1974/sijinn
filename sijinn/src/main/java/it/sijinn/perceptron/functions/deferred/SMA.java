@@ -1,16 +1,19 @@
-package it.sijinn.perceptron.deferredaggregatefunctions;
+package it.sijinn.perceptron.functions.deferred;
 
-public class MMA implements IDAFloatFunction {
+public class SMA implements IDAFloatFunction {
 
+	private Float _first=null;
 	private long counter=0;
 	
 	@Override
 	public float apply(float aggregator, float value) {
+		if(_first==null || counter==0)
+			_first=value;
 		counter++;
 		if(counter==1)
 			return value;
 		else 
-			return (value+(counter-1)*aggregator)/counter;
+			return aggregator-_first/counter+value/counter;
 	}
 
 	@Override
@@ -21,6 +24,8 @@ public class MMA implements IDAFloatFunction {
 	@Override
 	public void init() {
 		counter=0;
+		_first=null;
+		
 	}
 
 }

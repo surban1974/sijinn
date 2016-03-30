@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
-import it.sijinn.perceptron.errorfunctions.IErrorFunctionApplied;
+import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.utils.IDataReader;
 import it.sijinn.perceptron.utils.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.IStreamWrapper;

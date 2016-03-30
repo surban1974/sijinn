@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import it.sijinn.perceptron.functions.IFunctionApplied;
+import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.utils.IWeightGenerator;
 
 public class Neuron implements Serializable{
@@ -286,7 +286,7 @@ public class Neuron implements Serializable{
 						if(function.indexOf(".")>-1)
 							functionApplied = (IFunctionApplied)Class.forName(function).newInstance();
 						else
-							functionApplied = (IFunctionApplied)Class.forName("it.sijinn.perceptron.functions."+function).newInstance();
+							functionApplied = (IFunctionApplied)Class.forName("it.sijinn.perceptron.functions.applied."+function).newInstance();
 					}else{
 						String parameters = function.substring(function.indexOf("{")+1, function.lastIndexOf("}"));
 						function = function.substring(0, function.indexOf("{"));
@@ -302,7 +302,7 @@ public class Neuron implements Serializable{
 						if(function.indexOf(".")>-1)
 							clazz = (Class<?>)Class.forName(function).asSubclass(IFunctionApplied.class);
 						else
-							clazz = (Class<?>)Class.forName("it.sijinn.perceptron.functions."+function);
+							clazz = (Class<?>)Class.forName("it.sijinn.perceptron.functions.applied."+function);
 						
 						Constructor<?> clazzConstructor = null;
 						for(Constructor<?> constructor: (Constructor<?>[])clazz.getConstructors()){

@@ -1,8 +1,8 @@
 package it.sijinn.perceptron.strategies;
 
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
-import it.sijinn.perceptron.errorfunctions.IErrorFunctionApplied;
-import it.sijinn.perceptron.errorfunctions.MSE;
+import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
+import it.sijinn.perceptron.functions.error.MSE;
 
 public abstract class TrainingStrategy implements ITrainingStrategy {
 

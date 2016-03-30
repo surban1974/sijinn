@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 
 import org.apache.logging.log4j.Logger;
 
-import it.sijinn.perceptron.functions.IFunctionApplied;
+import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 import it.sijinn.perceptron.utils.IWeightGenerator;
 

@@ -1,4 +1,4 @@
-package it.sijinn.perceptron.functions;
+package it.sijinn.perceptron.functions.applied;
 
 public class SimpleSin implements IFunctionApplied {
 
