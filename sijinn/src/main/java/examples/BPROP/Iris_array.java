@@ -9,10 +9,10 @@ import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
+import it.sijinn.perceptron.functions.generator.RandomWeightGenerator;
 import it.sijinn.perceptron.strategies.GradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
-import it.sijinn.perceptron.utils.RandomWeightGenerator;
 
 public class Iris_array {
 

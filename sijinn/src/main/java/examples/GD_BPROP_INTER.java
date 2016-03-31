@@ -9,14 +9,14 @@ import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
+import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
 import it.sijinn.perceptron.strategies.GradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.sijinn.perceptron.utils.IReadLinesAggregator;
-import it.sijinn.perceptron.utils.IStreamWrapper;
-import it.sijinn.perceptron.utils.RandomPositiveWeightGenerator;
-import it.sijinn.perceptron.utils.ResourceStreamWrapper;
-import it.sijinn.perceptron.utils.SimpleLineDataAggregator;
 import it.sijinn.perceptron.utils.Utils;
+import it.sijinn.perceptron.utils.io.IStreamWrapper;
+import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
+import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
+import it.sijinn.perceptron.utils.parser.SimpleLineDataAggregator;
 
 public class GD_BPROP_INTER {
 

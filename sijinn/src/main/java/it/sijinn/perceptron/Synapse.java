@@ -6,8 +6,8 @@ import java.util.StringTokenizer;
 import org.apache.logging.log4j.Logger;
 
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
+import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.utils.ISynapseProperty;
-import it.sijinn.perceptron.utils.IWeightGenerator;
 
 
 public class Synapse implements Serializable{
@@ -25,7 +25,7 @@ public class Synapse implements Serializable{
 		this.weight = _weight;
 	}
 	
-	public Synapse(Neuron _from, Neuron _to, IWeightGenerator weightGenerator){
+	public Synapse(Neuron _from, Neuron _to, IGenerator weightGenerator){
 		super();
 		this.from = _from;
 		this.to = _to;
@@ -45,7 +45,7 @@ public class Synapse implements Serializable{
 		this.weight = _weight;
 	}
 	
-	public Synapse(int fromLayer, int fromOrder, int toLayer, int toOrder, IWeightGenerator weightGenerator){
+	public Synapse(int fromLayer, int fromOrder, int toLayer, int toOrder, IGenerator weightGenerator){
 		super();
 		this.from = new Neuron();
 		this.from.setLayer(fromLayer);

@@ -15,9 +15,9 @@ import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.GradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
-import it.sijinn.perceptron.utils.IReadLinesAggregator;
-import it.sijinn.perceptron.utils.IStreamWrapper;
-import it.sijinn.perceptron.utils.PairIO;
+import it.sijinn.perceptron.utils.io.IStreamWrapper;
+import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
+import it.sijinn.perceptron.utils.parser.PairIO;
 
 public class Animals {
 

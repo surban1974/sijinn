@@ -12,7 +12,7 @@ import it.sijinn.perceptron.algorithms.RPROP;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
-import it.sijinn.perceptron.utils.ResourceStreamWrapper;
+import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
 
 
 

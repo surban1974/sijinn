@@ -18,6 +18,16 @@ public class BPROP implements ITrainingAlgorithm {
 		private float delta = 0;
 		private float previousDelta = 0;
 		private float aggregatedDelta = 0;
+		private Synapse relation = null;
+		
+		public ISynapseProperty setSynapse(Synapse synapse){
+			this.relation = synapse;
+			return this;
+		}
+		
+		public Synapse getSynapse(){
+			return relation;
+		}
 		
 		public BPROPSynapseProperty clear(){
 			sigma=0;

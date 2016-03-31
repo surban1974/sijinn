@@ -8,15 +8,17 @@ import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.RPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
+import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.MSE;
+import it.sijinn.perceptron.functions.generator.IGenerator;
+import it.sijinn.perceptron.functions.generator.RandomWeightGenerator;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.sijinn.perceptron.utils.IReadLinesAggregator;
-import it.sijinn.perceptron.utils.IStreamWrapper;
-import it.sijinn.perceptron.utils.RandomWeightGenerator;
-import it.sijinn.perceptron.utils.ResourceStreamWrapper;
-import it.sijinn.perceptron.utils.SimpleLineDataAggregator;
 import it.sijinn.perceptron.utils.Utils;
+import it.sijinn.perceptron.utils.io.IStreamWrapper;
+import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
+import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
+import it.sijinn.perceptron.utils.parser.SimpleLineDataAggregator;
 
 public class BGD_RPROP_INTER {
 
@@ -24,7 +26,7 @@ public class BGD_RPROP_INTER {
 		
 		final String resource = "examples/resources/interpolation.txt";
 		final float approximation = 0.001f;
-		final int maxSteps = 50000;
+		final int maxSteps = 50;
 
 
 		
@@ -33,10 +35,10 @@ public class BGD_RPROP_INTER {
 		Network network = new Network(
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2),
-						Network.createLayer(2,	new SimpleSigmoidFermi()),
+						Network.createLayer(4,	new SimpleSigmoidFermi()),
 						Network.createLayer(1, new SimpleSigmoidFermi())
 						)),
-				new RandomWeightGenerator()
+				0
 			)
 			;
 				
@@ -47,10 +49,20 @@ public class BGD_RPROP_INTER {
 
 		
 		
-		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(new RPROP(), new MSE(),0,0);
+		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(
+				new RPROP(1.2f,0.5f,0.000001f,50f,
+						new IGenerator() {			
+						@Override
+						public float generate(Neuron from, Neuron to) {
+							return 0.1f;
+						}
+					}), 
+				new MSE(),
+				new SUMMATOR(),
+				0,0);
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource);
-		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
+		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,1);
 
 		
 
@@ -70,7 +82,7 @@ public class BGD_RPROP_INTER {
 							streamWrapper,
 							trainingStrategy,
 							readLinesAggregator);
-					if(step % 1000 == 0)
+//					if(step % 1000 == 0)
 						System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
 				}else
 					break;

@@ -10,16 +10,16 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
+import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.sijinn.perceptron.utils.IReadLinesAggregator;
-import it.sijinn.perceptron.utils.IDataReader;
-import it.sijinn.perceptron.utils.IDataWriter;
-import it.sijinn.perceptron.utils.IStreamWrapper;
-import it.sijinn.perceptron.utils.IWeightGenerator;
-import it.sijinn.perceptron.utils.PairIO;
-import it.sijinn.perceptron.utils.SimpleFileReader;
-import it.sijinn.perceptron.utils.SimpleFileWriter;
 import it.sijinn.perceptron.utils.Utils;
+import it.sijinn.perceptron.utils.io.IDataReader;
+import it.sijinn.perceptron.utils.io.IDataWriter;
+import it.sijinn.perceptron.utils.io.IStreamWrapper;
+import it.sijinn.perceptron.utils.io.SimpleFileReader;
+import it.sijinn.perceptron.utils.io.SimpleFileWriter;
+import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
+import it.sijinn.perceptron.utils.parser.PairIO;
 
 public class Network extends Neuron implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -74,7 +74,7 @@ public class Network extends Neuron implements Serializable{
 		createSynapses(ititialWeight);
 	}
 	
-	public Network(List<List<Neuron>> _layers, IWeightGenerator weightGenerator){
+	public Network(List<List<Neuron>> _layers, IGenerator weightGenerator){
 		super();
 		if(_layers!=null && _layers.size()>0)
 			this.layers = _layers;
@@ -167,7 +167,7 @@ public class Network extends Neuron implements Serializable{
 		return this;
 	}
 	
-	public Network createSynapses(IWeightGenerator weightGenerator){
+	public Network createSynapses(IGenerator weightGenerator){
 		indexingPositionOfNeurons();
 
 		if(layers==null || layers.size()==0)
@@ -202,7 +202,7 @@ public class Network extends Neuron implements Serializable{
 		return this;
 	}
 	
-	public Network clearSynapses(IWeightGenerator weightGenerator, boolean clearProperties){
+	public Network clearSynapses(IGenerator weightGenerator, boolean clearProperties){
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
 				if(neuron!=null && neuron.getChildren()!=null){

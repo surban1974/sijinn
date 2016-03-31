@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
-import it.sijinn.perceptron.utils.IWeightGenerator;
+import it.sijinn.perceptron.functions.generator.IGenerator;
 
 public class Neuron implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -71,7 +71,7 @@ public class Neuron implements Serializable{
 		return true;
 	}
 	
-	public boolean makeRelation(List<Neuron> layer, IWeightGenerator weightGenerator){
+	public boolean makeRelation(List<Neuron> layer, IGenerator weightGenerator){
 		if(layer==null)
 			return false;
 		for(Neuron neuron:layer){
@@ -123,7 +123,7 @@ public class Neuron implements Serializable{
 		return true;
 	}
 	
-	public boolean updateWeights(IWeightGenerator weightGenerator, boolean clearProperties){
+	public boolean updateWeights(IGenerator weightGenerator, boolean clearProperties){
 		if(weightGenerator==null)
 			return false;
 		if(children!=null){

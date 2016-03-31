@@ -13,10 +13,10 @@ import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.sijinn.perceptron.utils.IReadLinesAggregator;
-import it.sijinn.perceptron.utils.IStreamWrapper;
-import it.sijinn.perceptron.utils.PairIO;
 import it.sijinn.perceptron.utils.Utils;
+import it.sijinn.perceptron.utils.io.IStreamWrapper;
+import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
+import it.sijinn.perceptron.utils.parser.PairIO;
 
 public class Animals {
 

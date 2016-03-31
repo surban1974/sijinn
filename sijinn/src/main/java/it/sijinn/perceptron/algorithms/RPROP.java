@@ -6,6 +6,7 @@ import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.Synapse;
 import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
+import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
 public class RPROP implements ITrainingAlgorithm {
@@ -14,6 +15,7 @@ public class RPROP implements ITrainingAlgorithm {
 	protected float etaNegative=0.5f;
 	protected float maxDelta=50f;
 	protected float minDelta=0.000001f;
+	protected IGenerator initialDeltaGenarator=null;
 
 	
 	class RPROPSynapseProperty implements ISynapseProperty{
@@ -21,6 +23,16 @@ public class RPROP implements ITrainingAlgorithm {
 		private float delta = 0;
 		private float previousDelta = 0;
 		private float aggregatedDelta = 0;
+		private Synapse relation = null;
+		
+		public ISynapseProperty setSynapse(Synapse synapse){
+			this.relation = synapse;
+			return this;
+		}
+		
+		public Synapse getSynapse(){
+			return relation;
+		}
 		
 		public RPROPSynapseProperty clear(){
 			sigma=0;
@@ -37,9 +49,12 @@ public class RPROP implements ITrainingAlgorithm {
 			this.sigma = sigma;
 		}
 		public float getPreviousDelta() {
-			if(previousDelta==0)
-				return 0.1f;
-			else
+			if(previousDelta==0){
+				if(initialDeltaGenarator==null)
+					return 0.1f;
+				else 
+					return initialDeltaGenarator.generate((relation==null)?null:relation.getFrom(), (relation==null)?null:relation.getTo());
+			}else
 				return previousDelta;
 		}
 		public void setPreviousDelta(float previousDelta) {
@@ -72,12 +87,13 @@ public class RPROP implements ITrainingAlgorithm {
 		this.etaNegative = _etaNegative;
 	}
 	
-	public RPROP(float _etaPositive, float _etaNegative, float _minDelta, float _maxDelta){
+	public RPROP(float _etaPositive, float _etaNegative, float _minDelta, float _maxDelta, IGenerator _initialDeltaGenarator){
 		super();
 		this.minDelta = _minDelta;
 		this.maxDelta = _maxDelta;
 		this.etaPositive = _etaPositive;
 		this.etaNegative = _etaNegative;
+		this.initialDeltaGenarator = _initialDeltaGenarator;
 	}
 	
 
@@ -198,7 +214,7 @@ public class RPROP implements ITrainingAlgorithm {
 					newDelta=Math.min(newDelta,this.maxDelta);
 					newDelta=Math.max(newDelta,this.minDelta);
 					
-					newDelta*= Math.signum(sigma);
+					newDelta*= Math.signum(previousSigma*sigma);
 				
 					relation.setWeight(
 							relation.getWeight()+newDelta
@@ -240,7 +256,7 @@ public class RPROP implements ITrainingAlgorithm {
 					newDelta=Math.min(newDelta,this.maxDelta);
 					newDelta=Math.max(newDelta,this.minDelta);
 					
-					newDelta*= Math.signum(sigma);
+					newDelta*= Math.signum(previousSigma*sigma);
 					
 					relation.setWeight(relation.getWeight()+ newDelta);
 					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
