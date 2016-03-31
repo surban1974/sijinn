@@ -5,11 +5,10 @@ package it.sijinn.perceptron.algorithms;
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.Synapse;
-import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
 import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
-public class RPROP implements ITrainingAlgorithm {
+public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 	protected float etaPositive=1.2f;
 	protected float etaNegative=0.5f;
@@ -81,22 +80,6 @@ public class RPROP implements ITrainingAlgorithm {
 		super();
 	}
 	
-	public RPROP(float _etaPositive, float _etaNegative){
-		super();
-		this.etaPositive = _etaPositive;
-		this.etaNegative = _etaNegative;
-	}
-	
-	public RPROP(float _etaPositive, float _etaNegative, float _minDelta, float _maxDelta, IGenerator _initialDeltaGenarator){
-		super();
-		this.minDelta = _minDelta;
-		this.maxDelta = _maxDelta;
-		this.etaPositive = _etaPositive;
-		this.etaNegative = _etaNegative;
-		this.initialDeltaGenarator = _initialDeltaGenarator;
-	}
-	
-
 
 	public ITrainingAlgorithm calculateAndUpdateWeights(Network network) {		
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
@@ -111,15 +94,15 @@ public class RPROP implements ITrainingAlgorithm {
 		return this;
 	}
 	
-	public ITrainingAlgorithm calculate(Network network, IDAFloatFunction aggregatorFunction) {		
+	public ITrainingAlgorithm calculate(Network network) {		
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return this;
-		if(aggregatorFunction!=null)
-			aggregatorFunction.init();
+		if(deferredAgregateFunction!=null)
+			deferredAgregateFunction.init();
 		for(int i=network.getLayers().size()-1;i>0;i--){
 			for(Neuron neuron: network.getLayers().get(i)){
 				if(neuron!=null)
-					updateGradients(neuron, i==network.getLayers().size()-1,aggregatorFunction);
+					updateGradients(neuron, i==network.getLayers().size()-1);
 			}
 		}
 		return this;
@@ -153,7 +136,7 @@ public class RPROP implements ITrainingAlgorithm {
 		return this;
 	}	
 
-	public ITrainingAlgorithm sync(Network network1, Network network2, IDAFloatFunction aggregatorFunction, int type) {
+	public ITrainingAlgorithm sync(Network network1, Network network2, int type) {
 		switch (type) {
 		case SYNC_WEIGHT_DELTA:
 			if(network1==null || network1.getLayers()==null || network1.getLayers().size()==0)
@@ -175,11 +158,11 @@ public class RPROP implements ITrainingAlgorithm {
 				if(relation2.getProperty()==null)
 					relation2.setProperty(new RPROPSynapseProperty());				
 
-				if(aggregatorFunction==null)
+				if(deferredAgregateFunction==null)
 					((RPROPSynapseProperty)relation1.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation1.getProperty()).getAggregatedDelta()+((RPROPSynapseProperty)relation2.getProperty()).getDelta());
 				else
 					((RPROPSynapseProperty)relation1.getProperty()).setAggregatedDelta(
-							aggregatorFunction.apply(((RPROPSynapseProperty)relation1.getProperty()).getAggregatedDelta(), ((RPROPSynapseProperty)relation2.getProperty()).getDelta())
+						deferredAgregateFunction.apply(((RPROPSynapseProperty)relation1.getProperty()).getAggregatedDelta(), ((RPROPSynapseProperty)relation2.getProperty()).getDelta())
 					);
 			}
 			
@@ -293,7 +276,7 @@ public class RPROP implements ITrainingAlgorithm {
 			
 	}
 	
-	private void updateGradients(Neuron neuron, boolean lastLayer, IDAFloatFunction aggregatorFunction){
+	private void updateGradients(Neuron neuron, boolean lastLayer){
 		
 		if(lastLayer){
 			float sigma = (neuron.getTarget() - neuron.getOutput())* ((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0);
@@ -320,11 +303,11 @@ public class RPROP implements ITrainingAlgorithm {
 
 						
 					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					if(aggregatorFunction==null)
+					if(deferredAgregateFunction==null)
 						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+newDelta);
 					else 
 						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
-								aggregatorFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), newDelta)
+							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), newDelta)
 						);
 					((RPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
@@ -362,11 +345,11 @@ public class RPROP implements ITrainingAlgorithm {
 					newDelta*= Math.signum(sigma);
 						
 					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					if(aggregatorFunction==null)
+					if(deferredAgregateFunction==null)
 						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+newDelta);
 					else 
 						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
-								aggregatorFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(),newDelta)
+							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(),newDelta)
 						);
 					((RPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
@@ -375,7 +358,39 @@ public class RPROP implements ITrainingAlgorithm {
 	}
 
 	public String toSaveString(){
-		return "algorithm="+this.getClass().getSimpleName()+","+etaNegative+","+etaPositive+","+minDelta+","+maxDelta;
+		return "algorithm="+this.getClass().getSimpleName()+","+etaNegative+","+etaPositive+","+minDelta+","+maxDelta+
+				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.toSaveString()+"");
+
+	}
+
+
+	public RPROP setEtaPositive(float etaPositive) {
+		this.etaPositive = etaPositive;
+		return this;
+	}
+
+
+	public RPROP setEtaNegative(float etaNegative) {
+		this.etaNegative = etaNegative;
+		return this;
+	}
+
+
+	public RPROP setMaxDelta(float maxDelta) {
+		this.maxDelta = maxDelta;
+		return this;
+	}
+
+
+	public RPROP setMinDelta(float minDelta) {
+		this.minDelta = minDelta;
+		return this;
+	}
+
+
+	public RPROP setInitialDeltaGenarator(IGenerator initialDeltaGenarator) {
+		this.initialDeltaGenarator = initialDeltaGenarator;
+		return this;
 	}
 
 }

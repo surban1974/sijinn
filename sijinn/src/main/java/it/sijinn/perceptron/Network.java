@@ -10,14 +10,17 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
+import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.Utils;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.io.IDataWriter;
 import it.sijinn.perceptron.utils.io.IStreamWrapper;
+import it.sijinn.perceptron.utils.io.SimpleArrayReader;
 import it.sijinn.perceptron.utils.io.SimpleFileReader;
 import it.sijinn.perceptron.utils.io.SimpleFileWriter;
+import it.sijinn.perceptron.utils.io.SimpleStreamReader;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
@@ -338,7 +341,7 @@ public class Network extends Neuron implements Serializable{
 		return error;
 	}
 	
-	public float training(File trainingData, ITrainingStrategy strategy, IReadLinesAggregator dataReader) throws Exception{
+	public float training(File trainingData, ITrainingStrategy strategy, IReadLinesAggregator dataAggregater) throws Exception{
 		
 		if(trainingData==null)
 			return -1;
@@ -356,7 +359,7 @@ public class Network extends Neuron implements Serializable{
 			return -1;
 		
 		try{
-			error = strategy.apply(this, trainingData, dataReader);
+			error = strategy.apply(this, trainingData, dataAggregater);
 		}catch(Exception e){
 			logger.error(e);
 			throw e;
@@ -365,9 +368,9 @@ public class Network extends Neuron implements Serializable{
 		return error;
 	}
 	
-	public float training(IStreamWrapper trainingData, ITrainingStrategy strategy, IReadLinesAggregator dataReader) throws Exception{
+	public float training(IStreamWrapper streamWrapper, ITrainingStrategy strategy, IReadLinesAggregator dataAggregator) throws Exception{
 		
-		if(trainingData==null)
+		if(streamWrapper==null)
 			return -1;
 		
 		if(strategy==null)
@@ -383,7 +386,7 @@ public class Network extends Neuron implements Serializable{
 			return -1;
 		
 		try{
-			error = strategy.apply(this, trainingData, dataReader);
+			error = strategy.apply(this, streamWrapper, dataAggregator);
 		}catch(Exception e){
 			logger.error(e);
 			throw e;
@@ -391,9 +394,9 @@ public class Network extends Neuron implements Serializable{
 		return error;
 	}
 	
-	public float training(IDataReader trainingData, ITrainingStrategy strategy, IReadLinesAggregator dataReader) throws Exception{
+	public float training(IDataReader dataReader, ITrainingStrategy strategy, IReadLinesAggregator dataAggregator) throws Exception{
 		
-		if(trainingData==null)
+		if(dataReader==null)
 			return -1;
 		
 		if(strategy==null)
@@ -409,13 +412,197 @@ public class Network extends Neuron implements Serializable{
 			return -1;
 		
 		try{
-			error = strategy.apply(this, trainingData, dataReader);
+			error = strategy.apply(this, dataReader, dataAggregator);
 		}catch(Exception e){
 			logger.error(e);
 			throw e;
 		}		
 		return error;
 	}	
+
+	
+	public float test(float[][][] testData, IErrorFunctionApplied errorFunction) throws Exception{
+		
+		if(testData==null)
+			return -1;
+		
+		if(errorFunction==null)
+			return -1;
+		
+	
+		float error=0;
+
+		IDataReader dataReader = new SimpleArrayReader(testData);
+		
+		final IReadLinesAggregator dataAggregator = new IReadLinesAggregator() {
+			
+			@Override
+			public PairIO getData(Network network, Object[] lines) {
+				if(lines==null || lines.length==0)
+					return null;
+				float[][] f = (float[][])lines[0];
+				return new PairIO(f[0], f[1]);
+			}
+			
+			@Override
+			public Object[] aggregate(Object line, int linenumber) {
+				if(line==null)
+					return null;
+				else 
+					return new Object[]{line};
+			}
+			
+			@Override
+			public Object getRowData(Network network, Object[] objs) {
+				if(objs==null || objs.length==0)
+					return null;
+				return objs[0];
+			}			
+		};
+
+		
+		try{
+			if(dataReader.open()){
+				Object line = null;
+				int linenumber=0;
+				while ((line = dataReader.readNext()) != null) {
+					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
+					if(aggregated!=null){
+						PairIO param = dataAggregator.getData(this,aggregated);
+						compute(param.getInput(), param.getOutput());
+						error+=errorFunction.compute(this, 0);
+					}
+					linenumber++;
+				}
+				dataReader.close();
+				dataReader.finalizer();
+			}
+		}catch(Exception e){
+			logger.error(e);
+			throw e;
+		}
+		
+		return error;
+	}
+
+	public float test(File file, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
+		
+		if(file==null)
+			return -1;
+		
+		if(dataAggregator==null)
+			return -1;
+
+		if(errorFunction==null)
+			return -1;
+		
+	
+		float error=0;
+
+		IDataReader dataReader = new SimpleFileReader(file);
+		try{
+			if(dataReader.open()){
+				Object line = null;
+				int linenumber=0;
+				while ((line = dataReader.readNext()) != null) {
+					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
+					if(aggregated!=null){
+						PairIO param = dataAggregator.getData(this,aggregated);
+						compute(param.getInput(), param.getOutput());
+						error+=errorFunction.compute(this, 0);
+					}
+					linenumber++;
+				}
+				dataReader.close();
+				dataReader.finalizer();
+			}
+		}catch(Exception e){
+			logger.error(e);
+			throw e;
+		}
+		
+		return error;
+	}
+
+	
+	public float test(IStreamWrapper streamWrapper, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
+		
+		if(streamWrapper==null)
+			return -1;
+		
+		if(dataAggregator==null)
+			return -1;
+
+		if(errorFunction==null)
+			return -1;
+		
+	
+		float error=0;
+
+		IDataReader dataReader = new SimpleStreamReader(streamWrapper);
+		try{
+			if(dataReader.open()){
+				Object line = null;
+				int linenumber=0;
+				while ((line = dataReader.readNext()) != null) {
+					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
+					if(aggregated!=null){
+						PairIO param = dataAggregator.getData(this,aggregated);
+						compute(param.getInput(), param.getOutput());
+						error+=errorFunction.compute(this, 0);
+					}
+					linenumber++;
+				}
+				dataReader.close();
+				dataReader.finalizer();
+			}
+		}catch(Exception e){
+			logger.error(e);
+			throw e;
+		}
+		
+		return error;
+	}
+	
+	
+	public float test(IDataReader dataReader, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
+		
+		if(dataReader==null)
+			return -1;
+
+		if(dataAggregator==null)
+			return -1;
+		
+		if(errorFunction==null)
+			return -1;
+
+		float error=0;
+		
+		try{
+			if(dataReader.open()){
+				Object line = null;
+				int linenumber=0;
+				while ((line = dataReader.readNext()) != null) {
+					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
+					if(aggregated!=null){
+						PairIO param = dataAggregator.getData(this,aggregated);
+						compute(param.getInput(), param.getOutput());
+						error+=errorFunction.compute(this, 0);
+					}
+					linenumber++;
+				}
+				dataReader.close();
+				dataReader.finalizer();
+			}
+		}catch(Exception e){
+			logger.error(e);
+			throw e;
+		}
+
+		return error;
+	}
+	
+
 	
 	public float[][] compute(IDataReader dataReader, IReadLinesAggregator dataAggregator) throws Exception{
 		

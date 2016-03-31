@@ -5,12 +5,11 @@ package it.sijinn.perceptron.algorithms;
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.Synapse;
-import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
-public class BPROP implements ITrainingAlgorithm {
+public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
-	protected float learningRate=0;
+	protected float learningRate=0.1f;
 	protected float learningMomentum=0;
 	
 	class BPROPSynapseProperty implements ISynapseProperty{
@@ -67,18 +66,6 @@ public class BPROP implements ITrainingAlgorithm {
 	}
 	
 
-	
-	public BPROP(float _learningRate){
-		super();
-		this.learningRate = _learningRate;
-	}
-	
-	public BPROP(float _learningRate, float _learningMomentum){
-		super();
-		this.learningRate = _learningRate;
-		this.learningMomentum = _learningMomentum;
-	}
-
 	public ITrainingAlgorithm calculateAndUpdateWeights(Network network) {		
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return this;
@@ -93,16 +80,16 @@ public class BPROP implements ITrainingAlgorithm {
 		
 	}
 	
-	public ITrainingAlgorithm calculate(Network network, IDAFloatFunction aggregatorFunction) {		
+	public ITrainingAlgorithm calculate(Network network) {		
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return this;
 
-		if(aggregatorFunction!=null)
-			aggregatorFunction.init();
+		if(deferredAgregateFunction!=null)
+			deferredAgregateFunction.init();
 		for(int i=network.getLayers().size()-1;i>0;i--){
 			for(Neuron neuron: network.getLayers().get(i)){
 				if(neuron!=null)
-					updateGradients(neuron, i==network.getLayers().size()-1, aggregatorFunction);
+					updateGradients(neuron, i==network.getLayers().size()-1);
 			}
 		}
 		return this;
@@ -136,7 +123,7 @@ public class BPROP implements ITrainingAlgorithm {
 		return this;
 	}
 	
-	public ITrainingAlgorithm sync(Network network1, Network network2, IDAFloatFunction aggregatorFunction, int type) {
+	public ITrainingAlgorithm sync(Network network1, Network network2, int type) {
 		switch (type) {
 		case SYNC_WEIGHT_DELTA:
 			if(network1==null || network1.getLayers()==null || network1.getLayers().size()==0)
@@ -159,11 +146,11 @@ public class BPROP implements ITrainingAlgorithm {
 					relation2.setProperty(new BPROPSynapseProperty());				
 
 				
-				if(aggregatorFunction==null)
+				if(deferredAgregateFunction==null)
 					((BPROPSynapseProperty)relation1.getProperty()).setAggregatedDelta(((BPROPSynapseProperty)relation1.getProperty()).getAggregatedDelta()+((BPROPSynapseProperty)relation2.getProperty()).getDelta());
 				else
 					((BPROPSynapseProperty)relation1.getProperty()).setAggregatedDelta(
-							aggregatorFunction.apply(((BPROPSynapseProperty)relation1.getProperty()).getAggregatedDelta(), ((BPROPSynapseProperty)relation2.getProperty()).getDelta())
+						deferredAgregateFunction.apply(((BPROPSynapseProperty)relation1.getProperty()).getAggregatedDelta(), ((BPROPSynapseProperty)relation2.getProperty()).getDelta())
 					);
 				
 			}
@@ -244,7 +231,7 @@ public class BPROP implements ITrainingAlgorithm {
 		}
 	}
 	
-	private void updateGradients(Neuron neuron, boolean lastLayer, IDAFloatFunction aggregatorFunction){
+	private void updateGradients(Neuron neuron, boolean lastLayer){
 		
 		if(lastLayer){
 			float sigma = (neuron.getTarget() - neuron.getOutput()) * ((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0);
@@ -256,11 +243,11 @@ public class BPROP implements ITrainingAlgorithm {
 					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getPreviousDelta() +
 							(1-learningMomentum) * learningRate * sigma * relation.getFrom().getOutput();
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					if(aggregatorFunction==null)
+					if(deferredAgregateFunction==null)
 						((BPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+newDelta);
 					else
 						((BPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
-								aggregatorFunction.apply(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), newDelta)
+							deferredAgregateFunction.apply(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), newDelta)
 						);
 					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
@@ -283,11 +270,11 @@ public class BPROP implements ITrainingAlgorithm {
 					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getPreviousDelta() +
 							(1-learningMomentum) * learningRate * sigma * relation.getFrom().getOutput();
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					if(aggregatorFunction==null)
+					if(deferredAgregateFunction==null)
 						((BPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+newDelta);
 					else
 						((BPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
-								aggregatorFunction.apply(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), newDelta)
+							deferredAgregateFunction.apply(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), newDelta)
 						);
 					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
@@ -304,6 +291,17 @@ public class BPROP implements ITrainingAlgorithm {
 	}
 
 	public String toSaveString(){
-		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+learningMomentum;
+		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+learningMomentum+
+				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.toSaveString()+"");
+	}
+
+	public BPROP setLearningRate(float learningRate) {
+		this.learningRate = learningRate;
+		return this;
+	}
+
+	public BPROP setLearningMomentum(float learningMomentum) {
+		this.learningMomentum = learningMomentum;
+		return this;
 	}
 }

@@ -2,18 +2,13 @@ package it.sijinn.perceptron.strategies;
 
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
-import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
-public class StochasticGradientDescent extends GradientDescent implements ITrainingStrategy { 
+public class StochasticGradientDescent extends OnlineGradientDescent implements ITrainingStrategy { 
 	
 	
-	public StochasticGradientDescent(ITrainingAlgorithm _algorithm, IErrorFunctionApplied _errorFunction){
-		super(_algorithm, _errorFunction);
-	}	
-
 	public StochasticGradientDescent(ITrainingAlgorithm _algorithm){
 		super(_algorithm);
 	}

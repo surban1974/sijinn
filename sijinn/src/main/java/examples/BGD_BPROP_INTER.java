@@ -8,11 +8,7 @@ import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
-import it.sijinn.perceptron.functions.deferred.MMA;
-import it.sijinn.perceptron.functions.deferred.SMA;
-import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.MSE;
-import it.sijinn.perceptron.functions.generator.RandomWeightGenerator;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.Utils;
@@ -25,7 +21,7 @@ public class BGD_BPROP_INTER {
 
 	public static void main(String[] args) {
 		
-		final String resource = "examples/resources/interpolation.txt";
+		final String resource_training = "examples/resources/interpolation_training.txt";
 		final float learningRate = 0.001f;
 		final float learningMomentum = 0.01f;
 		final float approximation = 0.001f;
@@ -52,9 +48,11 @@ public class BGD_BPROP_INTER {
 
 		
 		
-		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(new BPROP(learningRate,learningMomentum), new MSE(),  0, 0);
+		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(
+				new BPROP().setLearningRate(learningRate).setLearningMomentum(learningMomentum)
+				).setErrorFunction(new MSE());
 
-		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource);
+		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
 		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
 
 		

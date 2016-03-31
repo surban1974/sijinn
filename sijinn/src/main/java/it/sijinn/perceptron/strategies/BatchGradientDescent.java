@@ -10,49 +10,17 @@ import java.util.concurrent.TimeUnit;
 
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
-import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
-import it.sijinn.perceptron.functions.deferred.MMA;
-import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
+import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
-public class BatchGradientDescent extends GradientDescent implements ITrainingStrategy { 
+public class BatchGradientDescent extends OnlineGradientDescent implements ITrainingStrategy { 
 	
 	private int parallelLimit=0; 
-	private long parallelTimeout=1000*60;
-	private IDAFloatFunction deferredAggregateFunction;
+	private long parallelTimeout=1000;
 	
-	public BatchGradientDescent(ITrainingAlgorithm _algorithm, IErrorFunctionApplied _errorFunction, IDAFloatFunction _defferedAggregationFunction, int _parallelLimit, long _parallelTimeout){
-		super(_algorithm, _errorFunction);
-		parallelLimit=_parallelLimit;
-		parallelTimeout=_parallelTimeout;
-		deferredAggregateFunction=_defferedAggregationFunction;
-	}	
-	
-	public BatchGradientDescent(ITrainingAlgorithm _algorithm, IErrorFunctionApplied _errorFunction, IDAFloatFunction _defferedAggregationFunction){
-		super(_algorithm, _errorFunction);
-		parallelLimit=0;
-		deferredAggregateFunction=_defferedAggregationFunction;
-	}	
-	
-	public BatchGradientDescent(ITrainingAlgorithm _algorithm, IErrorFunctionApplied _errorFunction, int _parallelLimit, long _parallelTimeout){
-		super(_algorithm, _errorFunction);
-		parallelLimit=_parallelLimit;
-		parallelTimeout=_parallelTimeout;
-	}	
 
-	public BatchGradientDescent(ITrainingAlgorithm _algorithm, int _parallelLimit, long _parallelTimeout){
-		super(_algorithm);
-		parallelLimit=_parallelLimit;
-		parallelTimeout=_parallelTimeout;
-	}
-	
-	public BatchGradientDescent(ITrainingAlgorithm _algorithm, IErrorFunctionApplied _errorFunction){
-		super(_algorithm, _errorFunction);
-		parallelLimit=0;
-	}	
-	
 	public BatchGradientDescent(ITrainingAlgorithm _algorithm){
 		super(_algorithm);
 		parallelLimit=0;
@@ -64,8 +32,8 @@ public class BatchGradientDescent extends GradientDescent implements ITrainingSt
 		if(network==null || dataReader==null)
 			return -1;
 		float error = 0;
-		final IDAFloatFunction daFunction = new MMA();
-
+		if(algorithm.getDeferredAgregateFunction()==null)
+			algorithm.setDeferredAgregateFunction(new SUMMATOR());
 
 		Object next=null;
 		int linenumber=0;
@@ -78,10 +46,7 @@ public class BatchGradientDescent extends GradientDescent implements ITrainingSt
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(network,aggregated);
 						network.compute(param.getInput(), param.getOutput());
-						if(deferredAggregateFunction!=null)
-							algorithm.calculate(network, deferredAggregateFunction);		
-						else
-							algorithm.calculate(network, daFunction);
+						algorithm.calculate(network);		
 					}
 					linenumber++;
 				}
@@ -93,14 +58,14 @@ public class BatchGradientDescent extends GradientDescent implements ITrainingSt
 						ExecutorService taskExecutor = Executors.newFixedThreadPool(parallelLimit);
 						List<Future<ApplyExecutor>> list = new ArrayList<Future<ApplyExecutor>>();
 						for(PairIO pair:accumulator)
-							list.add(taskExecutor.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput(), daFunction)));
+							list.add(taskExecutor.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput())));
 						taskExecutor.shutdown();
 						try {
 							taskExecutor.awaitTermination(parallelTimeout, TimeUnit.MILLISECONDS);
 						} catch (InterruptedException e) {				
 						}
 						for(Future<ApplyExecutor> future:list)
-							algorithm.sync(network, future.get().getNetwork(), (deferredAggregateFunction!=null)?deferredAggregateFunction:daFunction, ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
+							algorithm.sync(network, future.get().getNetwork(), ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
 						
 						accumulator.clear();
 					}
@@ -115,14 +80,14 @@ public class BatchGradientDescent extends GradientDescent implements ITrainingSt
 					ExecutorService taskExecutor = Executors.newFixedThreadPool(parallelLimit);
 					List<Future<ApplyExecutor>> list = new ArrayList<Future<ApplyExecutor>>();
 					for(PairIO pair:accumulator)
-						list.add(taskExecutor.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput(), daFunction)));
+						list.add(taskExecutor.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput())));
 					taskExecutor.shutdown();
 					try {
 						taskExecutor.awaitTermination(parallelTimeout, TimeUnit.MILLISECONDS);
 					} catch (InterruptedException e) {				
 					}
 					for(Future<ApplyExecutor> future:list)
-						algorithm.sync(network, future.get().getNetwork(), (deferredAggregateFunction!=null)?deferredAggregateFunction:daFunction, ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
+						algorithm.sync(network, future.get().getNetwork(), ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
 
 					accumulator.clear();
 				}
@@ -161,15 +126,11 @@ public class BatchGradientDescent extends GradientDescent implements ITrainingSt
 		return parallelLimit;
 	}
 
-	public IDAFloatFunction getDefferedAggregationFunction() {
-		return deferredAggregateFunction;
-	}
 	
 	public String toSaveString(){
 		return "strategy="+this.getClass().getSimpleName()+","+parallelLimit+
 				((algorithm==null)?"":"\n"+algorithm.toSaveString()+"")+
-				((errorFunction==null)?"":"\n"+errorFunction.toSaveString()+"")+
-				((deferredAggregateFunction==null)?"":"\n"+deferredAggregateFunction.toSaveString()+"");
+				((errorFunction==null)?"":"\n"+errorFunction.toSaveString()+"");
 	}
 	
 	
@@ -178,24 +139,19 @@ public class BatchGradientDescent extends GradientDescent implements ITrainingSt
 		private Network network;
 		private float[] input;
 		private float[] output;
-		private IDAFloatFunction daFunction;
 		
-		ApplyExecutor(Network _network, float[] _input, float[] _output, final IDAFloatFunction _daFunction){
+		ApplyExecutor(Network _network, float[] _input, float[] _output){
 			super();
 			this.network = _network;
 			this.input = _input;
 			this.output = _output;
-			this.daFunction = _daFunction;
 		}
 
 		@Override
 		public ApplyExecutor call() throws Exception {
 			
 			network.compute(input, output);
-			if(deferredAggregateFunction!=null)
-				algorithm.calculate(network, deferredAggregateFunction);		
-			else
-				algorithm.calculate(network, daFunction);
+			algorithm.calculate(network);		
 			return this;
 		}
 
@@ -203,5 +159,18 @@ public class BatchGradientDescent extends GradientDescent implements ITrainingSt
 			return network;
 		}
 		
+	}
+
+
+
+	public BatchGradientDescent setParallelLimit(int parallelLimit) {
+		this.parallelLimit = parallelLimit;
+		return this;
+	}
+
+
+	public BatchGradientDescent setParallelTimeout(long parallelTimeout) {
+		this.parallelTimeout = parallelTimeout;
+		return this;
 	}
 }

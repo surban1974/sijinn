@@ -9,7 +9,6 @@ import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.RPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
-import it.sijinn.perceptron.functions.generator.RandomWeightGenerator;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 import it.sijinn.perceptron.utils.Utils;
@@ -22,7 +21,7 @@ public class SGD_RPROP_INTER {
 
 	public static void main(String[] args) {
 		
-		final String resource = "examples/resources/interpolation.txt";
+		final String resource = "examples/resources/interpolation_training.txt";
 		final float approximation = 0.001f;
 		final int maxSteps = 5000;
 
@@ -47,7 +46,7 @@ public class SGD_RPROP_INTER {
 
 		
 		
-		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new RPROP(), new MSE());
+		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new RPROP()).setErrorFunction(new MSE());
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource);
 		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,0);

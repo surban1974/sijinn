@@ -22,11 +22,13 @@ public class SGD_BPROP_INTER {
 
 	public static void main(String[] args) {
 		
-		final String resource = "examples/resources/interpolation.txt";
+		final String resource_training = "examples/resources/interpolation_training.txt";
+		final String resource_test = "examples/resources/interpolation_test.txt";
+
 		final float learningRate = 0.5f;
 		final float learningMomentum = 0.01f;
 		final float approximation = 0.001f;
-		final int maxSteps = 100000;
+		final int maxSteps = 50000;
 
 
 		
@@ -37,8 +39,8 @@ public class SGD_BPROP_INTER {
 						Network.createLayer(2),
 						Network.createLayer(4,	new SimpleSigmoidFermi()),
 						Network.createLayer(1, new SimpleSigmoidFermi())
-						)),0
-//				new RandomPositiveWeightGenerator()
+						)),
+				new RandomPositiveWeightGenerator()
 			)
 			;
 				
@@ -49,9 +51,14 @@ public class SGD_BPROP_INTER {
 
 		
 		
-		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new BPROP(learningRate,learningMomentum), new MSE());
+		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(
+				new BPROP().
+				setLearningRate(learningRate).
+				setLearningMomentum(learningMomentum)
+			).
+			setErrorFunction(new MSE());
 
-		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource);
+		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
 		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
 
 		
@@ -77,11 +84,16 @@ public class SGD_BPROP_INTER {
 				}else
 					break;
 			}
+			System.out.println("Steps: " + step);
+			System.out.println("MSE: " + delta);
 			
 			network.save("c:/tmp/SGD_BPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
 			
-			System.out.println("Steps: " + step);
-			System.out.println("MSE: " + delta);
+			final IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
+			
+			final float error_test = network.test(streamWrapperTest, readLinesAggregator, new MSE());
+			System.out.println("MSE Test: " + error_test);
+			
 			float[][] test = network.compute(
 					new float[][] {					
 						{0.823593752f,0.176406248f},	//0.842274203

@@ -40,7 +40,7 @@ public class XOR {
 			        {{0, 0}, {0}},
 				};
 				
-		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new BPROP(learningRate,learningMomentum), new MSE());
+		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new BPROP().setLearningRate(learningRate).setLearningMomentum(learningMomentum)).setErrorFunction(new MSE());
 
 		Assert.assertArrayEquals(network.getWeight(), new float[]{-0.082843f, -0.011006f, 0.018629f, -0.071407f, 0.03268f, 0.020701f}, approximation);
 

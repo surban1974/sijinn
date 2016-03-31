@@ -16,6 +16,7 @@ public interface ITrainingStrategy {
 	float apply(Network network, IStreamWrapper streamWrapper, IReadLinesAggregator dataAggregator) throws Exception;
 	float apply(Network network, IDataReader dataReader, IReadLinesAggregator dataAggregator) throws Exception;
 	ITrainingAlgorithm getTrainingAlgorithm();
+	ITrainingStrategy setTrainingAlgorithm(ITrainingAlgorithm trainingAlgorithm);
 	IErrorFunctionApplied getErrorFunction();
 	String toSaveString();
 }

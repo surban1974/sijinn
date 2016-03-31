@@ -32,4 +32,14 @@ public abstract class TrainingStrategy implements ITrainingStrategy {
 		return errorFunction;
 	}
 
+	public ITrainingStrategy setTrainingAlgorithm(final ITrainingAlgorithm algorithm) {
+		this.algorithm = algorithm;
+		return this;
+	}
+
+	public ITrainingStrategy setErrorFunction(final IErrorFunctionApplied errorFunction) {
+		this.errorFunction = errorFunction;
+		return this;
+	}
+
 }

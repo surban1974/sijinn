@@ -11,7 +11,6 @@ import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.functions.generator.IGenerator;
-import it.sijinn.perceptron.functions.generator.RandomWeightGenerator;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.Utils;
@@ -24,7 +23,7 @@ public class BGD_RPROP_INTER {
 
 	public static void main(String[] args) {
 		
-		final String resource = "examples/resources/interpolation.txt";
+		final String resource_training = "examples/resources/interpolation_training.txt";
 		final float approximation = 0.001f;
 		final int maxSteps = 50;
 
@@ -50,19 +49,19 @@ public class BGD_RPROP_INTER {
 		
 		
 		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(
-				new RPROP(1.2f,0.5f,0.000001f,50f,
+				new RPROP().
+				setInitialDeltaGenarator(
 						new IGenerator() {			
-						@Override
-						public float generate(Neuron from, Neuron to) {
-							return 0.1f;
-						}
-					}), 
-				new MSE(),
-				new SUMMATOR(),
-				0,0);
+							@Override
+							public float generate(Neuron from, Neuron to) {
+								return 0.1f;
+							}
+						}).
+				setDeferredAgregateFunction(new SUMMATOR())
+				).setErrorFunction(new MSE());
 
-		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource);
-		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,1);
+		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
+		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
 
 		
 

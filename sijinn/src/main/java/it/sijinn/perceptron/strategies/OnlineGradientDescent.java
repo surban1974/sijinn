@@ -8,20 +8,14 @@ import java.io.InputStreamReader;
 
 import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
-import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.io.IStreamWrapper;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
-public class GradientDescent extends TrainingStrategy implements ITrainingStrategy { 
+public class OnlineGradientDescent extends TrainingStrategy implements ITrainingStrategy { 
 	
-	
-	public GradientDescent(ITrainingAlgorithm _algorithm, IErrorFunctionApplied _errorFunction){
-		super(_algorithm, _errorFunction);
-	}	
-
-	public GradientDescent(ITrainingAlgorithm _algorithm){
+	public OnlineGradientDescent(ITrainingAlgorithm _algorithm){
 		super(_algorithm);
 	}
 	
@@ -222,7 +216,7 @@ public class GradientDescent extends TrainingStrategy implements ITrainingStrate
 				if(aggregated!=null){
 					PairIO param = dataAggregator.getData(network,aggregated);
 					network.compute(param.getInput(), param.getOutput());
-					algorithm.calculate(network, null);		
+					algorithm.calculate(network);		
 					algorithm.updateWeights(network);
 					error+=errorFunction.compute(network, 0);
 				}

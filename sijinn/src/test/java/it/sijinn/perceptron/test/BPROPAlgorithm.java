@@ -61,7 +61,7 @@ public class BPROPAlgorithm {
 				new float[][][] {						
 					{{0.35f, 0.9f}, {0.5f}}
 				};
-		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new BPROP(learningRate,learningMomentum), new MSE());
+		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new BPROP().setLearningRate(learningRate).setLearningMomentum(learningMomentum)).setErrorFunction(new MSE());
 
 		Assert.assertArrayEquals(network.getWeight(), new float[]{0.1f, 0.4f, 0.8f, 0.6f, 0.3f, 0.9f}, approximation);
 
