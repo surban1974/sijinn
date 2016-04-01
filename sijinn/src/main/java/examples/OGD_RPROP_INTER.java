@@ -49,7 +49,7 @@ public class OGD_RPROP_INTER {
 		final ITrainingStrategy trainingStrategy = new OnlineGradientDescent(new RPROP()).setErrorFunction(new MSE());
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
-		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,0);
+		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
 
 		
 

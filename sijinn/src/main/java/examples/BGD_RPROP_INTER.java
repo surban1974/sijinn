@@ -8,6 +8,8 @@ import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.RPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
+import it.sijinn.perceptron.functions.deferred.MMA;
+import it.sijinn.perceptron.functions.deferred.SMA;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.functions.generator.IGenerator;
@@ -24,7 +26,7 @@ public class BGD_RPROP_INTER {
 	public static void main(String[] args) {
 		
 		final String resource_training = "examples/resources/interpolation_training.txt";
-		final float approximation = 0.001f;
+		final float approximation = 0.000001f;
 		final int maxSteps = 50;
 
 
@@ -34,7 +36,7 @@ public class BGD_RPROP_INTER {
 		Network network = new Network(
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2),
-						Network.createLayer(4,	new SimpleSigmoidFermi()),
+//						Network.createLayer(4,	new SimpleSigmoidFermi()),
 						Network.createLayer(1, new SimpleSigmoidFermi())
 						)),
 				0
@@ -61,7 +63,7 @@ public class BGD_RPROP_INTER {
 				).setErrorFunction(new MSE());
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
-		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
+		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,0);
 
 		
 

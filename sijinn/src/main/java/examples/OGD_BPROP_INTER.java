@@ -2,6 +2,7 @@ package examples;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import it.sijinn.perceptron.Network;
@@ -23,10 +24,13 @@ public class OGD_BPROP_INTER {
 	public static void main(String[] args) {
 		
 		final String resource_training = "examples/resources/interpolation_training.txt";
-		final float learningRate = 0.1f;
+		final String resource_test = "examples/resources/interpolation_test.txt";
+
+		final float learningRate = 0.5f;
 		final float learningMomentum = 0.01f;
 		final float approximation = 0.001f;
-		final int maxSteps = 1000000;
+		final int maxSteps = 50000;
+		long startTime = 0;
 
 
 		
@@ -57,7 +61,9 @@ public class OGD_BPROP_INTER {
 		
 
 
-		try{		
+		try{
+			startTime = new Date().getTime();
+			
 			float delta = network.training(
 					streamWrapper,
 					trainingStrategy,
@@ -77,11 +83,17 @@ public class OGD_BPROP_INTER {
 				}else
 					break;
 			}
-			
-			network.save("c:/tmp/GD_BPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
-			
+			System.out.println("Time: " + (new Date().getTime()-startTime)/1000+"s");
 			System.out.println("Steps: " + step);
 			System.out.println("MSE: " + delta);
+			
+			network.save("c:/tmp/OGD_BPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
+			
+			final IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
+			
+			final float error_test = network.test(streamWrapperTest, readLinesAggregator, new MSE());
+			System.out.println("MSE Test: " + error_test);
+			
 			float[][] test = network.compute(
 					new float[][] {					
 						{0.823593752f,0.176406248f},	//0.842274203

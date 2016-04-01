@@ -15,7 +15,6 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	class BPROPSynapseProperty implements ISynapseProperty{
 		private float sigma = 0;
 		private float delta = 0;
-		private float previousDelta = 0;
 		private float aggregatedDelta = 0;
 		private Synapse relation = null;
 		
@@ -31,7 +30,6 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		public BPROPSynapseProperty clear(){
 			sigma=0;
 			delta = 0;
-			previousDelta=0;
 			aggregatedDelta=0;
 			return this;
 		}
@@ -42,11 +40,11 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		public void setSigma(float sigma) {
 			this.sigma = sigma;
 		}
-		public float getPreviousDelta() {
-			return previousDelta;
+		public float getDelta() {
+			return delta;
 		}
-		public void setPreviousDelta(float previousDelta) {
-			this.previousDelta = previousDelta;
+		public void setDelta(float previousDelta) {
+			this.delta = previousDelta;
 		}
 		public float getAggregatedDelta() {
 			return aggregatedDelta;
@@ -54,14 +52,8 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		public void setAggregatedDelta(float aggregatedDelta) {
 			this.aggregatedDelta = aggregatedDelta;
 		}
-		public float getDelta() {
-			return delta;
-		}
-		public void setDelta(float delta) {
-			this.delta = delta;
-		}
 		public String toString(){
-			return "{"+sigma+","+delta+","+previousDelta+","+aggregatedDelta+"}";
+			return "{"+sigma+","+delta+","+aggregatedDelta+"}";
 		}		
 	}
 	
@@ -172,11 +164,10 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					if(relation.getProperty()==null)
 						relation.setProperty(new BPROPSynapseProperty());
 					
-					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getPreviousDelta() +
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
 							(1-learningMomentum) * learningRate  * sigma * relation.getFrom().getOutput();
 					relation.setWeight(relation.getWeight()+newDelta);
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					((BPROPSynapseProperty)relation.getProperty()).setPreviousDelta(newDelta);
 					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
 			}			
@@ -195,11 +186,10 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					if(relation.getProperty()==null)
 						relation.setProperty(new BPROPSynapseProperty());
 					
-					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getPreviousDelta() +
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
 							(1-learningMomentum) * learningRate * sigma * relation.getFrom().getOutput();
 					relation.setWeight(relation.getWeight()+newDelta);
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					((BPROPSynapseProperty)relation.getProperty()).setPreviousDelta(newDelta);
 					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
 			}
@@ -213,7 +203,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				for(Synapse relation:neuron.getParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new BPROPSynapseProperty());
-					((BPROPSynapseProperty)relation.getProperty()).setPreviousDelta(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
+					((BPROPSynapseProperty)relation.getProperty()).setDelta(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					relation.setWeight(relation.getWeight()+((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					((BPROPSynapseProperty)relation.getProperty()).clear();
 				}
@@ -223,7 +213,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				for(Synapse relation:neuron.getParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new BPROPSynapseProperty());
-					((BPROPSynapseProperty)relation.getProperty()).setPreviousDelta(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
+					((BPROPSynapseProperty)relation.getProperty()).setDelta(((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					relation.setWeight(relation.getWeight()+((BPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					((BPROPSynapseProperty)relation.getProperty()).clear();
 				}
@@ -240,7 +230,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					if(relation.getProperty()==null)
 						relation.setProperty(new BPROPSynapseProperty());
 					
-					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getPreviousDelta() +
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
 							(1-learningMomentum) * learningRate * sigma * relation.getFrom().getOutput();
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					if(deferredAgregateFunction==null)
@@ -267,7 +257,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					if(relation.getProperty()==null)
 						relation.setProperty(new BPROPSynapseProperty());
 					
-					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getPreviousDelta() +
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
 							(1-learningMomentum) * learningRate * sigma * relation.getFrom().getOutput();
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					if(deferredAgregateFunction==null)

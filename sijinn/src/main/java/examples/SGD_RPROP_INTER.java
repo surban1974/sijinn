@@ -22,8 +22,8 @@ public class SGD_RPROP_INTER {
 	public static void main(String[] args) {
 		
 		final String resource = "examples/resources/interpolation_training.txt";
-		final float approximation = 0.001f;
-		final int maxSteps = 5000;
+		final float approximation = 0.00001f;
+		final int maxSteps = 50;
 
 
 		
@@ -49,7 +49,7 @@ public class SGD_RPROP_INTER {
 		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new RPROP()).setErrorFunction(new MSE());
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource);
-		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,0);
+		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,1);
 
 		
 
@@ -69,7 +69,7 @@ public class SGD_RPROP_INTER {
 							streamWrapper,
 							trainingStrategy,
 							readLinesAggregator);
-					if(step % 1000 == 0)
+//					if(step % 1000 == 0)
 						System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
 				}else
 					break;

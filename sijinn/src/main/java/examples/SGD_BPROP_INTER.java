@@ -2,6 +2,7 @@ package examples;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import it.sijinn.perceptron.Network;
@@ -29,12 +30,13 @@ public class SGD_BPROP_INTER {
 		final float learningMomentum = 0.01f;
 		final float approximation = 0.001f;
 		final int maxSteps = 50000;
+		long startTime = 0;
 
 
 		
 
 		
-		Network network = new Network(
+		final Network network = new Network(
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2),
 						Network.createLayer(4,	new SimpleSigmoidFermi()),
@@ -64,7 +66,9 @@ public class SGD_BPROP_INTER {
 		
 
 
-		try{		
+		try{	
+			startTime = new Date().getTime();
+			
 			float delta = network.training(
 					streamWrapper,
 					trainingStrategy,
@@ -84,6 +88,7 @@ public class SGD_BPROP_INTER {
 				}else
 					break;
 			}
+			System.out.println("Time: " + (new Date().getTime()-startTime)/1000+"s");
 			System.out.println("Steps: " + step);
 			System.out.println("MSE: " + delta);
 			

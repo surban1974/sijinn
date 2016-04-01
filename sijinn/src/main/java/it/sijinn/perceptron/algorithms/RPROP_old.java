@@ -8,7 +8,7 @@ import it.sijinn.perceptron.Synapse;
 import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
-public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
+public class RPROP_old extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 	protected float etaPositive=1.2f;
 	protected float etaNegative=0.5f;
@@ -20,7 +20,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	class RPROPSynapseProperty implements ISynapseProperty{
 		private float sigma = 0;
 		private float delta = 0;
-		private float weightChange = 0;
+		private float previousDelta = 0;
 		private float aggregatedDelta = 0;
 		private Synapse relation = null;
 		
@@ -36,7 +36,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		public RPROPSynapseProperty clear(){
 //			sigma=0;
 //			delta = 0;
-//			weightChange=0;
+//			previousDelta=0;
 			aggregatedDelta=0;
 			return this;
 		}
@@ -47,17 +47,17 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		public void setSigma(float sigma) {
 			this.sigma = sigma;
 		}
-		public float getDelta() {
-			if(delta==0){
+		public float getPreviousDelta() {
+			if(previousDelta==0){
 				if(initialDeltaGenarator==null)
 					return 0.1f;
 				else 
 					return initialDeltaGenarator.generate((relation==null)?null:relation.getFrom(), (relation==null)?null:relation.getTo());
 			}else
-				return delta;
+				return previousDelta;
 		}
-		public void setDelta(float previousDelta) {
-			this.delta = previousDelta;
+		public void setPreviousDelta(float previousDelta) {
+			this.previousDelta = previousDelta;
 		}
 		public float getAggregatedDelta() {
 			return aggregatedDelta;
@@ -65,20 +65,18 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		public void setAggregatedDelta(float aggregatedDelta) {
 			this.aggregatedDelta = aggregatedDelta;
 		}
+		public float getDelta() {
+			return delta;
+		}
+		public void setDelta(float delta) {
+			this.delta = delta;
+		}
 		public String toString(){
-			return "{"+sigma+","+delta+","+aggregatedDelta+"}";
-		}
-
-		public float getWeightChange() {
-			return weightChange;
-		}
-
-		public void setWeightChange(float previousWeightChange) {
-			this.weightChange = previousWeightChange;
+			return "{"+sigma+","+delta+","+previousDelta+","+aggregatedDelta+"}";
 		}		
 	}
 	
-	public RPROP(){
+	public RPROP_old(){
 		super();
 	}
 	
@@ -184,32 +182,29 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					if(relation.getProperty()==null)
 						relation.setProperty(new RPROPSynapseProperty());
 					
-					float delta = 0;
+					float newDelta = 0;
 					float previousSigma = ((RPROPSynapseProperty)relation.getProperty()).getSigma();
-					float weightChange=0;
 					if(previousSigma*sigma>0){
-						delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.min(delta,this.maxDelta);
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaPositive*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.min(newDelta,this.maxDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma<0){
-						delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.max(delta,this.minDelta);
-						weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
-						sigma=0;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaNegative*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.max(newDelta,this.minDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma==0){
-						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = ((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta*= Math.signum(sigma);
 					}
 				
 					relation.setWeight(
-							relation.getWeight()+weightChange
+							relation.getWeight()+newDelta
 							);
-					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+					((RPROPSynapseProperty)relation.getProperty()).setPreviousDelta(newDelta);
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
 			}			
 		}else{
@@ -229,32 +224,27 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 						relation.setProperty(new RPROPSynapseProperty());
 					
 					
-					float delta = 0;
+					float newDelta = 0;
 					float previousSigma = ((RPROPSynapseProperty)relation.getProperty()).getSigma();
-					float weightChange=0;
 					if(previousSigma*sigma>0){
-						delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.min(delta,this.maxDelta);
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaPositive*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.min(newDelta,this.maxDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma<0){
-						delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.max(delta,this.minDelta);
-						weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
-						sigma=0;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaNegative*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.max(newDelta,this.minDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma==0){
-						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = ((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta*= Math.signum(sigma);
 					}
-				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
-					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
+					
+					relation.setWeight(relation.getWeight()+ newDelta);
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+					((RPROPSynapseProperty)relation.getProperty()).setPreviousDelta(newDelta);
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
 			}
 		}
@@ -266,7 +256,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				for(Synapse relation:neuron.getParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new RPROPSynapseProperty());
-					((RPROPSynapseProperty)relation.getProperty()).setDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
+					((RPROPSynapseProperty)relation.getProperty()).setPreviousDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					relation.setWeight(relation.getWeight()+((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					((RPROPSynapseProperty)relation.getProperty()).clear();
 				}
@@ -276,7 +266,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				for(Synapse relation:neuron.getParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new RPROPSynapseProperty());
-					((RPROPSynapseProperty)relation.getProperty()).setDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
+					((RPROPSynapseProperty)relation.getProperty()).setPreviousDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					relation.setWeight(relation.getWeight()+((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					((RPROPSynapseProperty)relation.getProperty()).clear();
 				}
@@ -295,41 +285,33 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					if(relation.getProperty()==null)
 						relation.setProperty(new RPROPSynapseProperty());
 					
-					float delta = 0;
+					float newDelta = 0;
 					float previousSigma = ((RPROPSynapseProperty)relation.getProperty()).getSigma();
-					float weightChange=0;
 					if(previousSigma*sigma>0){
-						delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.min(delta,this.maxDelta);
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaPositive*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.min(newDelta,this.maxDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma<0){
-						delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.max(delta,this.minDelta);
-						weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
-						sigma=0;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaNegative*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.max(newDelta,this.minDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma==0){
-						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = ((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta*= Math.signum(sigma);
 					}
-				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
-					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
+					
 
-
+						
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					if(deferredAgregateFunction==null)
-						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+weightChange);
+						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+newDelta);
 					else 
 						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
-							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), weightChange)
+							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), newDelta)
 						);
-
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
 			}			
 		}else{
@@ -348,41 +330,31 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					if(relation.getProperty()==null)
 						relation.setProperty(new RPROPSynapseProperty());
 					
-					float delta = 0;
+					float newDelta = 0;
 					float previousSigma = ((RPROPSynapseProperty)relation.getProperty()).getSigma();
-					float weightChange=0;
 					if(previousSigma*sigma>0){
-						delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.min(delta,this.maxDelta);
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaPositive*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.min(newDelta,this.maxDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma<0){
-						delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						delta=Math.max(delta,this.minDelta);
-						weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
-						sigma=0;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = this.etaNegative*
+							((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta=Math.max(newDelta,this.minDelta);
+						newDelta*= Math.signum(sigma);
 					}else if(previousSigma*sigma==0){
-						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
-						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+						newDelta = ((RPROPSynapseProperty)relation.getProperty()).getPreviousDelta();
+						newDelta*= Math.signum(sigma);
 					}
-				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
-					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
-
-
+						
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					if(deferredAgregateFunction==null)
-						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+weightChange);
+						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+newDelta);
 					else 
 						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
-							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), weightChange)
+							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(),newDelta)
 						);
-
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
 				}
 			}
 		}
@@ -395,31 +367,31 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	}
 
 
-	public RPROP setEtaPositive(float etaPositive) {
+	public RPROP_old setEtaPositive(float etaPositive) {
 		this.etaPositive = etaPositive;
 		return this;
 	}
 
 
-	public RPROP setEtaNegative(float etaNegative) {
+	public RPROP_old setEtaNegative(float etaNegative) {
 		this.etaNegative = etaNegative;
 		return this;
 	}
 
 
-	public RPROP setMaxDelta(float maxDelta) {
+	public RPROP_old setMaxDelta(float maxDelta) {
 		this.maxDelta = maxDelta;
 		return this;
 	}
 
 
-	public RPROP setMinDelta(float minDelta) {
+	public RPROP_old setMinDelta(float minDelta) {
 		this.minDelta = minDelta;
 		return this;
 	}
 
 
-	public RPROP setInitialDeltaGenarator(IGenerator initialDeltaGenarator) {
+	public RPROP_old setInitialDeltaGenarator(IGenerator initialDeltaGenarator) {
 		this.initialDeltaGenarator = initialDeltaGenarator;
 		return this;
 	}
