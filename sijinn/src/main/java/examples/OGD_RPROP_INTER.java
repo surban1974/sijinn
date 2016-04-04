@@ -21,9 +21,12 @@ public class OGD_RPROP_INTER {
 
 	public static void main(String[] args) {
 		
+		
+//		for(int cnt=0;cnt<90;cnt++){
+		
 		final String resource_training = "examples/resources/interpolation_training.txt";
 		final float approximation = 0.001f;
-		final int maxSteps = 500;
+		final int maxSteps = 50;
 
 
 		
@@ -32,7 +35,7 @@ public class OGD_RPROP_INTER {
 		Network network = new Network(
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2),
-						Network.createLayer(4,	new SimpleSigmoidFermi()),
+//						Network.createLayer(1,	new SimpleSigmoidFermi()),
 						Network.createLayer(1, new SimpleSigmoidFermi())
 						)),0
 //				new RandomWeightGenerator()
@@ -75,22 +78,23 @@ public class OGD_RPROP_INTER {
 					break;
 			}
 			
-			network.save("c:/tmp/GD_RPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
+//			network.save("c:/tmp/GD_RPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
 			
-			System.out.println("Steps: " + step);
-			System.out.println("MSE: " + delta);
-			float[][] test = network.compute(
-					new float[][] {					
-						{0.823593752f,0.176406248f},	//0,842274203
-						{0.453583164f,0.546416836f},  	//0,7101472
-			          }
-			);
-
-			System.out.print(Utils.print(test, new String[]{" ","\n"}));
+			System.out.println("Steps: " + step+ " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
+//			float[][] test = network.compute(
+//					new float[][] {					
+//						{0.823593752f,0.176406248f},	//0,842274203
+//						{0.453583164f,0.546416836f},  	//0,7101472
+//			          }
+//			);
+//
+//			System.out.print(Utils.print(test, new String[]{" ","\n"}));
 
 		}catch(Exception e){
 			
 		}
+		
+//		}
 		
 
 	}

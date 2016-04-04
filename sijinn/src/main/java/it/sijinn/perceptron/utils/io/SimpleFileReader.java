@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import it.sijinn.perceptron.utils.Utils;
+
 
 
 public class SimpleFileReader implements IDataReader {
@@ -15,6 +17,11 @@ public class SimpleFileReader implements IDataReader {
 	public SimpleFileReader(File _file){
 		super();
 		this.file = _file;
+	}
+	
+	@Override
+	public byte[] readAll() throws Exception {
+		return Utils.getBytesFromFile(file);
 	}
 	
 	@Override
@@ -47,4 +54,6 @@ public class SimpleFileReader implements IDataReader {
 			breader.close();
 		return true;
 	}
+
+
 }

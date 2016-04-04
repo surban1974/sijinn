@@ -1,5 +1,7 @@
 package it.sijinn.perceptron.utils.io;
 
+import it.sijinn.perceptron.utils.Utils;
+
 public class SimpleArrayReader implements IDataReader{
 	private int current = 0;
 	private int finish = 0;
@@ -8,6 +10,11 @@ public class SimpleArrayReader implements IDataReader{
 	public SimpleArrayReader(float[][][] _data){
 		super();
 		this.data=_data;
+	}
+	
+	@Override
+	public byte[] readAll() throws Exception {
+		return Utils.serialize(data);
 	}
 	
 	@Override

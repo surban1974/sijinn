@@ -1,8 +1,11 @@
 package it.sijinn.perceptron.utils.io;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+
 
 public class SimpleStreamReader implements IDataReader{
 	private InputStream stream = null;
@@ -15,6 +18,24 @@ public class SimpleStreamReader implements IDataReader{
 		if(_streamWrapper!=null)
 			this.streamWrapper = _streamWrapper;
 	}
+	
+	@Override
+	public byte[] readAll() throws Exception {
+		InputStream is = streamWrapper.instance().openStream();
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+		int nRead;
+		byte[] data = new byte[16384];
+
+		while ((nRead = is.read(data, 0, data.length)) != -1) 
+		  buffer.write(data, 0, nRead);
+		
+
+		buffer.flush();
+		is.close();
+
+		return buffer.toByteArray();
+	}	
 	
 	@Override
 	public boolean open() throws Exception {

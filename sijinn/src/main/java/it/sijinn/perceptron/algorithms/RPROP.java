@@ -177,6 +177,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	}	
 	
 	private void backPropagation(Neuron neuron, boolean lastLayer){
+
 		if(lastLayer){
 			float sigma = (neuron.getTarget() - neuron.getOutput())* ((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0);
 			if(neuron.getParents()!=null){
@@ -191,24 +192,21 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 						delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						delta=Math.min(delta,this.maxDelta);
 						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}else if(previousSigma*sigma<0){
 						delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						delta=Math.max(delta,this.minDelta);
 						weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
 						sigma=0;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}else if(previousSigma*sigma==0){
 						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}
 				
 					relation.setWeight(
 							relation.getWeight()+weightChange
 							);
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);					
 					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
 				}
 			}			
@@ -236,29 +234,27 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 						delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						delta=Math.min(delta,this.maxDelta);
 						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}else if(previousSigma*sigma<0){
 						delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						delta=Math.max(delta,this.minDelta);
 						weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
 						sigma=0;
-						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}else if(previousSigma*sigma==0){
 						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						weightChange= Math.signum(sigma)*delta;
-						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}
 				
 					relation.setWeight(
 							relation.getWeight()+weightChange
 							);
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);					
 					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
 				}
 			}
 		}
 	}	
+	
 	
 	private void updateWeights(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
@@ -266,9 +262,141 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				for(Synapse relation:neuron.getParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new RPROPSynapseProperty());
-					((RPROPSynapseProperty)relation.getProperty()).setDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
+					
+					float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta();
+					float delta = 0;
+					float previousSigma = ((RPROPSynapseProperty)relation.getProperty()).getSigma();
+					float weightChange=0;
+					if(previousSigma*sigma>0){
+						delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
+						delta=Math.min(delta,this.maxDelta);
+						weightChange= Math.signum(sigma)*delta;
+					}else if(previousSigma*sigma<0){
+						delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
+						delta=Math.max(delta,this.minDelta);
+						weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
+						sigma=0;
+					}else if(previousSigma*sigma==0){
+						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
+						weightChange= Math.signum(sigma)*delta;
+					}
+					
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
+				
+					relation.setWeight(
+							relation.getWeight()+weightChange
+							);
+
+
+
+				}
+			}			
+		}else{
+			if(neuron.getParents()!=null){
+
+			
+			for(Synapse relation:neuron.getParents()){
+				if(relation.getProperty()==null)
+					relation.setProperty(new RPROPSynapseProperty());
+				
+				float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta();
+				float delta = 0;
+				float previousSigma = ((RPROPSynapseProperty)relation.getProperty()).getSigma();
+				float weightChange=0;
+				if(previousSigma*sigma>0){
+					delta = this.etaPositive*((RPROPSynapseProperty)relation.getProperty()).getDelta();
+					delta=Math.min(delta,this.maxDelta);
+					weightChange= Math.signum(sigma)*delta;
+				}else if(previousSigma*sigma<0){
+					delta = this.etaNegative*((RPROPSynapseProperty)relation.getProperty()).getDelta();
+					delta=Math.max(delta,this.minDelta);
+					weightChange=-((RPROPSynapseProperty)relation.getProperty()).getWeightChange();
+					sigma=0;
+					((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
+					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+				}else if(previousSigma*sigma==0){
+					delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
+					weightChange= Math.signum(sigma)*delta;
+				}
+			
+
+				((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
+				((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+				((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
+
+
+				relation.setWeight(
+						relation.getWeight()+weightChange
+						);
+
+
+
+			}
+		}
+	}
+
+	}
+
+	
+	private void updateGradients(Neuron neuron, boolean lastLayer){
+		
+		if(lastLayer){
+			float sigma = (neuron.getTarget() - neuron.getOutput())* ((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0);
+			if(neuron.getParents()!=null){
+				for(Synapse relation:neuron.getParents()){
+					if(relation.getProperty()==null)
+						relation.setProperty(new RPROPSynapseProperty());
+					if(deferredAgregateFunction==null)
+						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+sigma);
+					else 
+						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
+							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), sigma)
+						);
+
+				}
+			}			
+		}else{
+			if(neuron.getParents()!=null && neuron.getChildren()!=null){
+				float sigma=0;
+				for(Synapse relation:neuron.getChildren()){
+					if(relation.getProperty()==null)
+						relation.setProperty(new RPROPSynapseProperty());
+					
+					sigma+=relation.getWeight()*((RPROPSynapseProperty)relation.getProperty()).getSigma();
+				}
+				
+				sigma*=((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0);
+				
+				for(Synapse relation:neuron.getParents()){
+					if(relation.getProperty()==null)
+						relation.setProperty(new RPROPSynapseProperty());
+					if(deferredAgregateFunction==null)
+						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta()+sigma);
+					else 
+						((RPROPSynapseProperty)relation.getProperty()).setAggregatedDelta(
+							deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta(), sigma)
+						);
+
+				}
+			}
+		}
+	}
+	
+/*	
+	
+	
+	
+	private void updateWeights(Neuron neuron, boolean lastLayer){
+		if(lastLayer){
+			if(neuron.getParents()!=null){
+				for(Synapse relation:neuron.getParents()){
+					if(relation.getProperty()==null)
+						relation.setProperty(new RPROPSynapseProperty());
+//					((RPROPSynapseProperty)relation.getProperty()).setDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					relation.setWeight(relation.getWeight()+((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
-					((RPROPSynapseProperty)relation.getProperty()).clear();
+//					((RPROPSynapseProperty)relation.getProperty()).clear();
 				}
 			}			
 		}else{
@@ -276,15 +404,15 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				for(Synapse relation:neuron.getParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new RPROPSynapseProperty());
-					((RPROPSynapseProperty)relation.getProperty()).setDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
+//					((RPROPSynapseProperty)relation.getProperty()).setDelta(((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
 					relation.setWeight(relation.getWeight()+((RPROPSynapseProperty)relation.getProperty()).getAggregatedDelta());
-					((RPROPSynapseProperty)relation.getProperty()).clear();
+//					((RPROPSynapseProperty)relation.getProperty()).clear();
 				}
 			}
 		}
 			
 			
-	}
+	}	
 	
 	private void updateGradients(Neuron neuron, boolean lastLayer){
 		
@@ -314,12 +442,10 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					}else if(previousSigma*sigma==0){
 						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						weightChange= Math.signum(sigma)*delta;
+						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
 						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}
 				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
 					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
 
 
@@ -367,12 +493,11 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					}else if(previousSigma*sigma==0){
 						delta = ((RPROPSynapseProperty)relation.getProperty()).getDelta();
 						weightChange= Math.signum(sigma)*delta;
+						((RPROPSynapseProperty)relation.getProperty()).setDelta(delta);
 						((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					}
 				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
+
 					((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
 
 
@@ -387,6 +512,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			}
 		}
 	}
+	
+*/	
 
 	public String toSaveString(){
 		return "algorithm="+this.getClass().getSimpleName()+","+etaNegative+","+etaPositive+","+minDelta+","+maxDelta+

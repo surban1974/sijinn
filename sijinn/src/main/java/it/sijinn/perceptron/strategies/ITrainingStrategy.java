@@ -20,5 +20,5 @@ public interface ITrainingStrategy {
 	ITrainingStrategy setTrainingAlgorithm(ITrainingAlgorithm trainingAlgorithm);
 	ITrainingStrategy setListener(IStrategyListener listener);
 	IErrorFunctionApplied getErrorFunction();
-	String toSaveString();
+	String toSaveString(String prefix);
 }

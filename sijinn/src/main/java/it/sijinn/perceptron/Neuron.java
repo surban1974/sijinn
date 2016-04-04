@@ -8,9 +8,12 @@ import java.util.StringTokenizer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.functions.generator.IGenerator;
+import it.sijinn.perceptron.utils.Utils;
 
 public class Neuron implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -152,10 +155,21 @@ public class Neuron implements Serializable{
 			for(Synapse relation: parents)
 				output+= relation.getFrom().getOutput()*relation.getWeight();
 			
+			if(this instanceof Network){
+				((Network)this).setInputValues(0, new float[]{output});
+				float[] outputs =((Network)this).compute();
+				if(outputs!=null && outputs.length>0)
+					output = outputs[0];
+			}
 			output = ((getFunction()!=null)?getFunction().execution(new float[]{output}):0);
+		}else if(parents==null && this instanceof Network){
+			float[] outputs = ((Network)this).compute();
+			if(outputs!=null && outputs.length>0)
+				output = outputs[0];
 		}
 		return output;
 	}
+	
 	
 	public boolean setChildSynapse(Synapse synapse, boolean updateIfExist){
 		if(synapse==null)
@@ -202,14 +216,16 @@ public class Neuron implements Serializable{
 	}
 	
 	
-	public String toSaveString(){
-		String result = "";
-		result+="neuron="+getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getClass().getSimpleName():"")+"\n";
+	public String toSaveString(String prefix){
+		String result = (prefix!=null)?prefix:"";
+		result+="<neuron>"+
+		Utils.normalXML(getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getClass().getSimpleName():""),"utf8")+
+		"</neuron>\n";
 		return result;
 	}
 	
 	public String toString(){
-		return toSaveString();
+		return toSaveString(null);
 	}
 	
 	public int getLayer() {
@@ -266,6 +282,23 @@ public class Neuron implements Serializable{
 	}
 	
 	
+	public static Neuron create(Network _network, Node node, Logger logger){
+		if(node==null)
+			return null;
+		if(node.getNodeName().equalsIgnoreCase("neuron")){
+			String properties = null;
+			try{
+				properties = ((Text)node.getFirstChild()).getData();
+			}catch(Exception e){			
+			}
+			if(properties!=null)
+				return create(_network, properties, logger);
+			else
+				logger.error("Neuron instance Error: xml node is incomplet for initialization.");
+		}
+		return null;
+	}
+	
 	public static Neuron create(Network _network, String properties, Logger logger){
 		
 		if(properties==null || properties.length()==0)
@@ -279,53 +312,9 @@ public class Neuron implements Serializable{
 				layer = Integer.valueOf(st.nextToken()).intValue();
 			if(st.hasMoreTokens())
 				order = Integer.valueOf(st.nextToken()).intValue();
-			if(st.hasMoreTokens()){
-				String function = st.nextToken();
-				if(!function.trim().equals("")){
-					if(function.indexOf("{")==-1){
-						if(function.indexOf(".")>-1)
-							functionApplied = (IFunctionApplied)Class.forName(function).newInstance();
-						else
-							functionApplied = (IFunctionApplied)Class.forName("it.sijinn.perceptron.functions.applied."+function).newInstance();
-					}else{
-						String parameters = function.substring(function.indexOf("{")+1, function.lastIndexOf("}"));
-						function = function.substring(0, function.indexOf("{"));
-						StringTokenizer stp = new StringTokenizer(parameters, "|");
-						List<Float> param = new ArrayList<Float>();
-						while(stp.hasMoreTokens())
-							param.add(Float.valueOf(stp.nextToken()));
-						Float[] fParam = new Float[param.size()];
-						fParam = param.toArray(fParam);
-	
-						
-						Class<?> clazz = null;
-						if(function.indexOf(".")>-1)
-							clazz = (Class<?>)Class.forName(function).asSubclass(IFunctionApplied.class);
-						else
-							clazz = (Class<?>)Class.forName("it.sijinn.perceptron.functions.applied."+function);
-						
-						Constructor<?> clazzConstructor = null;
-						for(Constructor<?> constructor: (Constructor<?>[])clazz.getConstructors()){
-							if(constructor.getParameterTypes().length==fParam.length){
-								boolean isCorrect=true;
-								for(Class<?> paramClass: constructor.getParameterTypes())
-									isCorrect&=(paramClass.isPrimitive() &&  paramClass.getName().equals("float"));
-								if(isCorrect){
-									clazzConstructor = constructor;
-									break;
-								}
-							}
-						}
-						
-						if(clazzConstructor!=null)
-							functionApplied = (IFunctionApplied)clazzConstructor.newInstance((Object[])fParam);
-						else{
-							logger.error("Neuron instance Error: FunctionApplied into properties=["+properties+"] is incomplet for initialization.");
-							return null;
-						}
-					}	
-				}
-			}
+			if(st.hasMoreTokens())
+				functionApplied = create(st.nextToken(), logger);
+
 			if(layer>-1 && order>-1)
 				return new Neuron(_network, functionApplied,layer,order);
 			else{
@@ -337,8 +326,60 @@ public class Neuron implements Serializable{
 			logger.error(e);
 			return null;
 		}
-		
-		
 	}	
+	
+	public static IFunctionApplied create(String function, Logger logger){
+		IFunctionApplied functionApplied = null;
+		try{
+			if(function!=null && !function.trim().equals("")){
+				if(function.indexOf("{")==-1){
+					if(function.indexOf(".")>-1)
+						functionApplied = (IFunctionApplied)Class.forName(function).newInstance();
+					else
+						functionApplied = (IFunctionApplied)Class.forName("it.sijinn.perceptron.functions.applied."+function).newInstance();
+				}else{
+					String parameters = function.substring(function.indexOf("{")+1, function.lastIndexOf("}"));
+					function = function.substring(0, function.indexOf("{"));
+					StringTokenizer stp = new StringTokenizer(parameters, "|");
+					List<Float> param = new ArrayList<Float>();
+					while(stp.hasMoreTokens())
+						param.add(Float.valueOf(stp.nextToken()));
+					Float[] fParam = new Float[param.size()];
+					fParam = param.toArray(fParam);
+	
+					
+					Class<?> clazz = null;
+					if(function.indexOf(".")>-1)
+						clazz = (Class<?>)Class.forName(function).asSubclass(IFunctionApplied.class);
+					else
+						clazz = (Class<?>)Class.forName("it.sijinn.perceptron.functions.applied."+function);
+					
+					Constructor<?> clazzConstructor = null;
+					for(Constructor<?> constructor: (Constructor<?>[])clazz.getConstructors()){
+						if(constructor.getParameterTypes().length==fParam.length){
+							boolean isCorrect=true;
+							for(Class<?> paramClass: constructor.getParameterTypes())
+								isCorrect&=(paramClass.isPrimitive() &&  paramClass.getName().equals("float"));
+							if(isCorrect){
+								clazzConstructor = constructor;
+								break;
+							}
+						}
+					}
+					
+					if(clazzConstructor!=null)
+						functionApplied = (IFunctionApplied)clazzConstructor.newInstance((Object[])fParam);
+					else{
+						logger.error("FunctionApplied instance Error: properties=["+function+"] is incomplet for initialization.");
+						return null;
+					}
+				}	
+			}
+		}catch(Exception e){
+			logger.error(e);
+			return null;
+		}
+		return functionApplied;
+	}
 	
 }

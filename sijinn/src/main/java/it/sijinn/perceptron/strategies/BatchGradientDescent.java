@@ -14,6 +14,7 @@ import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.utils.IStrategyListener;
+import it.sijinn.perceptron.utils.Utils;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
@@ -50,7 +51,8 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(network,aggregated);
 							if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-						network.compute(param.getInput(), param.getOutput());
+						float out[] = network.compute(param.getInput(), param.getOutput());
+						Utils.print(out, " ");
 							if(listener!=null) listener.onAfterDataComputed(network,linenumber,param);
 						algorithm.calculate(network);	
 							if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param);

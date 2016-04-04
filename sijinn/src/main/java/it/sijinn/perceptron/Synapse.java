@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.StringTokenizer;
 
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.utils.ISynapseProperty;
+import it.sijinn.perceptron.utils.Utils;
 
 
 public class Synapse implements Serializable{
@@ -73,14 +76,16 @@ public class Synapse implements Serializable{
 	}
 	
 
-	public String toSaveString(){
-		String result="";
-		result+="synapse="+from.getLayer()+","+from.getOrder()+","+to.getLayer()+","+to.getOrder()+","+weight+ "," + ((property!=null)?property.toString():"{}")+ "\n";
+	public String toSaveString(String prefix){
+		String result=(prefix!=null)?prefix:"";
+		result+="<synapse>"+
+		Utils.normalXML(from.getLayer()+","+from.getOrder()+","+to.getLayer()+","+to.getOrder()+","+weight+ "," + ((property!=null)?property.toString():"{}"),"utf8")+
+		"</synapse>\n";
 		return result;
 	}	
 	
 	public String toString(){
-		return toSaveString();
+		return toSaveString(null);
 	}
 	
 	public float getWeight() {
@@ -110,6 +115,23 @@ public class Synapse implements Serializable{
 		this.property = property;
 	}
 	
+	
+	public static Synapse create(Node node, Logger logger){
+		if(node==null)
+			return null;
+		if(node.getNodeName().equalsIgnoreCase("synapse")){
+			String properties = null;
+			try{
+				properties = ((Text)node.getFirstChild()).getData();
+			}catch(Exception e){			
+			}
+			if(properties!=null)
+				return create(properties, logger);
+			else
+				logger.error("Synapse instance Error: xml node is incomplet for initialization.");
+		}
+		return null;
+	}
 	
 	public static Synapse create(String properties, Logger logger){
 		

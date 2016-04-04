@@ -1,13 +1,17 @@
 package it.sijinn.perceptron;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
@@ -21,6 +25,8 @@ import it.sijinn.perceptron.utils.io.SimpleArrayReader;
 import it.sijinn.perceptron.utils.io.SimpleFileReader;
 import it.sijinn.perceptron.utils.io.SimpleFileWriter;
 import it.sijinn.perceptron.utils.io.SimpleStreamReader;
+import it.sijinn.perceptron.utils.io.SimpleStringReader;
+import it.sijinn.perceptron.utils.io.SimpleStringWriter;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
@@ -646,18 +652,31 @@ public class Network extends Neuron implements Serializable{
 	public float[] compute(float[] input, float[] output){
 		if(this.layers==null || this.layers.size()<2)
 			return new float[0];
-		
+
+/*		
 		for(int i=0;i<input.length;i++){
-			if(this.layers.get(0).size()>i)
-				this.layers.get(0).get(i).setOutput(input[i]);
+			if(this.layers.get(0).size()>i){
+				if(this.layers.get(0).get(i) instanceof Network){
+					
+				}
+				else this.layers.get(0).get(i).setOutput(input[i]);
+			}
 		}
-		
 		if(output!=null){
 			for(int i=0;i<output.length;i++){
 				if(this.layers.get(this.layers.size()-1).size()>i)
 					this.layers.get(this.layers.size()-1).get(i).setTarget(output[i]);
 			}
-		}
+		}		
+*/		
+		
+
+
+		
+
+		
+		setInputValues(0, input);
+		setOutputValues(0, output);
 		
 		float[] result = new float[0];
 		for(List<Neuron> currentLayer: this.layers){
@@ -667,6 +686,54 @@ public class Network extends Neuron implements Serializable{
 					result[neuron.getOrder()] = neuron.calculation();
 			}
 		}
+		return result;
+	}
+	
+	public float[] compute(){
+		float[] result = new float[0];
+		for(List<Neuron> currentLayer: this.layers){
+			result = new float[currentLayer.size()]; 
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null)
+					result[neuron.getOrder()] = neuron.calculation();
+			}
+		}
+		return result;
+	}
+	
+	public int setInputValues(int start, float[] input){
+		int result = start;
+		if(this.layers==null || this.layers.get(0).size()==0 || input==null)
+			return start;
+		for(;result<input.length && result<this.layers.get(0).size();result++){
+			if(this.layers.get(0).get(result) instanceof Network){
+				result=((Network)this.layers.get(0).get(result)).setInputValues(result, input);
+			}else
+				this.layers.get(0).get(result).setOutput(input[result]);
+		}
+		return result;
+	}
+	
+	public int setOutputValues(int start, float[] output){
+		int result = start;
+		int lastLayer = this.layers.size()-1;
+		if(this.layers==null || this.layers.get(lastLayer).size()==0 || output==null)
+			return start;
+		for(;result<output.length && result<this.layers.get(lastLayer).size();result++){
+			if(this.layers.get(lastLayer).get(result) instanceof Network){
+				result=((Network)this.layers.get(lastLayer).get(result)).setOutputValues(result, output);
+			}else
+				this.layers.get(lastLayer).get(result).setTarget(output[result]);
+		}
+		return result;
+	}	
+	
+	public float[] getOutputValues(){
+		if(this.layers==null || this.layers.get(this.layers.size()-1).size()==0)
+			return new float[0];
+		float[] result = new float[this.layers.get(this.layers.size()-1).size()];
+		for(int i=0;i<this.layers.get(this.layers.size()-1).size();i++)
+			result[i] = this.layers.get(this.layers.size()-1).get(i).getOutput();
 		return result;
 	}
 	
@@ -708,6 +775,16 @@ public class Network extends Neuron implements Serializable{
 		return Utils.clone(this, Network.class);
 	}
 	
+	public String save(){
+		SimpleStringWriter stringWriter = new SimpleStringWriter();
+		try{
+			save(stringWriter);
+		}catch(Exception e){
+			logger.error(e);
+			return null;
+		}
+		return stringWriter.getOutput();
+	}
 	
 	public boolean save(String path){
 		return save(path,null);
@@ -722,231 +799,116 @@ public class Network extends Neuron implements Serializable{
 		}
 	}
 	
-	public boolean save(IDataWriter dataWriter) throws Exception{
+	public boolean save(final IDataWriter dataWriter) throws Exception{
 		return save(dataWriter,null);
 	}
 	
 	public boolean save(IDataWriter dataWriter, ITrainingStrategy[] strategies) throws Exception{
 		dataWriter.open();
-		dataWriter.writeNext(this.toSaveString(strategies).getBytes());
+		dataWriter.writeNext(this.toSaveString("",strategies).getBytes());
 		dataWriter.close();
 		dataWriter.finalizer();
 		return true;
 	}	
 	
-	public Network open(String path){
+	public Network open(String xml){
 		try{	
-			return open(new SimpleFileReader(new File(path)));
+			return open(new SimpleStringReader(xml,"utf8"));
 		}catch(Exception e){
 			logger.error(e);
 			return this;
 		}		
 	}
 	
-public Network open(final IStreamWrapper streamWrapper) throws Exception{
-		
+	public Network open(File path){
+		try{	
+			return open(new SimpleFileReader(path));
+		}catch(Exception e){
+			logger.error(e);
+			return this;
+		}		
+	}
+	
+	public Network open(final IStreamWrapper streamWrapper) throws Exception{
 		try{
-			
-			final IReadLinesAggregator dataAggregator = new IReadLinesAggregator() {
-				
-				@Override
-				public PairIO getData(Network network, Object[] lines) {
-					return null;
-				}
-				
-				@Override
-				public Object[] aggregate(Object line, int linenumber) {
-					if(line==null)
-						return null;
-					else 
-						return new Object[]{line};
-				}
-				
-				@Override
-				public Object getRowData(Network network, Object[] objs) {
-					if(objs==null || objs.length==0)
-						return null;
-					String line = (String)objs[0];
-					StringTokenizer st = new StringTokenizer(line, "=");
-					String[] result = new String[2];
-					if(st.hasMoreTokens()){
-						result[0]=st.nextToken();
-						if(st.hasMoreTokens())
-							result[1]=st.nextToken();
-						else result[1]="";
-							
-					}else{
-						result[0]="";
-						result[1]="";
-					}
-					return result;
-				}			
-			};
-			
-			final IDataReader dataReader = new IDataReader() {
-				
-				private InputStream stream = null;
-				private BufferedReader breader = null;
-				
-				@Override
-				public boolean open() throws Exception {
-					if(streamWrapper!=null){
-						stream = streamWrapper.openStream();
-						breader = new BufferedReader(new InputStreamReader(stream));	
-						return true;
-					}else
-						return false;
-					
-				}
-				
-				@Override
-				public Object readNext() throws Exception {
-					if(breader==null)
-						return null;
-					else
-						return breader.readLine();
-				}
-				
-				@Override
-				public boolean finalizer() throws Exception {
-					breader = null;
-					stream = null;				
-					return true;
-				}
-				
-				@Override
-				public boolean close() throws Exception {
-					if(breader!=null)
-						breader.close();
-					if(stream!=null)
-						stream.close();
-					return true;
-				}
-			};
-			
-			if(dataReader.open()){
-				Object line = null;
-				int linenumber=0;
-				while ((line = dataReader.readNext()) != null) {
-					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
-					if(aggregated!=null){
-						String[] pair = (String[])dataAggregator.getRowData(network,aggregated);
-						if(pair[0].equals("neuron"))
-							this.addNeuron(Neuron.create(this,pair[1], logger), false);
-						if(pair[0].equals("synapse"))
-							this.addSynapse(Synapse.create(pair[1], logger), false);
-						if(pair[0].equals("error"))
-							this.setError(new Float(pair[1]));
-						
-					}
-					linenumber++;
-				}
-				dataReader.close();
-				dataReader.finalizer();
-			}
+			return open(new SimpleStreamReader(streamWrapper));
 		}catch(Exception e){
 			logger.error(e);
 			throw e;
 		}
-		
-		
-		return this;
 	}	
 	
 	public Network open(IDataReader dataReader) throws Exception{
-		
 		try{
+			ByteArrayInputStream xmlSrcStream = new	ByteArrayInputStream(dataReader.readAll());
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//			dbf.setValidating(true);
+			Document documentXML = dbf.newDocumentBuilder().parse(xmlSrcStream);
 			
-			final IReadLinesAggregator dataAggregator = new IReadLinesAggregator() {
-				
-				@Override
-				public PairIO getData(Network network, Object[] lines) {
-					return null;
-				}
-				
-				@Override
-				public Object[] aggregate(Object line, int linenumber) {
-					if(line==null)
-						return null;
-					else 
-						return new Object[]{line};
-				}
-				
-				@Override
-				public Object getRowData(Network network, Object[] objs) {
-					if(objs==null || objs.length==0)
-						return null;
-					String line = (String)objs[0];
-					StringTokenizer st = new StringTokenizer(line, "=");
-					String[] result = new String[2];
-					if(st.hasMoreTokens()){
-						result[0]=st.nextToken();
-						if(st.hasMoreTokens())
-							result[1]=st.nextToken();
-						else result[1]="";
-							
-					}else{
-						result[0]="";
-						result[1]="";
-					}
-					return result;
-				}			
+			Node node = null;
+			int first=0;
+			while(node==null && first < documentXML.getChildNodes().getLength()){
+				if(documentXML.getChildNodes().item(first).getNodeType()== Node.ELEMENT_NODE)
+					node = documentXML.getChildNodes().item(first);
+				first++;
+			}
+			if(node==null){
+				Exception e = new Exception("Network's structure is incomplet for initialization.");
+				throw e;
 			};
 			
-			if(dataReader.open()){
-				Object line = null;
-				int linenumber=0;
-				while ((line = dataReader.readNext()) != null) {
-					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
-					if(aggregated!=null){
-						String[] pair = (String[])dataAggregator.getRowData(network,aggregated);
-						if(pair[0].equals("neuron"))
-							this.addNeuron(Neuron.create(this,pair[1], logger), false);
-						if(pair[0].equals("synapse"))
-							this.addSynapse(Synapse.create(pair[1], logger), false);
-						if(pair[0].equals("error"))
-							this.setError(new Float(pair[1]));
-						
-					}
-					linenumber++;
-				}
-				dataReader.close();
-				dataReader.finalizer();
-			}
+			return Network.create(this, node, logger);
+
 		}catch(Exception e){
 			logger.error(e);
 			throw e;
 		}
-		
-		
-		return this;
+
 	}	
 	
+	
+	
 	public String toSaveString(){
-		return toSaveString(null);
+		return toSaveString("",null);
 	}
-	public String toSaveString(ITrainingStrategy[] strategies){
-		String result="error="+getError()+"\n";
+	public String toSaveString(String prefix,ITrainingStrategy[] strategies){
+		String result=(prefix!=null)?prefix:"";
+		result+=prefix+"<network";
+		if(layer>-1)
+			result+=" layer=\""+layer+"\"";
+		if(order>-1)
+			result+=" order=\""+order+"\"";
+		if(function!=null)	
+			result+=" function=\""+((function==null)?"":function.toSaveString())+"\"";
+		if(error!=0)	
+			result+=" error=\""+error+"\"";
+		result+=">\n";
+		
+
 		if(this.layers==null || this.layers.size()==0)
 			return result;
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
-				if(neuron!=null)
-					result+=neuron.toSaveString();
+				if(neuron!=null){
+					if(neuron instanceof Network)
+						result+=((Network)neuron).toSaveString(prefix+"\t",null);
+					else result+=neuron.toSaveString(prefix+"\t");
+				}
 			}
 		}
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
 				if(neuron!=null && neuron.getChildren()!=null){
 					for(Synapse synapse:neuron.getChildren())
-						result+=synapse.toSaveString();
+						result+=synapse.toSaveString(prefix+"\t");
 				}
 			}
 		}
 		if(strategies!=null){
 			for(ITrainingStrategy strategy:strategies)
-				result+=strategy.toSaveString();
+				result+=strategy.toSaveString(prefix+"\t");
 		}
+		result+=prefix+"</network>\n";
 		return result;
 	}
 	
@@ -968,6 +930,66 @@ public Network open(final IStreamWrapper streamWrapper) throws Exception{
 		this.error = error;
 	}
 
+
+	public static Network create(Network network, Node node, Logger logger){
+		if(node==null || !node.getNodeName().equalsIgnoreCase("network")){
+			logger.error("Network instance Error: xml node is incomplet for initialization.");
+			return null;
+		}
+
+		
+		if(network==null)
+			network = new Network();
+		
+		NamedNodeMap nnm = node.getAttributes();	 		
+		if (nnm!=null){
+			for (int i=0;i<node.getAttributes().getLength();i++){
+				String paramName = node.getAttributes().item(i).getNodeName();
+				Node node_nnm =	nnm.getNamedItem(paramName);
+				String sNodeValue = node_nnm.getNodeValue();
+				if(sNodeValue!=null){
+					sNodeValue=sNodeValue.replace('\n', ' ').replace('\r', ' ');
+					sNodeValue = sNodeValue.replace(" ", "");
+				}
+				if(paramName.equalsIgnoreCase("layer")){
+					try{
+						network.setLayer(Integer.valueOf(sNodeValue));
+					}catch(Exception e){
+					}
+				}else if(paramName.equalsIgnoreCase("order")){
+					try{
+						network.setOrder(Integer.valueOf(sNodeValue));
+					}catch(Exception e){
+					}
+				}else if(paramName.equalsIgnoreCase("function"))
+					network.setFunction(Neuron.create(sNodeValue, logger));
+				else if(paramName.equalsIgnoreCase("error")){
+					try{
+						network.setError(Float.valueOf(sNodeValue));
+					}catch(Exception e){
+					}
+				}
+				
+			}
+		}
+
+		
+		for(int k=0;k<node.getChildNodes().getLength();k++){
+			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+				if(node.getChildNodes().item(k).getNodeName().equalsIgnoreCase("neuron"))
+					network.addNeuron(Neuron.create(network, node.getChildNodes().item(k), logger), false);
+				else if(node.getChildNodes().item(k).getNodeName().equalsIgnoreCase("synapse"))
+					network.addSynapse(Synapse.create(node.getChildNodes().item(k), logger), false);
+				else if(node.getChildNodes().item(k).getNodeName().equalsIgnoreCase("network")){
+					Network newNetwork = Network.create(new Network(), node.getChildNodes().item(k), logger);
+					newNetwork.setNetwork(network);
+					network.addNeuron(newNetwork, false);
+				}
+			}
+		}
+
+		return network;
+	}
 
 	
 	

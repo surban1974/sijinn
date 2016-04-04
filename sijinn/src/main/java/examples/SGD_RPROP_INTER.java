@@ -49,7 +49,7 @@ public class SGD_RPROP_INTER {
 		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(new RPROP()).setErrorFunction(new MSE());
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource);
-		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,1);
+		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,0);
 
 		
 

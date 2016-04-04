@@ -8,11 +8,13 @@ import it.sijinn.perceptron.Network;
 import it.sijinn.perceptron.Neuron;
 import it.sijinn.perceptron.algorithms.RPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
+import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
 import it.sijinn.perceptron.functions.deferred.MMA;
 import it.sijinn.perceptron.functions.deferred.SMA;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.functions.generator.IGenerator;
+import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.Utils;
@@ -59,11 +61,11 @@ public class BGD_RPROP_INTER {
 								return 0.1f;
 							}
 						}).
-				setDeferredAgregateFunction(new SUMMATOR())
+				setDeferredAgregateFunction( new SUMMATOR())
 				).setErrorFunction(new MSE());
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
-		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";",0,0);
+		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
 
 		
 
