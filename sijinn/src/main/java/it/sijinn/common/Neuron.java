@@ -1,4 +1,4 @@
-package it.sijinn.perceptron;
+package it.sijinn.common;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -25,6 +25,7 @@ public class Neuron implements Serializable{
 	protected List<Synapse> parents;
 	protected float output=0;
 	protected float target=0;
+	protected boolean bias=false;
 	
 	final protected Logger logger = LogManager.getLogger(this.getClass());
 	
@@ -40,6 +41,7 @@ public class Neuron implements Serializable{
 			this.layer = another.getLayer();
 			this.order = another.getOrder();
 			this.function = another.getFunction();
+			this.bias = another.bias;
 		}
 	}
 	
@@ -49,12 +51,28 @@ public class Neuron implements Serializable{
 		this.function = _function;
 	}
 	
+	public Neuron(Network _network, IFunctionApplied _function, boolean _bias){
+		super();
+		this.network = _network;
+		this.function = _function;
+		this.bias = _bias;
+	}
+	
 	public Neuron(Network _network, IFunctionApplied _function, int _layer, int _order){
 		super();
 		this.network = _network;
 		this.function = _function;
 		this.layer = _layer;
 		this.order = _order;
+	}	
+	
+	public Neuron(Network _network, IFunctionApplied _function, int _layer, int _order, boolean _bias){
+		super();
+		this.network = _network;
+		this.function = _function;
+		this.layer = _layer;
+		this.order = _order;
+		this.bias = _bias;
 	}
 	
 
@@ -69,7 +87,8 @@ public class Neuron implements Serializable{
 			if(children==null)
 				children = new ArrayList<Synapse>();
 			children.add(relation);
-			neuron.addParenRelation(relation);
+			if(!neuron.isBias())
+				neuron.addParentRelation(relation);
 		}
 		return true;
 	}
@@ -82,7 +101,8 @@ public class Neuron implements Serializable{
 			if(children==null)
 				children = new ArrayList<Synapse>();
 			children.add(relation);
-			neuron.addParenRelation(relation);
+			if(!neuron.isBias())
+				neuron.addParentRelation(relation);
 		}
 		return true;
 	}
@@ -99,7 +119,8 @@ public class Neuron implements Serializable{
 			if(children==null)
 				children = new ArrayList<Synapse>();
 			children.add(relation);
-			neuron.addParenRelation(relation);
+			if(!neuron.isBias())
+				neuron.addParentRelation(relation);
 		}
 		return true;
 	}
@@ -140,8 +161,10 @@ public class Neuron implements Serializable{
 	}	
 	
 	
-	public boolean addParenRelation(Synapse relation){
+	public boolean addParentRelation(Synapse relation){
 		if(relation==null)
+			return false;
+		if(isBias())
 			return false;
 		if(parents==null)
 			parents = new ArrayList<Synapse>();
@@ -162,7 +185,7 @@ public class Neuron implements Serializable{
 					output = outputs[0];
 			}
 			output = ((getFunction()!=null)?getFunction().execution(new float[]{output}):0);
-		}else if(parents==null && this instanceof Network){
+		}else if(parents==null && this instanceof Network && !isBias()){
 			float[] outputs = ((Network)this).compute();
 			if(outputs!=null && outputs.length>0)
 				output = outputs[0];
@@ -219,7 +242,7 @@ public class Neuron implements Serializable{
 	public String toSaveString(String prefix){
 		String result = (prefix!=null)?prefix:"";
 		result+="<neuron>"+
-		Utils.normalXML(getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getClass().getSimpleName():""),"utf8")+
+				Utils.normalXML(getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getClass().getSimpleName():""),"utf8")+","+isBias()+
 		"</neuron>\n";
 		return result;
 	}
@@ -253,10 +276,13 @@ public class Neuron implements Serializable{
 		this.parents = parent;
 	}
 	public float getOutput() {
+		if(isBias())
+			return 1;
 		return output;
 	}
 	public void setOutput(float output) {
-		this.output = output;
+		if(!isBias())
+			this.output = output;
 	}
 	public IFunctionApplied getFunction() {
 		return function;
@@ -279,6 +305,14 @@ public class Neuron implements Serializable{
 
 	public void setNetwork(Network network) {
 		this.network = network;
+	}
+	
+	public boolean isBias() {
+		return bias;
+	}
+
+	public void setBias(boolean bias) {
+		this.bias = bias;
 	}
 	
 	
@@ -307,6 +341,7 @@ public class Neuron implements Serializable{
 			StringTokenizer st = new StringTokenizer(properties, ",");
 			int layer = -1;
 			int order = -1;
+			boolean bias = false;
 			IFunctionApplied functionApplied = null;
 			if(st.hasMoreTokens())
 				layer = Integer.valueOf(st.nextToken()).intValue();
@@ -314,9 +349,14 @@ public class Neuron implements Serializable{
 				order = Integer.valueOf(st.nextToken()).intValue();
 			if(st.hasMoreTokens())
 				functionApplied = create(st.nextToken(), logger);
-
+			if(st.hasMoreTokens()){
+				try{
+					bias = Boolean.valueOf(st.nextToken()).booleanValue();
+				}catch(Exception e){
+				}
+			}
 			if(layer>-1 && order>-1)
-				return new Neuron(_network, functionApplied,layer,order);
+				return new Neuron(_network, functionApplied,layer,order,bias);
 			else{
 				logger.error("Neuron instance Error: properties=["+properties+"] is incomplet for initialization.");
 				return null;
@@ -381,5 +421,7 @@ public class Neuron implements Serializable{
 		}
 		return functionApplied;
 	}
+
+
 	
 }

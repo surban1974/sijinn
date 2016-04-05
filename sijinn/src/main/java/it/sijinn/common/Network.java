@@ -1,4 +1,4 @@
-package it.sijinn.perceptron;
+package it.sijinn.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -94,21 +94,32 @@ public class Network extends Neuron implements Serializable{
 	
 	public static List<Neuron> createLayer(int neurons){
 		return createLayer(neurons, null);
+	}
+	public static List<Neuron> createLayer(int neurons, boolean bias){
+		return createLayer(neurons, null, true);
 	}	
 	public static List<Neuron> createLayer(int neurons, IFunctionApplied function){
+		return createLayer(neurons, function, false);
+	}	
+	public static List<Neuron> createLayer(int neurons, IFunctionApplied function, boolean bias){
 		if(neurons<=0)
 			return null;
 		List<Neuron> layer = new ArrayList<Neuron>();
+		if(bias)
+			layer.add(new Neuron(null, function, true));
 		for(int i=0;i<neurons;i++)
-			layer.add(new Neuron(null, function));
+			layer.add(new Neuron(null, function));		
 		return layer;
 	}
 	
 
 	public Network addLayer(int neurons){
-		return addLayer(neurons, null);
+		return addLayer(neurons, null, false);
 	}
 	public Network addLayer(int neurons, IFunctionApplied function){
+		return addLayer(neurons, function, false);
+	}	
+	public Network addLayer(int neurons, IFunctionApplied function, boolean bias){
 		if(neurons<=0)
 			return this;
 
@@ -116,7 +127,8 @@ public class Network extends Neuron implements Serializable{
 			this.layers = new ArrayList<List<Neuron>>();
 
 		List<Neuron> layer = new ArrayList<Neuron>();
-
+		if(bias)
+			layer.add(new Neuron(null, function, true));
 		for(int i=0;i<neurons;i++)
 			layer.add(new Neuron(this, function));
 		
@@ -705,13 +717,16 @@ public class Network extends Neuron implements Serializable{
 		int result = start;
 		if(this.layers==null || this.layers.get(0).size()==0 || input==null)
 			return start;
+		int biases=0;
 		for(;result<input.length && result<this.layers.get(0).size();result++){
 			if(this.layers.get(0).get(result) instanceof Network){
 				result=((Network)this.layers.get(0).get(result)).setInputValues(result, input);
-			}else
+			}else if(this.layers.get(0).get(result).isBias())
+				biases++;
+			else	
 				this.layers.get(0).get(result).setOutput(input[result]);
 		}
-		return result;
+		return result-biases;
 	}
 	
 	public int setOutputValues(int start, float[] output){
@@ -921,6 +936,17 @@ public class Network extends Neuron implements Serializable{
 	public List<List<Neuron>> getLayers() {
 		return layers;
 	}
+	
+	public int getLayerBiases(int layer) {
+		if(layers==null || layer>=layers.size() || layer<0)
+			return 0;
+		int bias=0;;
+		for(Neuron neuron:layers.get(layer)){
+			if(neuron.isBias())
+				bias++;
+		}
+		return bias;
+	}	
 
 	public float getError() {
 		return error;

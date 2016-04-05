@@ -1,6 +1,6 @@
 package it.sijinn.perceptron.strategies;
 
-import it.sijinn.perceptron.Network;
+import it.sijinn.common.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.utils.IStrategyListener;
@@ -47,7 +47,7 @@ public class StochasticGradientDescent extends OnlineGradientDescent implements 
 			dataReader.finalizer();
 				if(listener!=null) listener.onAfterReaderFinalize(network,dataReader);
 		}
-		algorithm.clear(network);
+//		algorithm.clear(network);
 		
 		return error;
 	}

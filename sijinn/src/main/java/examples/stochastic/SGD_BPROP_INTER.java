@@ -1,25 +1,25 @@
-package examples;
+package examples.stochastic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import it.sijinn.perceptron.Network;
-import it.sijinn.perceptron.Neuron;
+import it.sijinn.common.Network;
+import it.sijinn.common.Neuron;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
-import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
+import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 import it.sijinn.perceptron.utils.Utils;
 import it.sijinn.perceptron.utils.io.IStreamWrapper;
 import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.SimpleLineDataAggregator;
 
-public class BGD_BPROP_INTER {
+public class SGD_BPROP_INTER {
 
 	public static void main(String[] args) {
 		
@@ -36,10 +36,10 @@ public class BGD_BPROP_INTER {
 		
 
 		
-		Network network = new Network(
+		final Network network = new Network(
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2),
-						Network.createLayer(4,	new SimpleSigmoidFermi()),
+						Network.createLayer(4, new SimpleSigmoidFermi()),
 						Network.createLayer(1, new SimpleSigmoidFermi())
 						)),
 				new RandomPositiveWeightGenerator()
@@ -51,45 +51,14 @@ public class BGD_BPROP_INTER {
 
 	
 
-		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(
-				new BPROP().setLearningRate(learningRate).setLearningMomentum(learningMomentum)
-				)
-				.setErrorFunction(new MSE());
-
-/*		
-		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(
-				new BPROP().setLearningRate(learningRate).setLearningMomentum(learningMomentum)
-				)
-				.setErrorFunction(new MSE())
-				.setParallelLimit(5)
-				.setParallelTimeout(1000)
-				.setListener(new IStrategyListener() {
-					public void onAfterLinePrepared(Network network, int linenumber, Object[] aggregated) throws Exception {
-					}
-					public void onAfterErrorComputed(Network network, float error, int linenumber, PairIO param) throws Exception {
-					}
-					public void onAfterDataPrepared(Network network, int linenumber, PairIO param) throws Exception {
-					}
-					public void onAfterDataComputed(Network network, int linenumber, PairIO param) throws Exception {
-					}
-					public void onAfterAlgorithmUpdated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param) throws Exception {
-					}
-					public void onAfterAlgorithmCalculatedAndUpdated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param) throws Exception {
-					}
-					public void onAfterAlgorithmCalculated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param) throws Exception {
-					}
-					public IStrategyListener setTrainingStrategy(ITrainingStrategy _strategy) {
-						return this;
-					}
-					public void onAfterReaderOpen(Network network, IDataReader reader) throws Exception {
-					}
-					public void onAfterReaderClose(Network network, IDataReader reader) throws Exception {
-					}
-					public void onAfterReaderFinalize(Network network, IDataReader reader) throws Exception {
-						System.out.print(".");
-					}
-				});
-*/				
+		
+		
+		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(
+				new BPROP().
+				setLearningRate(learningRate).
+				setLearningMomentum(learningMomentum)
+			).
+			setErrorFunction(new MSE());
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
 		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");
@@ -123,7 +92,7 @@ public class BGD_BPROP_INTER {
 			System.out.println("Steps: " + step);
 			System.out.println("MSE: " + delta);
 			
-			network.save("c:/tmp/BGD_BPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
+			network.save("c:/tmp/SGD_BPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
 			
 			final IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
 			
@@ -134,10 +103,9 @@ public class BGD_BPROP_INTER {
 					new float[][] {					
 						{0.823593752f,0.176406248f},	//0.842274203
 						{0.453583164f,0.546416836f},  	//0.7101472
-						{0,0},							//0
-						{-0.453583164f,-0.546416836f},  //?
 			          }
 			);
+
 			System.out.print(Utils.print(test, new String[]{" ","\n"}));
 
 		}catch(Exception e){

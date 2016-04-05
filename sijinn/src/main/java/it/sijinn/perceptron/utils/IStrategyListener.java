@@ -1,6 +1,6 @@
 package it.sijinn.perceptron.utils;
 
-import it.sijinn.perceptron.Network;
+import it.sijinn.common.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.io.IDataReader;

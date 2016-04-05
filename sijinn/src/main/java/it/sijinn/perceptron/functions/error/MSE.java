@@ -1,7 +1,7 @@
 package it.sijinn.perceptron.functions.error;
 
-import it.sijinn.perceptron.Network;
-import it.sijinn.perceptron.Neuron;
+import it.sijinn.common.Network;
+import it.sijinn.common.Neuron;
 
 public class MSE implements IErrorFunctionApplied {
 

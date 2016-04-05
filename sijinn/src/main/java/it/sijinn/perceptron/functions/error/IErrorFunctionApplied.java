@@ -1,6 +1,6 @@
 package it.sijinn.perceptron.functions.error;
 
-import it.sijinn.perceptron.Network;
+import it.sijinn.common.Network;
 
 public interface IErrorFunctionApplied {
 	float compute(Network network, float initialError);

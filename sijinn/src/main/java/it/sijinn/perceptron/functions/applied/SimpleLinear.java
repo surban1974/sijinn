@@ -23,6 +23,12 @@ public class SimpleLinear implements IFunctionApplied {
 			return (slope*param[0]);
 		return 0;
 	}
+	
+	@Override
+	public float flatspot() {
+		return 0;
+	}
+	
 	@Override
 	public String toSaveString(){
 		return this.getClass().getName()+"{"+slope+"}";

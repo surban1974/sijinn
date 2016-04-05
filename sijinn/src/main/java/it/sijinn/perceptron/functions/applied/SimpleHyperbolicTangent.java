@@ -25,8 +25,15 @@ public class SimpleHyperbolicTangent implements IFunctionApplied {
 					).floatValue();
 		return 0;
 	}
+	
+	@Override
+	public float flatspot() {
+		return 0;
+	}
+	
 	@Override
 	public String toSaveString(){
 		return this.getClass().getName();
 	}
+	
 }

@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import it.sijinn.perceptron.Network;
+import it.sijinn.common.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
@@ -114,53 +114,7 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 					}
 
 				}
-				
-/*				
-				List<PairIO> accumulator = new ArrayList<PairIO>();
-				while((next = dataReader.readNext()) !=null ){
-					if(accumulator.size()==parallelLimit){
-						ExecutorService taskExecutor = Executors.newFixedThreadPool(parallelLimit);
-						List<Future<ApplyExecutor>> list = new ArrayList<Future<ApplyExecutor>>();
-						for(PairIO pair:accumulator)
-							list.add(taskExecutor.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput(), linenumber)));
-						taskExecutor.shutdown();
-						try {
-							final boolean done = taskExecutor.awaitTermination(parallelTimeout, TimeUnit.MILLISECONDS);
-							if(!done)
-								taskExecutor.shutdownNow();
-						} catch (InterruptedException e) {	
-							e.toString();
-						}
-						for(Future<ApplyExecutor> future:list)
-							algorithm.sync(network, future.get().getNetwork(), ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
-						
-						accumulator.clear();
-					}
-					Object[] aggregated = dataAggregator.aggregate(next,linenumber);
-						if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
-					if(aggregated!=null){
-						PairIO param = dataAggregator.getData(network,aggregated);
-							if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-						accumulator.add(param);
-					}
-					linenumber++;
-				}
-				if(accumulator.size()>0){
-					ExecutorService taskExecutor = Executors.newFixedThreadPool(parallelLimit);
-					List<Future<ApplyExecutor>> list = new ArrayList<Future<ApplyExecutor>>();
-					for(PairIO pair:accumulator)
-						list.add(taskExecutor.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput(), linenumber)));
-					taskExecutor.shutdown();
-					try {
-						taskExecutor.awaitTermination(parallelTimeout, TimeUnit.MILLISECONDS);
-					} catch (InterruptedException e) {				
-					}
-					for(Future<ApplyExecutor> future:list)
-						algorithm.sync(network, future.get().getNetwork(), ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
 
-					accumulator.clear();
-				}
-*/				
 			}
 			
  
@@ -170,7 +124,7 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 			
 			algorithm.updateWeights(network);
 				if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,null);
-			algorithm.clear(network);
+//			algorithm.clear(network);
 		}
 			
 		

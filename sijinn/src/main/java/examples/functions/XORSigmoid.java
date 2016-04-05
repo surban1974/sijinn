@@ -26,4 +26,9 @@ public class XORSigmoid implements IFunctionApplied {
 	public String toSaveString(){
 		return this.getClass().getName();
 	}
+
+	@Override
+	public float flatspot() {
+		return 0;
+	}
 }

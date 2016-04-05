@@ -35,4 +35,9 @@ public class SimpleGaussian implements IFunctionApplied {
 	public String toSaveString(){
 		return this.getClass().getName()+"{"+sigma+"}";
 	}
+
+	@Override
+	public float flatspot() {
+		return 0;
+	}
 }

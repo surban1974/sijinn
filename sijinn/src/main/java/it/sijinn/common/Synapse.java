@@ -1,4 +1,4 @@
-package it.sijinn.perceptron;
+package it.sijinn.common;
 
 import java.io.Serializable;
 import java.util.StringTokenizer;

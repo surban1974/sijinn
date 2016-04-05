@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import it.sijinn.perceptron.Network;
-import it.sijinn.perceptron.Neuron;
+import it.sijinn.common.Network;
+import it.sijinn.common.Neuron;
 import it.sijinn.perceptron.algorithms.RPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
+import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
 import it.sijinn.perceptron.strategies.OnlineGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.Utils;
@@ -22,11 +23,11 @@ public class OGD_RPROP_INTER {
 	public static void main(String[] args) {
 		
 		
-//		for(int cnt=0;cnt<90;cnt++){
+
 		
 		final String resource_training = "examples/resources/interpolation_training.txt";
 		final float approximation = 0.001f;
-		final int maxSteps = 50;
+		final int maxSteps = 50000;
 
 
 		
@@ -35,10 +36,10 @@ public class OGD_RPROP_INTER {
 		Network network = new Network(
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2),
-//						Network.createLayer(1,	new SimpleSigmoidFermi()),
+						Network.createLayer(4,	new SimpleSigmoidFermi()),
 						Network.createLayer(1, new SimpleSigmoidFermi())
-						)),0
-//				new RandomWeightGenerator()
+						)),
+				new RandomPositiveWeightGenerator()
 			)
 			;
 				
@@ -72,29 +73,29 @@ public class OGD_RPROP_INTER {
 							streamWrapper,
 							trainingStrategy,
 							readLinesAggregator);
-//					if(step % 1000 == 0)
+					if(step % 1000 == 0)
 						System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
 				}else
 					break;
 			}
 			
-//			network.save("c:/tmp/GD_RPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
+			network.save("c:/tmp/GD_RPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
 			
 			System.out.println("Steps: " + step+ " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
-//			float[][] test = network.compute(
-//					new float[][] {					
-//						{0.823593752f,0.176406248f},	//0,842274203
-//						{0.453583164f,0.546416836f},  	//0,7101472
-//			          }
-//			);
-//
-//			System.out.print(Utils.print(test, new String[]{" ","\n"}));
+			float[][] test = network.compute(
+					new float[][] {					
+						{0.823593752f,0.176406248f},	//0,842274203
+						{0.453583164f,0.546416836f},  	//0,7101472
+			          }
+			);
+
+			System.out.print(Utils.print(test, new String[]{" ","\n"}));
 
 		}catch(Exception e){
 			
 		}
 		
-//		}
+
 		
 
 	}

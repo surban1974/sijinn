@@ -2,7 +2,7 @@ package it.sijinn.perceptron.utils.parser;
 
 import java.util.StringTokenizer;
 
-import it.sijinn.perceptron.Network;
+import it.sijinn.common.Network;
 
 public class SimpleLineDataAggregator implements IReadLinesAggregator {
 	
@@ -34,7 +34,9 @@ public class SimpleLineDataAggregator implements IReadLinesAggregator {
 			return new PairIO(new float[0],new float[0]);
 		String[] lines = (String[])objs;
 		if(lines!=null && lines.length>0){
-			float[] input = new float[network.getLayers().get(0).size()];
+			int biases=0;
+
+			float[] input = new float[network.getLayers().get(0).size() - network.getLayerBiases(0)];
 			float[] target = new float[network.getLayers().get(network.getLayers().size()-1).size()];
 			PairIO pairIO = new PairIO(input,target);
 			StringTokenizer st = new StringTokenizer(lines[0], separator);

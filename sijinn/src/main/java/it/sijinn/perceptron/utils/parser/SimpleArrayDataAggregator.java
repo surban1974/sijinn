@@ -1,6 +1,6 @@
 package it.sijinn.perceptron.utils.parser;
 
-import it.sijinn.perceptron.Network;
+import it.sijinn.common.Network;
 
 public class SimpleArrayDataAggregator implements IReadLinesAggregator{
 	@Override

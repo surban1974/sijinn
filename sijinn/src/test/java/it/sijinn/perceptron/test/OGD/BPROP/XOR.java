@@ -7,7 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import it.sijinn.perceptron.Network;
+import it.sijinn.common.Network;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;

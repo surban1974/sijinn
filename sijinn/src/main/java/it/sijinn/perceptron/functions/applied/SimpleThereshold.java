@@ -26,6 +26,10 @@ public class SimpleThereshold implements IFunctionApplied {
 		return 0;
 	}	
 	@Override
+	public float flatspot() {
+		return 0;
+	}	
+	@Override
 	public String toSaveString(){
 		return this.getClass().getName()+"{"+threshold+"}";
 	}

@@ -12,9 +12,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import it.sijinn.perceptron.Network;
-import it.sijinn.perceptron.Neuron;
-import it.sijinn.perceptron.Synapse;
+import it.sijinn.common.Network;
+import it.sijinn.common.Neuron;
+import it.sijinn.common.Synapse;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.functions.error.MSE;
