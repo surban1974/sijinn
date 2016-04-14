@@ -1,0 +1,230 @@
+
+ <!DOCTYPE html>
+<html lang="en">
+   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SIJINN</title>
+	<link rel="SHORTCUT ICON" href="images/application.ico">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <style>
+      body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
+      .navbar {
+        margin-bottom: 20px;
+      }
+    </style>
+    
+    <!-- Styles for avoiding jQuery -->
+    <link rel="stylesheet" href="css/navbar.css">
+
+  </head>
+
+
+  <body>
+
+    <div class="container" style="padding-top: 50px">
+
+      <!-- Navbar -->
+      <nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
+
+
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron" >
+      	<form id="settings" method="post"> 
+	      	<h2><b>Settings</b></h2>
+	      	<div class="form-group">
+	  			<label for="settings.root">Today</label>
+	  			<span data-bind="text: model().settings.date"></span>
+			</div>
+			<div class="form-group">
+	  			<label for="settings.root">ROOT</label>
+	  			<input type="text" class="form-control" id="model.settings.root" data-bind="value: model().settings.root">
+			</div>
+			
+			<div class="form-group">
+	  			
+				
+
+				<table style="width:100%">
+					<tr>
+						<td valign="bottom" align="left">
+							<label>REST Authentication</label><br>
+							<span>
+						  		<label class="btn btn-default">
+									<input type="radio" id="model.settings.restAuth" autocomplete="off" data-bind="checked: model().settings.restAuth, checkedValue: false"> Disable
+							  	</label>
+							  	<label class="btn btn-default">
+									<input type="radio" id="model.settings.restAuth" autocomplete="off" data-bind="checked: model().settings.restAuth, checkedValue: true"> Enable
+							  	</label>
+						  	</span>						
+						</td>
+<!-- ko if: model().settings.restAuth -->
+						<td>
+				  			<label for="settings.restUser">User</label>
+				 			<input type="text" class="form-control" id="model.settings.restUser" data-bind="value: model().settings.restUser, enable: model().settings.restAuth">						
+				 		</td>
+				 		<td>&nbsp;</td>
+						<td>
+				  			<label for="settings.restPassword">Password</label>
+				 			<input type="password" class="form-control" id="model.settings.restPassword" data-bind="value: model().settings.restPassword, enable: model().settings.restAuth">				 		
+	 					</td>	
+<!-- /ko -->	 								 		
+					</tr>
+				</table>
+
+
+			</div>	
+			
+        </form>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Navbar JavaScript -->
+    <script src="js/dropdown-native.js"></script>
+    
+	<!--  Knockout JavaScript -->
+	<script src='js/knockout-3.4.0.js'></script>   
+	
+	<!--  ClassHidra Ajax JavaScript -->
+	<script src='js/classhidra-ajax.js'></script>  	 
+	
+	
+	<script>
+
+	var ViewModelRoot = {
+		settings : {
+			date: ko.observable('...'),
+			root: ko.observable('...'),
+			restAuth: ko.observable(false),
+			restUser: ko.observable('anonimouse'),
+			restPassword: ko.observable('...')
+		}
+	}
+	
+	var ViewModel = new function() {
+		var self = this;
+		self.initialisation = true;
+		self.model = ko.observable(ViewModelRoot);
+		
+		self.modelChanged = ko.computed(
+			function (newValue) {
+				
+				if(!self.initialisation){
+					self.postModel(newValue);
+				}
+				
+				return ko.toJSON(self.model);
+        	},
+        	self,
+        	{deferEvaluation: false}
+        );
+		
+		self.init = function(parsed){
+			self.initialisation = true;
+			self.model().settings.date(parsed.model.settings.date);
+			self.model().settings.root(parsed.model.settings.root);
+			self.model().settings.restAuth(parsed.model.settings.restAuth);
+			self.model().settings.restUser(parsed.model.settings.restUser);
+			self.model().settings.restPassword(parsed.model.settings.restPassword);
+			self.initialisation = false;					
+		}
+		self.init_root = function(parsed){
+			this.initialisation = true;
+				this.model(parsed.model);
+			this.initialisation = false;					
+		}		
+		self.postModel = function(newValue){
+			if(!self.initialisation){
+				new clajax({
+					url:"settings-json",
+					json: ko.toJSON(ViewModel),
+					contentType: "application/json",
+					asJson: true,
+					success: function(http_request){ 
+						self.init(JSON.parse(http_request.responseText));
+					}
+				})	
+				.request("POST")
+				;
+			}
+			
+		}		
+	}
+	
+
+		
+	ko.applyBindings(ViewModel);
+	
+	
+/*
+	ViewModel.model.subscribe(
+			function(newValue){
+				alert(newValue)
+			}
+		);
+	
+	ViewModel.model().settings.root.subscribe(
+			function(newValue){
+				ViewModel.postModel(newValue)
+			}
+		);	
+	
+	ViewModel.model().settings.root.subscribe(
+			function(newValue){
+				ViewModel.postModel(newValue)
+			}
+		);
+	ViewModel.model().settings.restAuth.subscribe(
+			function(newValue){
+				ViewModel.postModel(newValue)
+			}
+		);	
+	ViewModel.model().settings.restUser.subscribe(
+			function(newValue){
+				ViewModel.postModel(newValue)
+			}
+		);
+	ViewModel.model().settings.restPassword.subscribe(
+			function(newValue){
+				ViewModel.postModel(newValue)
+			}
+		);
+*/	
+	new clajax({
+		url:"pages/included/top_menu.html",
+		target: document.getElementById("top_menu"),
+		success: function(){ 
+			document.getElementById("top_menu_settings").className += " active";
+			document.getElementById("top_menu_settings_actions").style.display = "block";
+					
+			new clajax({
+				url:"settings-json",
+				success: function(http_request){ 
+					ViewModel.init(JSON.parse(http_request.responseText));
+				}
+			}).request("POST");	
+					
+		}
+	}).request("POST");
+			
+
+		
+		
+	</script>
+  </body>
+</html>

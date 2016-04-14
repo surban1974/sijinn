@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:web="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp">
+  <display-name>sijinn-admin</display-name>
+  <filter>
+    <display-name>bsFilter</display-name>
+    <filter-name>bsFilter</filter-name>
+    <filter-class>it.classhidra.core.controller.bsFilter</filter-class>
+    <init-param>
+      <param-name>CharacterEncoding</param-name>
+      <param-value>ISO-8859-1</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ExcludedUrl</param-name>
+      <param-value>/js/;/css/;/images/;</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ExcludedPattern</param-name>
+      <param-value>^(?!.*/neohort/).*\.jsp$</param-value>
+    </init-param>
+    <init-param>
+      <param-name>RestSupport</param-name>
+      <param-value>true</param-value>
+    </init-param>    
+    
+  </filter>
+  <filter-mapping>
+    <filter-name>bsFilter</filter-name>
+    <url-pattern>/actions/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>bsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+  </filter-mapping>
+  <servlet>
+    <display-name>bsController</display-name>
+    <servlet-name>bsController</servlet-name>
+    <servlet-class>it.classhidra.core.controller.bsController</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>creator_iHort</display-name>
+    <servlet-name>creator_iHort</servlet-name>
+    <servlet-class>neohort.universal.output.creator_iHort</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>bsController</servlet-name>
+    <url-pattern>/Controller</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>creator_iHort</servlet-name>
+    <url-pattern>/report_creator</url-pattern>
+  </servlet-mapping>
+  
+
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/pages/mappings_error.html</location>
+  </error-page>
+</web-app>
