@@ -5,8 +5,14 @@ package it.sijinn.admin.components.controllers;
 
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.Entity;
+import it.classhidra.annotation.elements.Redirect;
+import it.classhidra.annotation.elements.Expose;
 import it.classhidra.annotation.elements.SessionDirective;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
@@ -27,6 +33,7 @@ public class CSettings extends CBase implements i_action, i_bean, Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private SettingProperties settings;
+
 
 
 	public CSettings(){
@@ -64,6 +71,31 @@ public class CSettings extends CBase implements i_action, i_bean, Serializable{
 	}	
 */
 	
+	
+	@ActionCall(
+			name="save",
+			navigated="false",
+			Redirect=@Redirect(contentType="application/json"),
+			Expose=@Expose(method = Expose.POST)
+	)
+	public String save(HttpServletRequest request, HttpServletResponse response){
+		clear();
+		if(getSettings()!=null){
+			try{
+				if(getSettings().save())
+					setSuccess("The 'Settings property' saved successfully.");
+				else
+					setError("There were problems with 'Save' operation.");
+			}catch(Exception e){
+				setError("There were problems with operation: "+e.toString());
+			}
+		}
+		String json = super.modelAsJson(request, response);
+		clear();
+		return json;
+		
+	}
+	
 	@Serialized
 	public SettingProperties getSettings() {
 		return settings;
@@ -79,7 +111,9 @@ public class CSettings extends CBase implements i_action, i_bean, Serializable{
 		
 		if(this.settings==null)
 			this.settings = new SettingProperties();
+
 	}
+
 
 
 

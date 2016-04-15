@@ -49,6 +49,10 @@
 	  			<label for="settings.root">Today</label>
 	  			<span data-bind="text: model().settings.date"></span>
 			</div>
+	      	<div class="form-group">
+	  			<label for="settings.config">Configuration</label>
+	  			<span data-bind="text: model().settings.config"></span>
+			</div>			
 			<div class="form-group">
 	  			<label for="settings.root">ROOT</label>
 	  			<input type="text" class="form-control" id="model.settings.root" data-bind="value: model().settings.root">
@@ -84,46 +88,62 @@
 <!-- /ko -->	 								 		
 					</tr>
 				</table>
+				<br>
 
-
+				<div class="modal-footer">
+					<button type="button" id="saveButton" data-toggle="button" data-loading-text="Saving..." class="btn btn-danger" autocomplete="off">
+					  	Save
+					</button>
+				</div>
 			</div>	
-			
+
         </form>
       </div>
 
     </div> <!-- /container -->
 
 
-    <!-- Navbar JavaScript -->
-    <script src="js/dropdown-native.js"></script>
+
+
+    <!-- Bootstrap Native -->
+    <script src="js/bootstrap-native.js"></script>
+
     
 	<!--  Knockout JavaScript -->
 	<script src='js/knockout-3.4.0.js'></script>   
 	
 	<!--  ClassHidra Ajax JavaScript -->
-	<script src='js/classhidra-ajax.js'></script>  	 
+	<script src='js/classhidra-ajax.js'></script>  	
+	
+	<!--  ClassHidra Utils JavaScript -->
+	<script src='js/classhidra-utils.js'></script> 	 
 	
 	
 	<script>
 
 	var ViewModelRoot = {
 		settings : {
+			config: ko.observable('/'),
 			date: ko.observable('...'),
 			root: ko.observable('...'),
 			restAuth: ko.observable(false),
 			restUser: ko.observable('anonimouse'),
 			restPassword: ko.observable('...')
-		}
+		},
+		error : '',
+		warning : '',
+		info : '',
+		success: ''
 	}
 	
 	var ViewModel = new function() {
 		var self = this;
 		self.initialisation = true;
 		self.model = ko.observable(ViewModelRoot);
+
 		
 		self.modelChanged = ko.computed(
 			function (newValue) {
-				
 				if(!self.initialisation){
 					self.postModel(newValue);
 				}
@@ -136,6 +156,11 @@
 		
 		self.init = function(parsed){
 			self.initialisation = true;
+			self.model().error = parsed.model.error;
+			self.model().warning = parsed.model.warning;
+			self.model().info = parsed.model.info;
+			self.model().success = parsed.model.success;
+			self.model().settings.config(parsed.model.settings.config);
 			self.model().settings.date(parsed.model.settings.date);
 			self.model().settings.root(parsed.model.settings.root);
 			self.model().settings.restAuth(parsed.model.settings.restAuth);
@@ -161,9 +186,34 @@
 				})	
 				.request("POST")
 				;
+			}			
+		}	
+		self.showPopup = function(){
+			if(self.model().error && self.model().error!=''){
+				new clpopup({
+					type: 'danger',
+					message: self.model().error
+				}).open();					 
 			}
-			
-		}		
+			if(self.model().success && self.model().success!=''){
+				new clpopup({
+					type: 'success',
+					message: self.model().success
+				}).open();					 
+			}	
+			if(self.model().info && self.model().info!=''){
+				new clpopup({
+					type: 'info',
+					message: self.model().info
+				}).open();					 
+			}
+			if(self.model().warning && self.model().warning!=''){
+				new clpopup({
+					type: 'warning',
+					message: self.model().warning
+				}).open();					 
+			}			
+		}
 	}
 	
 
@@ -217,14 +267,28 @@
 				success: function(http_request){ 
 					ViewModel.init(JSON.parse(http_request.responseText));
 				}
-			}).request("POST");	
+			}).request("GET");	
 					
 		}
-	}).request("POST");
+	}).request("GET");
 			
+	var btn = document.getElementById('saveButton');
+	btn.addEventListener('click', function() {
+	  	new Button(btn,'loading'); 
+		new clajax({
+			url:"settings-save",
+			success: function(http_request){ 
+				ViewModel.init(JSON.parse(http_request.responseText));
+				ViewModel.showPopup();
+			
+				new Button(btn,"reset");
+			}
+		}).request("POST");
+	});
+		
+	
 
-		
-		
+	
 	</script>
   </body>
 </html>

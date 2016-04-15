@@ -234,32 +234,32 @@ var clajax = function(prot){
 	
 	this.load = function(){
 		if(this.asScript){
-			var e = document.createElement("script");
+			var e = document.createElement('script');
 	
 			if(this.base64){
 				var parameters = this.getParametersAsUrl(null,this.url);
-				if(this.url.indexOf("?")>-1)
-					e.src = url.substring(0,this.url.indexOf("?"))+parameters;
+				if(this.url.indexOf('?')>-1)
+					e.src = url.substring(0,this.url.indexOf('?'))+parameters;
 				else
 					e.src = this.url+parameters;
 			}else
 				e.src = this.url;
 	
-			if(this.type && this.type!="")
+			if(this.type && this.type!='')
 				e.type=this.type;
 			else
-				e.type="text/javascript";
+				e.type='text/javascript';
 	
-			if(this.rel && this.rel!="")
+			if(this.rel && this.rel!='')
 				e.rel=this.rel;
 			
-			if(this.contentEncoding && this.contentEncoding!="")
+			if(this.contentEncoding && this.contentEncoding!='')
 				e.charset=this.contentEncoding;
 			
 			var instance  = this;
 			try{
-				if(instance.success && instance.success!=""){
-					if (typeof instance.success === "function") {
+				if(instance.success && instance.success!=''){
+					if (typeof instance.success === 'function') {
 						//real browsers
 					    e.onload=instance.success;
 					    //Internet explorer
@@ -271,11 +271,11 @@ var clajax = function(prot){
 	
 					}else{
 						//real browsers
-					    	e.onload=eval(instance.success + "()");
+					    	e.onload=eval(instance.success + '()');
 					    //Internet explorer
 						    e.onreadystatechange = function() {
 						        if (this.readyState == 'complete') {
-						        	eval(instance.success + "()");
+						        	eval(instance.success + '()');
 						        }
 						    }
 					}
@@ -283,43 +283,43 @@ var clajax = function(prot){
 			}catch(e){
 			}
 			try{
-				document.getElementsByTagName("head")[0].appendChild(e);
+				document.getElementsByTagName('head')[0].appendChild(e);
 			}catch(e){
 			}
 		}
 		if(this.asCss){
-			var e = document.createElement("link");
+			var e = document.createElement('link');
 
 			if(this.base64){
 				var parameters = this.getParametersAsUrl(null,this.url);
-				if(href.indexOf("?")>-1)
-					e.href = this.url.substring(0,this.url.indexOf("?"))+parameters;
+				if(href.indexOf('?')>-1)
+					e.href = this.url.substring(0,this.url.indexOf('?'))+parameters;
 				else
 					e.href = this.url+parameters;
 			}else
 				e.href = this.url;
 
-			if(this.type && this.type!="")
+			if(this.type && this.type!='')
 				e.type=this.type;
 			else
-				e.type="text/css";
+				e.type='text/css';
 
 
-			if(this.rel && this.rel!="")
+			if(this.rel && this.rel!='')
 				e.rel=rel;
 			else
-				e.rel="stylesheet";
+				e.rel='stylesheet';
 
-			if(this.media && this.media!="")
+			if(this.media && this.media!='')
 				e.media=this.media;
 			
-			if(this.contentEncoding && this.contentEncoding!="") 
+			if(this.contentEncoding && this.contentEncoding!='') 
 				e.charset=this.contentEncoding;
 			
 			var instance  = this;
 			try{
-				if(instance.success && instance.success!=""){
-					if (typeof instance.success === "function") {
+				if(instance.success && instance.success!=''){
+					if (typeof instance.success === 'function') {
 						//real browsers
 					    e.onload=instance.success;
 					    //Internet explorer
@@ -331,11 +331,11 @@ var clajax = function(prot){
 
 					}else{
 						//real browsers
-					    	e.onload=eval(instance.success + "()");
+					    	e.onload=eval(instance.success + '()');
 					    //Internet explorer
 						    e.onreadystatechange = function() {
 						        if (this.readyState == 'complete') {
-						        	eval(instance.success + "()");
+						        	eval(instance.success + '()');
 						        }
 						    }
 					}
@@ -343,7 +343,7 @@ var clajax = function(prot){
 			}catch(e){
 			}
 			try{
-				document.getElementsByTagName("head")[0].appendChild(e);
+				document.getElementsByTagName('head')[0].appendChild(e);
 			}catch(e){
 			}			
 		}
@@ -389,11 +389,11 @@ var clajax = function(prot){
 	}
 	
 	this.request = function(_method){	
-		if(_method && _method!="")
+		if(_method && _method!='')
 			this.method = _method;
 		
-		var urlOnly="";
-		var parametersOnly="";
+		var urlOnly='';
+		var parametersOnly='';
 		var sendJson;
 
 		if(this.asJson==false && this.json && this.json.length>0)
@@ -406,25 +406,25 @@ var clajax = function(prot){
 		if(this.asJson==false && this.asXml==false && this.asMpart==false){
 			
 			if(this.url){
-				if(this.url.indexOf("?")>-1){
-					var pos = this.url.indexOf("?");
+				if(this.url.indexOf('?')>-1){
+					var pos = this.url.indexOf('?');
 					urlOnly = this.url.substring(0,pos);
 					parametersOnly = this.url.substring(pos+1);
 				}else{
 					urlOnly=this.url;
 				}
 			}
-			if(parametersOnly=="") 
-				parametersOnly+="js4ajax=true";
+			if(parametersOnly=='') 
+				parametersOnly+='js4ajax=true';
 			else 
-				parametersOnly+="&js4ajax=true";
+				parametersOnly+='&js4ajax=true';
 			
 		}else if(this.asJson){	
 			
 			sendJson = JSON.parse(this.json);
 			if(this.url){
-				if(this.url.indexOf("?")>-1){		
-					var pos = this.url.indexOf("?");
+				if(this.url.indexOf('?')>-1){		
+					var pos = this.url.indexOf('?');
 					urlOnly = this.url.substring(0,pos);
 			    	var urlParameters=this.url.substring(pos+1,this.url.length);
 			    	if(urlParameters.length>0){
@@ -439,7 +439,7 @@ var clajax = function(prot){
 					urlOnly=this.url;
 				}
 			}
-			sendJson["js4ajax"] = "true";
+			sendJson['js4ajax'] = 'true';
 		
 		}else if(this.asXml){	
 			
@@ -448,8 +448,8 @@ var clajax = function(prot){
 		}else if(this.asMpart){
 			
 			if(this.url){
-				if(this.url.indexOf("?")>-1){
-					var pos = this.url.indexOf("?");
+				if(this.url.indexOf('?')>-1){
+					var pos = this.url.indexOf('?');
 					urlOnly = this.url.substring(0,pos);
 			    	var urlParameters=this.url.substring(pos+1,this.url.length);
 			    	if(urlParameters.length>0){
@@ -464,21 +464,21 @@ var clajax = function(prot){
 					urlOnly=this.url;
 				}
 			}
-			this.mpart.append("js4ajax","true");			
+			this.mpart.append('js4ajax','true');			
 		}
 		
 
-		if(this.start && this.start!=""){
-    		if (typeof this.start === "function") {
+		if(this.start && this.start!=''){
+    		if (typeof this.start === 'function') {
     			this.start();
     		}else{
-    			eval(this.start + "()");
+    			eval(this.start + '()');
     		}
     	}
 
 		if(this.target){
 			try{
-				if(this.progressWait && this.progressWait!="")
+				if(this.progressWait && this.progressWait!='')
 					this.target.innerHTML=this.progressWait;
 			}catch(e){
 			}
@@ -493,10 +493,10 @@ var clajax = function(prot){
 	    if (window.ActiveXObject) { // IE
 	       try {
 
-	          http_request = new ActiveXObject("Msxml2.XMLHTTP");
+	          http_request = new ActiveXObject('Msxml2.XMLHTTP');
 	       } catch (e) {
 	          try {
-	             http_request = new ActiveXObject("Microsoft.XMLHTTP");
+	             http_request = new ActiveXObject('Microsoft.XMLHTTP');
 
 	          } catch (e) {}
 	       }
@@ -504,7 +504,7 @@ var clajax = function(prot){
 	    if (window.XMLHttpRequest) { 
 		       http_request = new XMLHttpRequest();
 		       
-		       if(this.responseType && this.responseType!=""){
+		       if(this.responseType && this.responseType!=''){
 		    	   try{
 		    		   http_request.responseType = this.responseType;
 		    		   setResponseType=true;
@@ -512,20 +512,20 @@ var clajax = function(prot){
 		    	   }
 		       }else{   
 			       if (http_request.overrideMimeType) {
-			    	   if(this.mimeType && this.mimeType!="")
+			    	   if(this.mimeType && this.mimeType!='')
 			    		   http_request.overrideMimeType(this.mimeType);
 			    	   else
-			    		   http_request.overrideMimeType("text/html");
+			    		   http_request.overrideMimeType('text/html');
 			       }
 		       }
 
 	    }
 	    if (!http_request) {
-	    	if(instance.error && instance.error!=""){
-        		if (typeof instance.error === "function") {
-        			instance.error(http_request, null, "Cannot create XMLHTTP instance");
+	    	if(instance.error && instance.error!=''){
+        		if (typeof instance.error === 'function') {
+        			instance.error(http_request, null, 'Cannot create XMLHTTP instance');
         		}else{
-        			eval(instance.error + "(http_request, null, 'Cannot create XMLHTTP instance')");
+        			eval(instance.error + '(http_request, null, "Cannot create XMLHTTP instance")');
         		}
         	}else
         		alert('Cannot create XMLHTTP instance');
@@ -537,31 +537,31 @@ var clajax = function(prot){
 	    	try{
 		    	if (http_request.readyState == 4) {
 		            if (http_request.status == 200 ) {
-		            	if(instance.ready && instance.ready!=""){
-		            		if (typeof instance.ready === "function") {
+		            	if(instance.ready && instance.ready!=''){
+		            		if (typeof instance.ready === 'function') {
 		            			instance.ready(http_request);
 		            		}else{
-		            			eval(instance.ready + "(http_request)");
+		            			eval(instance.ready + '(http_request)');
 		            		}
 		            	}else{
 		            		if(instance.target)
 		            			instance.target.innerHTML=http_request.responseText;
 		            	}
 		            	
-		            	if(instance.success && instance.success!=""){
-		            		if (typeof instance.success === "function") {
+		            	if(instance.success && instance.success!=''){
+		            		if (typeof instance.success === 'function') {
 		            			instance.success(http_request);
 		            		}
 		            		else
-		            			eval(instance.success + "(http_request)");
+		            			eval(instance.success + '(http_request)');
 		            		
 		            	}
 		            }else{
-		            	if(instance.fail && instance.fail!=""){
-		            		if (typeof instance.fail === "function") {
+		            	if(instance.fail && instance.fail!=''){
+		            		if (typeof instance.fail === 'function') {
 		            			instance.fail(http_request);
 		            		}else{
-		            			eval(instance.fail + "(http_request)");
+		            			eval(instance.fail + '(http_request)');
 		            		}
 		            	}		            	
 		            }
@@ -571,21 +571,21 @@ var clajax = function(prot){
 		            }
 		        }
 	    	}catch(e){
-	    		if(instance.error && instance.error!=""){
-            		if (typeof instance.error === "function") {
+	    		if(instance.error && instance.error!=''){
+            		if (typeof instance.error === 'function') {
             			instance.error(http_request, e, e.toString());
             		}else{
-            			eval(instance.error + "(http_request, e, e.toString())");
+            			eval(instance.error + '(http_request, e, e.toString())');
             		}
             	}else
             		alert('There was a generic problem with callback_function():'+e.toString());
 	    	}
 	    	
-	    	if(instance.finish && instance.finish!=""){
-        		if (typeof instance.finish === "function") {
+	    	if(instance.finish && instance.finish!=''){
+        		if (typeof instance.finish === 'function') {
         			instance.finish(http_request);
         		}else{
-        			eval(instance.finish + "(http_request)");
+        			eval(instance.finish + '(http_request)');
         		}
         	}
 
@@ -593,25 +593,25 @@ var clajax = function(prot){
 
 
 
-        if(this.method && this.method!="")
+        if(this.method && this.method!='')
         	http_request.open(this.method, urlOnly, true);
         else
-        	http_request.open("POST", urlOnly, true);
-	    if(this.responseType && this.responseType!="" && setResponseType==false){
+        	http_request.open('POST', urlOnly, true);
+	    if(this.responseType && this.responseType!='' && setResponseType==false){
 	    	try{
 	    		   http_request.responseType = this.responseType;
 	    	}catch(e){
 	    	}
 	    }
 
-	    if(this.contentType && this.contentType!="")
-	    	http_request.setRequestHeader("Content-type", this.contentType);
+	    if(this.contentType && this.contentType!='')
+	    	http_request.setRequestHeader('Content-type', this.contentType);
 	    else
-	    	http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	    if(this.contentEncoding && this.contentEncoding!="")
-	    	http_request.setRequestHeader("Content-Encoding", this.contentEncoding);
+	    	http_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	    if(this.contentEncoding && this.contentEncoding!='')
+	    	http_request.setRequestHeader('Content-Encoding', this.contentEncoding);
 	    else
-	    	http_request.setRequestHeader("Content-Encoding", "iso-8859-1");
+	    	http_request.setRequestHeader('Content-Encoding', 'iso-8859-1');
 
 	    if(this.asJson==false && this.asXml==false && this.asMpart==false){
 	    	http_request.send(parametersOnly);
@@ -632,18 +632,18 @@ var clajax = function(prot){
 	
 	this.getParametersAsUrl = function(frm,_url) {
 
-	    var getstr = "?";
-	    if(_url.indexOf("?")>-1) getstr="&";
+	    var getstr = '?';
+	    if(_url.indexOf('?')>-1) getstr='&';
 	    if(this.base64){
-	    	getstr+="$inputBase64=true&";
-	    	if(_url.indexOf("?")>-1){
-	        	var urlParameters=_url.substring(_url.indexOf("?")+1,_url.length);
+	    	getstr+='$inputBase64=true&';
+	    	if(_url.indexOf('?')>-1){
+	        	var urlParameters=_url.substring(_url.indexOf('?')+1,_url.length);
 	        	if(urlParameters.length>0){
 	        		urlParameters = decodeURIComponent(urlParameters);
 	        		var chunks = urlParameters.split('&');
 	        		for(var c=0; c < chunks.length; c++){
 	        			var split = chunks[c].split('=', 2);
-	        			getstr+=split[0]+"="+encodeURIComponent(base64_encode(split[1]))+"&";
+	        			getstr+=split[0]+'='+encodeURIComponent(base64_encode(split[1]))+'&';
 	        		}
 	        	}
 	        }
@@ -653,59 +653,59 @@ var clajax = function(prot){
 		    for (i=0; i<frm.elements.length; i++) {
 				var element = frm.elements[i];
 				var element_name;
-				if(element.name && element.name!="")
+				if(element.name && element.name!='')
 					element_name=element.name;
-				else if(element.id && element.id!="")
+				else if(element.id && element.id!='')
 					element_name=element.id;
 				
 				if(	element_name &&
-					_url.indexOf("?"+element_name+"=")==-1 &&
-					_url.indexOf("&"+element_name+"=")==-1){
+					_url.indexOf('?'+element_name+'=')==-1 &&
+					_url.indexOf('&'+element_name+'=')==-1){
 					
-						if	(element.type.toUpperCase() == "TEXT" ||
-					         element.type.toUpperCase() == "HIDDEN" ||
-					         element.type.toUpperCase() == "PASSWORD") {
+						if	(element.type.toUpperCase() == 'TEXT' ||
+					         element.type.toUpperCase() == 'HIDDEN' ||
+					         element.type.toUpperCase() == 'PASSWORD') {
 							if(this.base64)
-								getstr += element_name + "=" + encodeURIComponent(base64_encode(element.value)) + "&";
+								getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
 							else	
-								getstr += element_name + "=" + encodeURIComponent(element.value) + "&";
+								getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 					    }
-						if	(element.type.toUpperCase() == "TEXTAREA") {
+						if	(element.type.toUpperCase() == 'TEXTAREA') {
 							if(this.base64)
-								getstr += element_name + "=" + encodeURIComponent(base64_encode(element.value)) + "&";
+								getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
 							else	
-					        	getstr += element_name + "=" + encodeURIComponent(element.value) + "&";
+					        	getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 						}
 
-					    if (element.type.toUpperCase() == "CHECKBOX") {
+					    if (element.type.toUpperCase() == 'CHECKBOX') {
 					    	if (element.checked) {
 					    		if(this.base64)
-					    			getstr += element_name + "=" + encodeURIComponent(base64_encode(element.value)) + "&";
+					    			getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
 					    		else	
-					    			getstr += element_name + "=" + encodeURIComponent(element.value) + "&";
+					    			getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 					        } else {
 					        	if(this.base64)
-					        		getstr += element_name + "=&";
+					        		getstr += element_name + '=&';
 					        	else	
-					        		getstr += element_name + "=&";
+					        		getstr += element_name + '=&';
 					        }
 					    }
-					    if (element.type.toUpperCase() == "RADIO") {
+					    if (element.type.toUpperCase() == 'RADIO') {
 					    	if (element.checked) {
 					    		if(this.base64)
-					    			getstr += element_name + "=" + encodeURIComponent(base64_encode(element.value)) + "&";
+					    			getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
 					    		else
-					    			getstr += element_name + "=" + encodeURIComponent(element.value) + "&";
+					    			getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 					        }
 					    }
 
-						if (element.type.toUpperCase().indexOf("SELECT")==0) {
+						if (element.type.toUpperCase().indexOf('SELECT')==0) {
 					    	var sel = element;
 					    	try{
 					    		if(this.base64)
-					    			getstr += sel.name + "=" + encodeURIComponent(base64_encode(sel.options[sel.selectedIndex].value)) + "&";
+					    			getstr += sel.name + '=' + encodeURIComponent(base64_encode(sel.options[sel.selectedIndex].value)) + '&';
 					    		else
-					    			getstr += sel.name + "=" + encodeURIComponent(sel.options[sel.selectedIndex].value) + "&";
+					    			getstr += sel.name + '=' + encodeURIComponent(sel.options[sel.selectedIndex].value) + '&';
 					    	}catch(e){
 					    	}
 					    }
@@ -724,10 +724,10 @@ var clajax = function(prot){
 	    	issue = {};
 
 	    if(this.base64)
-	    	issue[$inputBase64]="true";
+	    	issue[$inputBase64]='true';
 
-	    if(_url.indexOf("?")>-1){
-	    	var urlParameters=_url.substring(_url.indexOf("?")+1,_url.length);
+	    if(_url.indexOf('?')>-1){
+	    	var urlParameters=_url.substring(_url.indexOf('?')+1,_url.length);
 	    	if(urlParameters.length>0){
 	    		urlParameters = decodeURIComponent(urlParameters);
 	    		var chunks = urlParameters.split('&');
@@ -747,43 +747,43 @@ var clajax = function(prot){
 		 		
 				var element_name;
 				
-				if(element.name && element.name!="")
+				if(element.name && element.name!='')
 					element_name=element.name;
-				else if(element.id && element.id!="")
+				else if(element.id && element.id!='')
 					element_name=element.id;
 		 		
 				if(	element_name &&
-					_url.indexOf("?"+element_name+"=")==-1 &&
-					_url.indexOf("&"+element_name+"=")==-1){
+					_url.indexOf('?'+element_name+'=')==-1 &&
+					_url.indexOf('&'+element_name+'=')==-1){
 					
 
-						if	(element.type.toUpperCase() == "TEXT" ||
-					         element.type.toUpperCase() == "HIDDEN" ||
-					         element.type.toUpperCase() == "PASSWORD") {
+						if	(element.type.toUpperCase() == 'TEXT' ||
+					         element.type.toUpperCase() == 'HIDDEN' ||
+					         element.type.toUpperCase() == 'PASSWORD') {
 							if(this.base64)
 								issue[element_name ] = base64_encode(element.value);
 							else
 								issue[element_name ] = element.value;
 					    }
-						if	(element.type.toUpperCase() == "TEXTAREA") {
+						if	(element.type.toUpperCase() == 'TEXTAREA') {
 							if(this.base64)
 								issue[element_name ] = base64_encode(element.value);
 							else
 								issue[element_name ] = element.value;
 						}
 
-					    if (element.type.toUpperCase() == "CHECKBOX") {
+					    if (element.type.toUpperCase() == 'CHECKBOX') {
 					    	if (element.checked) {
 					    		if(this.base64)
 					    			issue[element_name ] = base64_encode(element.value);
 					    		else
 					    			issue[element_name ] = element.value;
 					        } else {
-								issue[element_name ] = "";
+								issue[element_name ] = '';
 
 					        }
 					    }
-					    if (element.type.toUpperCase() == "RADIO") {
+					    if (element.type.toUpperCase() == 'RADIO') {
 					    	if (element.checked) {
 					    		if(this.base64)
 					    			issue[element_name ] = base64_encode(element.value);
@@ -792,7 +792,7 @@ var clajax = function(prot){
 					        }
 					    }
 
-						if (element.type.toUpperCase().indexOf("SELECT")==0) {
+						if (element.type.toUpperCase().indexOf('SELECT')==0) {
 					    	var sel = element;
 					    	try{
 					    		if(this.base64)
@@ -823,10 +823,10 @@ var clajax = function(prot){
 				formdata = new FormData();
 
 			if(this.base64)
-				formdata.append("$inputBase64","true");
+				formdata.append('$inputBase64','true');
 			
-		    if(_url.indexOf("?")>-1){
-		    	var urlParameters=_url.substring(_url.indexOf("?")+1,_url.length);
+		    if(_url.indexOf('?')>-1){
+		    	var urlParameters=_url.substring(_url.indexOf('?')+1,_url.length);
 		    	if(urlParameters.length>0){
 		    		urlParameters = decodeURIComponent(urlParameters);
 		    		var chunks = urlParameters.split('&');
@@ -846,43 +846,43 @@ var clajax = function(prot){
 			 		
 					var element_name;
 					
-					if(element.name && element.name!="")
+					if(element.name && element.name!='')
 						element_name=element.name;
-					else if(element.id && element.id!="")
+					else if(element.id && element.id!='')
 						element_name=element.id;
 			 		
 					if(	element_name &&
-						_url.indexOf("?"+element_name+"=")==-1 &&
-						_url.indexOf("&"+element_name+"=")==-1){
+						_url.indexOf('?'+element_name+'=')==-1 &&
+						_url.indexOf('&'+element_name+'=')==-1){
 
 
 
-							if	(element.type.toUpperCase() == "TEXT" ||
-						         element.type.toUpperCase() == "HIDDEN" ||
-						         element.type.toUpperCase() == "PASSWORD") {
+							if	(element.type.toUpperCase() == 'TEXT' ||
+						         element.type.toUpperCase() == 'HIDDEN' ||
+						         element.type.toUpperCase() == 'PASSWORD') {
 								if(this.base64)
 									formdata.append(element_name, base64_encode(element.value));
 								else
 									formdata.append(element_name, element.value);
 						    }
-							if	(element.type.toUpperCase() == "TEXTAREA") {
+							if	(element.type.toUpperCase() == 'TEXTAREA') {
 								if(this.base64)
 									formdata.append(element_name, base64_encode(element.value));
 								else
 									formdata.append(element_name, element.value);
 							}
 
-						    if (element.type.toUpperCase() == "CHECKBOX") {
+						    if (element.type.toUpperCase() == 'CHECKBOX') {
 						    	if (element.checked) {
 						    		if(this.base64)
 						    			formdata.append(element_name, base64_encode(element.value));
 						    		else
 						    			formdata.append(element_name, element.value);
 						        } else {
-						        	formdata.append(element_name, "");
+						        	formdata.append(element_name, '');
 						        }
 						    }
-						    if (element.type.toUpperCase() == "RADIO") {
+						    if (element.type.toUpperCase() == 'RADIO') {
 						    	if (element.checked) {
 						    		if(this.base64)
 						    			formdata.append(element_name, base64_encode(element.value));
@@ -891,7 +891,7 @@ var clajax = function(prot){
 						        }
 						    }
 
-							if (element.type.toUpperCase().indexOf("SELECT")==0) {
+							if (element.type.toUpperCase().indexOf('SELECT')==0) {
 						    	var sel = element;
 						    	try{
 						    		if(this.base64)
@@ -901,7 +901,7 @@ var clajax = function(prot){
 						    	}catch(e){
 						    	}
 						    }
-						    if (element.type.toUpperCase() == "FILE") {
+						    if (element.type.toUpperCase() == 'FILE') {
 					    		formdata.append(element_name, element.files[0]);
 						    }
 
@@ -914,7 +914,7 @@ var clajax = function(prot){
 
 		    return formdata;
 		}else{
-			alert("Features supported for object FormData (). Available in Chrome, FireFox, Safari, IE9...");
+			alert('Features supported for object FormData (). Available in Chrome, FireFox, Safari, IE9...');
 		}
 	}
 }
@@ -939,10 +939,10 @@ function base64_encode(data) {
 //	      return btoa(data);
 		  return btoa(unescape(encodeURIComponent(data)));
 	  }
-	  var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	  var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 	  var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
 	    ac = 0,
-	    enc = "",
+	    enc = '',
 	    tmp_arr = [];
 
 	  if (!data) {

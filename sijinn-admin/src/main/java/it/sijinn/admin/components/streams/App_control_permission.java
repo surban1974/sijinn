@@ -24,7 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 @Stream(	
 		name="def_control_permission",
 		applied={
-			@Apply_to_action(action="*")
+			@Apply_to_action(action="*"),
+			@Apply_to_action(action="restnetworks",excluded="true")
 		}
 )
 

@@ -19,12 +19,25 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.serialize.JsonMapper;
+import it.classhidra.serialize.Serialized;
 import it.sijinn.admin.utils.JsonMapperUtils;
 
 
 public abstract class CBase extends action implements i_action, i_bean, Serializable{
 
 	private static final long serialVersionUID = 1L;
+	
+	@Serialized
+	private String error;
+	
+	@Serialized
+	private String warning;
+	
+	@Serialized
+	private String info;
+	
+	@Serialized
+	private String success;
 
 public CBase(){
 	super();
@@ -97,6 +110,48 @@ public void init(HttpServletRequest request) throws bsControllerException {
 		})) return;
 	}else
 		super.init(request);
+}
+
+public void clear(){
+	error=null;
+	warning=null;
+	info=null;
+	success=null;
+}
+
+public String getError() {
+	return error;
+}
+
+public void setError(String error) {
+	this.error = error;
+}
+
+
+
+public String getInfo() {
+	return info;
+}
+
+public void setInfo(String info) {
+	this.info = info;
+}
+
+
+public String getWarning() {
+	return warning;
+}
+
+public void setWarning(String warning) {
+	this.warning = warning;
+}
+
+public String getSuccess() {
+	return success;
+}
+
+public void setSuccess(String success) {
+	this.success = success;
 }
 
 

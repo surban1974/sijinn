@@ -1,15 +1,23 @@
 package it.sijinn.admin.beans;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Date;
+import java.util.Properties;
 
 import it.classhidra.serialize.Format; 
 import it.classhidra.serialize.Serialized;
+import it.classhidra.core.tool.util.util_classes;
+import it.classhidra.core.tool.util.util_file;
 
 public class SettingProperties  implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	public static final String CONST_CONFIGNAME = "sijinn-admin.properties";
 
+	@Serialized
+	private String config;
+	
 	@Serialized
 	private String root;
 	
@@ -28,21 +36,50 @@ public class SettingProperties  implements Serializable {
 	
 	public SettingProperties(){
 		super();
-		this.root="...?";
-		this.restAuth=true;
-		this.restUser="";
-		this.restPassword="";
+		Properties property = null;
+		try{
+			URL rootUrl = this.getClass().getClassLoader().getResource(".");
+   			String path = util_classes.convertUrl2File(rootUrl).getAbsolutePath();
+   			path=path.replace('\\', '/');
+   			if(path.lastIndexOf("/")!=path.length())
+   				path+="/";
+   			config = path+CONST_CONFIGNAME;
+   			property = util_file.loadProperty(path+"/"+CONST_CONFIGNAME);
+   			
+
+		}catch(Exception e){			
+		}
+		if(property==null){
+			this.root="...?";
+			this.restAuth=true;
+			this.restUser="";
+			this.restPassword="";
+		}else{
+			this.root = property.getProperty("root", "...");
+			try{
+				this.restAuth=new Boolean(property.getProperty("restAuth", ""));
+			}catch(Exception e){
+				this.restAuth=false;
+			}
+			this.restUser=property.getProperty("restUser", "");
+			this.restPassword=property.getProperty("restPassword", "");
+		}
 		this.date=new Date();
 	}
 	
-	public SettingProperties(String _root){
-		super();
-		this.root=_root;
-		this.restAuth=false;
-		this.restUser="";
-		this.restPassword="";
-		this.date=new Date();		
+	public boolean save() throws Exception{
+		return util_file.writeByteToFile(toProperties().getBytes(), getConfig());
 	}
+	
+	public String toProperties(){
+		String result="";
+		result+="root="+getRoot()+System.getProperty("line.separator");
+		result+="restAuth="+isRestAuth()+System.getProperty("line.separator");
+		result+="restUser="+getRestUser()+System.getProperty("line.separator");
+		result+="restPassword="+getRestPassword()+System.getProperty("line.separator");
+		return result;
+	}
+	
 	
 	public String getRoot() {
 		return root;
@@ -85,6 +122,16 @@ public class SettingProperties  implements Serializable {
 	
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+
+	public String getConfig() {
+		return config;
+	}
+
+
+	public void setConfig(String config) {
+		this.config = config;
 	}
 
 	
