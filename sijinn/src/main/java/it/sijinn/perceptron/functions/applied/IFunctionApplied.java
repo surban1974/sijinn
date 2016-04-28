@@ -14,5 +14,5 @@ public interface IFunctionApplied extends Serializable{
 	float derivative(float delta, float[] param);
 	float execution(float[] param);
 	float flatspot();
-	String toSaveString();
+	String getDefinition();
 }

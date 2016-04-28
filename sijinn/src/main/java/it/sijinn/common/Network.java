@@ -155,7 +155,7 @@ public class Network extends Neuron implements Serializable{
 					if(neuron!=null){
 						neuron.setLayer(h);
 						neuron.setOrder(i);
-						if(neuron.getNetwork()==null)
+						if(neuron.obtainNetwork()==null)
 							neuron.setNetwork(this);
 					}
 				}
@@ -215,7 +215,7 @@ public class Network extends Neuron implements Serializable{
 	public Network clearSynapses(float newWeight, boolean clearProperties){
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
-				if(neuron!=null && neuron.getChildren()!=null){
+				if(neuron!=null && neuron.obtainChildren()!=null){
 					neuron.updateWeights(newWeight, clearProperties);
 				}
 			}
@@ -226,7 +226,7 @@ public class Network extends Neuron implements Serializable{
 	public Network clearSynapses(IGenerator weightGenerator, boolean clearProperties){
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
-				if(neuron!=null && neuron.getChildren()!=null){
+				if(neuron!=null && neuron.obtainChildren()!=null){
 					neuron.updateWeights(weightGenerator, clearProperties);
 				}
 			}
@@ -758,8 +758,8 @@ public class Network extends Neuron implements Serializable{
 		List<Float> weights = new ArrayList<Float>();
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
-				if(neuron!=null && neuron.getChildren()!=null){
-					for(Synapse synapse:neuron.getChildren())
+				if(neuron!=null && neuron.obtainChildren()!=null){
+					for(Synapse synapse:neuron.obtainChildren())
 						weights.add(synapse.getWeight());
 				}
 			}
@@ -776,8 +776,8 @@ public class Network extends Neuron implements Serializable{
 		List<Synapse> synapses = new ArrayList<Synapse>();
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
-				if(neuron!=null && neuron.getChildren()!=null)
-					synapses.addAll(neuron.getChildren());
+				if(neuron!=null && neuron.obtainChildren()!=null)
+					synapses.addAll(neuron.obtainChildren());
 			}
 		}
 		Synapse[] result = new Synapse[synapses.size()];
@@ -786,7 +786,7 @@ public class Network extends Neuron implements Serializable{
 	}
 
 	
-	public Network getCloned() throws Exception {
+	public Network obtainCloned() throws Exception {
 		return Utils.clone(this, Network.class);
 	}
 	
@@ -894,7 +894,7 @@ public class Network extends Neuron implements Serializable{
 		if(order>-1)
 			result+=" order=\""+order+"\"";
 		if(function!=null)	
-			result+=" function=\""+((function==null)?"":function.toSaveString())+"\"";
+			result+=" function=\""+((function==null)?"":function.getDefinition())+"\"";
 		if(error!=0)	
 			result+=" error=\""+error+"\"";
 		result+=">\n";
@@ -913,8 +913,8 @@ public class Network extends Neuron implements Serializable{
 		}
 		for(List<Neuron> currentLayer: this.layers){
 			for(Neuron neuron:currentLayer){
-				if(neuron!=null && neuron.getChildren()!=null){
-					for(Synapse synapse:neuron.getChildren())
+				if(neuron!=null && neuron.obtainChildren()!=null){
+					for(Synapse synapse:neuron.obtainChildren())
 						result+=synapse.toSaveString(prefix+"\t");
 				}
 			}

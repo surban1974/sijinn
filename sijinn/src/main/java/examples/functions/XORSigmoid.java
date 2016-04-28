@@ -23,7 +23,7 @@ public class XORSigmoid implements IFunctionApplied {
 		return 0;
 	}
 	@Override
-	public String toSaveString(){
+	public String getDefinition(){
 		return this.getClass().getName();
 	}
 

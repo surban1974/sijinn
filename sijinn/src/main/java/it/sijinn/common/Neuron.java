@@ -242,7 +242,7 @@ public class Neuron implements Serializable{
 	public String toSaveString(String prefix){
 		String result = (prefix!=null)?prefix:"";
 		result+="<neuron>"+
-				Utils.normalXML(getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getClass().getSimpleName():""),"utf8")+","+isBias()+
+				Utils.normalXML(getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getDefinition():""),"utf8")+","+isBias()+
 		"</neuron>\n";
 		return result;
 	}
@@ -263,13 +263,13 @@ public class Neuron implements Serializable{
 	public void setOrder(int order) {
 		this.order = order;
 	}
-	public List<Synapse> getChildren() {
+	public List<Synapse> obtainChildren() {
 		return children;
 	}
 	public void setChildren(List<Synapse> children) {
 		this.children = children;
 	}
-	public List<Synapse> getParents() {
+	public List<Synapse> obtainParents() {
 		return parents;
 	}
 	public void setParents(List<Synapse> parent) {
@@ -290,7 +290,7 @@ public class Neuron implements Serializable{
 	public void setFunction(IFunctionApplied function) {
 		this.function = function;
 	}
-
+	
 	public float getTarget() {
 		return target;
 	}
@@ -299,7 +299,7 @@ public class Neuron implements Serializable{
 		this.target = target;
 	}
 
-	public Network getNetwork() {
+	public Network obtainNetwork() {
 		return network;
 	}
 

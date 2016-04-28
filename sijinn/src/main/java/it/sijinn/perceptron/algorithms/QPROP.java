@@ -84,8 +84,8 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 						((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0)+
 						((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0)
 					);
-			if(neuron.getParents()!=null){
-				for(Synapse relation:neuron.getParents()){
+			if(neuron.obtainParents()!=null){
+				for(Synapse relation:neuron.obtainParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());
 
@@ -127,9 +127,9 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				}
 			}			
 		}else{
-			if(neuron.getParents()!=null && neuron.getChildren()!=null){
+			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma0=0;
-				for(Synapse relation:neuron.getChildren()){
+				for(Synapse relation:neuron.obtainChildren()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());
 					sigma0+=relation.getWeight()*((QPROPSynapseProperty)relation.getProperty()).getSigma();
@@ -137,7 +137,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				
 				sigma0*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma0,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				
-				for(Synapse relation:neuron.getParents()){
+				for(Synapse relation:neuron.obtainParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());
 					
@@ -185,8 +185,8 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 	protected void updateWeights(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
-			if(neuron.getParents()!=null){
-				for(Synapse relation:neuron.getParents()){
+			if(neuron.obtainParents()!=null){
+				for(Synapse relation:neuron.obtainParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());
 					
@@ -229,10 +229,10 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				}
 			}			
 		}else{
-			if(neuron.getParents()!=null){
+			if(neuron.obtainParents()!=null){
 
 				
-				for(Synapse relation:neuron.getParents()){
+				for(Synapse relation:neuron.obtainParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());
 					
@@ -286,8 +286,8 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 							((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0)+
 							((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0)
 					);
-			if(neuron.getParents()!=null){
-				for(Synapse relation:neuron.getParents()){
+			if(neuron.obtainParents()!=null){
+				for(Synapse relation:neuron.obtainParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());
 					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
@@ -302,9 +302,9 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				}
 			}			
 		}else{
-			if(neuron.getParents()!=null && neuron.getChildren()!=null){
+			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
-				for(Synapse relation:neuron.getChildren()){
+				for(Synapse relation:neuron.obtainChildren()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());					
 					sigma+=relation.getWeight()*((QPROPSynapseProperty)relation.getProperty()).getSigma();
@@ -312,7 +312,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				
-				for(Synapse relation:neuron.getParents()){
+				for(Synapse relation:neuron.obtainParents()){
 					if(relation.getProperty()==null)
 						relation.setProperty(new QPROPSynapseProperty());
 					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);

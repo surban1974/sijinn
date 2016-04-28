@@ -32,8 +32,8 @@ public class SimpleHyperbolicTangent implements IFunctionApplied {
 	}
 	
 	@Override
-	public String toSaveString(){
-		return this.getClass().getName();
+	public String getDefinition(){
+		return this.getClass().getSimpleName();
 	}
 	
 }

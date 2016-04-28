@@ -100,13 +100,14 @@ public class Synapse implements Serializable{
 	public void setFrom(Neuron from) {
 		this.from = from;
 	}
+	
 	public Neuron getTo() {
 		return to;
 	}
 	public void setTo(Neuron to) {
 		this.to = to;
 	}
-
+	
 	public ISynapseProperty getProperty() {
 		return property;
 	}

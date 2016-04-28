@@ -32,8 +32,8 @@ public class SimpleGaussian implements IFunctionApplied {
 		return 0;
 	}
 	@Override
-	public String toSaveString(){
-		return this.getClass().getName()+"{"+sigma+"}";
+	public String getDefinition(){
+		return this.getClass().getSimpleName()+"{"+sigma+"}";
 	}
 
 	@Override

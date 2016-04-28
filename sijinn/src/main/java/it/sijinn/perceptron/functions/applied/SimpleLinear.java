@@ -30,7 +30,7 @@ public class SimpleLinear implements IFunctionApplied {
 	}
 	
 	@Override
-	public String toSaveString(){
-		return this.getClass().getName()+"{"+slope+"}";
+	public String getDefinition(){
+		return this.getClass().getSimpleName()+"{"+slope+"}";
 	}
 }

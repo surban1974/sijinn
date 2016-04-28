@@ -33,7 +33,7 @@ public class SimpleSigmoidFermi implements IFunctionApplied {
 	}
 	
 	@Override
-	public String toSaveString(){
-		return this.getClass().getName()+"{"+flatspot+"}";
+	public String getDefinition(){
+		return this.getClass().getSimpleName()+"{"+flatspot+"}";
 	}
 }

@@ -30,7 +30,7 @@ public class SimpleThereshold implements IFunctionApplied {
 		return 0;
 	}	
 	@Override
-	public String toSaveString(){
-		return this.getClass().getName()+"{"+threshold+"}";
+	public String getDefinition(){
+		return this.getClass().getSimpleName()+"{"+threshold+"}";
 	}
 }
