@@ -1,9 +1,12 @@
 package it.sijinn.admin.beans;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
+
+
 
 import it.classhidra.serialize.Format; 
 import it.classhidra.serialize.Serialized;
@@ -17,6 +20,8 @@ public class SettingProperties  implements Serializable {
 
 	@Serialized
 	private String config;
+	
+	private String config_path;
 	
 	@Serialized
 	private String root;
@@ -37,14 +42,27 @@ public class SettingProperties  implements Serializable {
 	public SettingProperties(){
 		super();
 		Properties property = null;
+		config_path = System.getProperty("config-path");
+		if(config_path!=null){
+			File path = new File(config_path);
+			if(!path.exists()){
+				if(!path.mkdirs())
+					config_path=null;
+			}
+			
+		}
 		try{
-			URL rootUrl = this.getClass().getClassLoader().getResource(".");
-   			String path = util_classes.convertUrl2File(rootUrl).getAbsolutePath();
-   			path=path.replace('\\', '/');
-   			if(path.lastIndexOf("/")!=path.length())
-   				path+="/";
-   			config = path+CONST_CONFIGNAME;
-   			property = util_file.loadProperty(path+"/"+CONST_CONFIGNAME);
+			if(config_path==null){
+				URL rootUrl = this.getClass().getClassLoader().getResource(".");
+	   			String path = util_classes.convertUrl2File(rootUrl).getAbsolutePath();
+	   			path=path.replace('\\', '/');
+	   			if(path.lastIndexOf("/")!=path.length())
+	   				path+="/";
+	   			config = path+CONST_CONFIGNAME;
+			}else
+				config = config_path+CONST_CONFIGNAME;
+			
+   			property = util_file.loadProperty(config);
    			
 
 		}catch(Exception e){			

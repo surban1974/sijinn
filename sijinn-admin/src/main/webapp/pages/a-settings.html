@@ -1,0 +1,316 @@
+
+ <!DOCTYPE html>
+<html lang="en">
+   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SIJINN</title>
+	<link rel="SHORTCUT ICON" href="images/application.ico">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <style>
+      body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
+      .navbar {
+        margin-bottom: 20px;
+      }
+    </style>
+    
+    <!-- Styles for avoiding jQuery -->
+    <link rel="stylesheet" href="css/navbar.css">
+
+  </head>
+
+
+  <body>
+
+    <div class="container" style="padding-top: 50px">
+
+      <!-- Navbar -->
+      <nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
+
+
+
+
+      <div class="jumbotron" >
+      	<form id="settings" method="post" ng-app="settingsApp" ng-controller="settingsCtrl"> 
+	      	<h2 style="width:100%; text-align: right;"><b>Settings</b></h2>
+	      	<div class="form-group">
+	  			<label for="settings.root">Today</label>
+	  			<span>{{ view.model.settings.date}}</span>
+			</div>
+	      	<div class="form-group">
+	  			<label for="settings.config">Configuration</label>
+	  			<span>{{ view.model.settings.config}}</span>
+			</div>			
+			<div class="form-group">
+	  			<label for="settings.root">ROOT</label>
+	  			<input type="text" class="form-control" id="view.model.settings.root" ng-model="view.model.settings.root">
+			</div>
+
+			
+			<div class="form-group">
+	  			
+				
+
+				<table style="width:100%">
+					<tr>
+						<td valign="bottom" align="left">
+							<label>REST Authentication</label><br>
+							<span>
+						  		<label class="btn btn-default">
+									<input type="radio" id="model.settings.restAuth" autocomplete="off" ng-model="view.model.settings.restAuth" ng-value="false"> Disable
+							  	</label>
+							  	<label class="btn btn-default">
+									<input type="radio" id="model.settings.restAuth" autocomplete="off" ng-model="view.model.settings.restAuth" ng-value="true"> Enable
+							  	</label>
+						  	</span>						
+						</td>
+
+						<td ng-if="view.model.settings.restAuth == true">
+				  			<label for="settings.restUser">User</label>
+				 			<input type="text" class="form-control" id="model.settings.restUser" ng-model="view.model.settings.restUser">						
+				 		</td>
+				 		<td>&nbsp;</td>
+						<td ng-if="view.model.settings.restAuth == true">
+				  			<label for="settings.restPassword">Password</label>
+				 			<input type="password" class="form-control" id="model.settings.restPassword" ng-model="view.model.settings.restPassword">				 		
+	 					</td>	
+	 								 		
+					</tr>
+				</table>
+				<br>
+
+				<div class="modal-footer">
+				
+					<button type="button" id="loadButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-primary" autocomplete="off">
+					  	Load
+					</button>
+				
+					<button type="button" id="saveButton" data-toggle="button" data-loading-text="Saving..." class="btn btn-danger" autocomplete="off">
+					  	Save
+					</button>
+				</div>
+			</div>	
+
+        </form>
+      </div>
+
+    </div> <!-- /container -->
+
+
+
+
+    <!-- Bootstrap Native -->
+    <script src="js/bootstrap-native.js"></script>
+    
+	<!--  Angular 1.5 JavaScript -->
+	<script src='js/angular.min.js'></script>
+	
+	<!--  ClassHidra Ajax JavaScript -->
+	<script src='js/classhidra-ajax.js'></script>  	
+	
+	<!--  ClassHidra Utils JavaScript -->
+	<script src='js/classhidra-bootstrap-utils.js'></script> 	 
+	
+	
+	<script>
+
+	
+
+	var SettingsServerModel = {
+		settings : {
+			config: '',
+			date: '',
+			root: '',
+			restAuth: false,
+			restUser: '',
+			restPassword: ''
+		},
+		error : '',
+		warning : '',
+		info : '',
+		success: '',
+		
+		init: function(model){
+			json2model(this,model);
+		},
+		
+	
+		message : function(){
+			if(this.error && this.error!=''){
+				new clpopup({
+					type: 'danger',
+					message: this.error
+				}).open();					 
+			}
+			if(this.success && this.success!=''){
+				new clpopup({
+					type: 'success',
+					message: this.success
+				}).open();					 
+			}	
+			if(this.info && this.info!=''){
+				new clpopup({
+					type: 'info',
+					message: this.info
+				}).open();					 
+			}
+			if(this.warning && this.warning!=''){
+				new clpopup({
+					type: 'warning',
+					message: this.warning
+				}).open();					 
+			}			
+		}
+					
+	}
+	
+	var ViewModel = function(serverModel) {
+		var self = this;
+		self.initialisation = true;
+		self.model = serverModel;
+		
+		self.init = function(parsed){
+			self.initialisation = true;
+			try{
+				self.model.init(parsed.model);
+			}catch(e){
+				showException(e);
+			}
+			self.initialisation = false;					
+		}
+		
+		self.post = function($http,newValue){
+			if(!self.initialisation){
+				
+				$http.post('settings-json', JSON.stringify(newValue)).
+			    success(function(data, status, headers, config) {
+			    	self.init(data);
+			      }).
+			      error(function(data, status, headers, config) {
+			    	  console.log(data);
+			      });
+				
+
+			}			
+		}
+	
+		self.postDirty = function($http,newValue){
+			if(!self.initialisation){
+				
+				$http.post('settings-diff', JSON.stringify(newValue)).
+			    success(function(data, status, headers, config) {
+			    	self.init(data);
+			      }).
+			      error(function(data, status, headers, config) {
+			    	  console.log(data);
+			      });
+			}			
+		}		
+		
+		self.getDirty = function(oldModel){
+			var result = [];
+			dirtyModelElements(self,oldModel,result);
+			return result;
+		}
+		
+		self.message = function(){
+			self.model.message();
+		}
+	}
+	
+	function getScope(){
+		return angular.element(document.getElementById("settings")).scope();
+	}
+	
+	var app = angular.module('settingsApp', []);
+	app.controller('settingsCtrl', function($scope, $http) {
+
+		$scope.view = new ViewModel(SettingsServerModel);
+		
+		$http({
+            method : 'GET',
+            url : 'pages/included/top_menu.html'
+	    }).success(function(data, status, headers, config) {
+	    	document.getElementById("top_menu").innerHTML = data;
+	    	document.getElementById("top_menu_settings").className += " active";
+			document.getElementById("top_menu_settings_actions").style.display = "block";
+			
+			var btnSave = document.getElementById('saveButton');
+			btnSave.addEventListener('click', function() {
+			  	new Button(btnSave,'loading'); 
+			  	$http({
+					url:'settings-save',
+					method : 'POST'
+			    }).success(function(data, status, headers, config) { 
+					getScope().view.init(data);
+					getScope().view.message();
+					new Button(btnSave,"reset");
+				});
+			});
+			
+			var menuSave = document.getElementById('top_menu_settings_actions_save');
+			menuSave.addEventListener('click', function() {
+			  	$http({
+					url:'settings-save',
+					method : 'POST'
+			    }).success(function(data, status, headers, config) { 
+					getScope().view.init(data);
+					getScope().view.message();
+				}).error(function(data, status, headers, config) {
+		            alert(data);
+		    	});	
+			});
+			
+			var btnLoad = document.getElementById('loadButton');
+			btnLoad.addEventListener('click', function() {
+			  	new Button(btnLoad,'loading'); 
+			  	$http({
+					url:'settings-load',
+					method : 'POST'
+			    }).success(function(data, status, headers, config) { 
+					getScope().view.init(data);
+					getScope().view.message();
+					new Button(btnLoad,"reset");
+				});
+			});			
+			
+			
+			$http({
+	            method : 'GET',
+	            url : 'settings-json'
+		    }).success(function(data, status, headers, config) {
+		    	getScope().view.init(data);
+		    	
+		    	getScope().$watch('view', function(newValue, oldValue) {
+		    		var diff = newValue.getDirty(oldValue);
+					if(diff.length>0)
+						$scope.view.postDirty($http,diff);
+		  		},true);
+
+		    	
+		    	
+
+		    });
+	    }).error(function(data, status, headers, config) {
+	            // called asynchronously if an error occurs
+	            // or server returns response with an error status.
+	    });	
+	});
+	
+
+	
+	</script>
+  </body>
+</html>

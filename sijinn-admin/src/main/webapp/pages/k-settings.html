@@ -1,0 +1,354 @@
+
+ <!DOCTYPE html>
+<html lang="en">
+   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SIJINN</title>
+	<link rel="SHORTCUT ICON" href="images/application.ico">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <style>
+      body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
+      .navbar {
+        margin-bottom: 20px;
+      }
+    </style>
+    
+    <!-- Styles for avoiding jQuery -->
+    <link rel="stylesheet" href="css/navbar.css">
+
+  </head>
+
+
+  <body>
+
+    <div class="container" style="padding-top: 50px">
+
+      <!-- Navbar -->
+      <nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
+
+
+
+
+      <div class="jumbotron" >
+      	<form id="settings" method="post"> 
+	      	<h2 style="width:100%; text-align: right;"><b>Settings</b></h2>
+	      	<div class="form-group">
+	  			<label for="settings.root">Today</label>
+	  			<span data-bind="text: model().settings.date"></span>
+			</div>
+	      	<div class="form-group">
+	  			<label for="settings.config">Configuration</label>
+	  			<span data-bind="text: model().settings.config"></span>
+			</div>			
+			<div class="form-group">
+	  			<label for="settings.root">ROOT</label>
+	  			<input type="text" class="form-control" id="model.settings.root" data-bind="value: model().settings.root">
+			</div>
+			
+			<div class="form-group">
+	  			
+				
+
+				<table style="width:100%">
+					<tr>
+						<td valign="bottom" align="left">
+							<label>REST Authentication</label><br>
+							<span>
+						  		<label class="btn btn-default">
+									<input type="radio" id="model.settings.restAuth" autocomplete="off" data-bind="checked: model().settings.restAuth, checkedValue: false"> Disable
+							  	</label>
+							  	<label class="btn btn-default">
+									<input type="radio" id="model.settings.restAuth" autocomplete="off" data-bind="checked: model().settings.restAuth, checkedValue: true"> Enable
+							  	</label>
+						  	</span>						
+						</td>
+<!-- ko if: model().settings.restAuth -->
+						<td>
+				  			<label for="settings.restUser">User</label>
+				 			<input type="text" class="form-control" id="model.settings.restUser" data-bind="value: model().settings.restUser, enable: model().settings.restAuth">						
+				 		</td>
+				 		<td>&nbsp;</td>
+						<td>
+				  			<label for="settings.restPassword">Password</label>
+				 			<input type="password" class="form-control" id="model.settings.restPassword" data-bind="value: model().settings.restPassword, enable: model().settings.restAuth">				 		
+	 					</td>	
+<!-- /ko -->	 								 		
+					</tr>
+				</table>
+				<br>
+
+				<div class="modal-footer">
+					<button type="button" id="loadButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-primary" autocomplete="off">
+					  	Load
+					</button>				
+					<button type="button" id="saveButton" data-toggle="button" data-loading-text="Saving..." class="btn btn-danger" autocomplete="off">
+					  	Save
+					</button>
+				</div>
+			</div>	
+
+        </form>
+      </div>
+
+    </div> <!-- /container -->
+
+
+
+
+    <!-- Bootstrap Native -->
+    <script src="js/bootstrap-native.js"></script>
+    
+	<!--  Knockout JavaScript -->
+	<script src='js/knockout-3.4.0.debug.js'></script> 
+	
+	<!--  ClassHidra Ajax JavaScript -->
+	<script src='js/classhidra-ajax.js'></script>  	
+	
+	<!--  ClassHidra Utils JavaScript -->
+	<script src='js/classhidra-bootstrap-utils.js'></script> 	 
+	
+	
+	<script>
+	
+
+
+	var SettingsServerModel = {
+		settings : {
+			config: ko.observable(''),
+			date: ko.observable(''),
+			root: ko.observable(''),
+			restAuth: ko.observable(false),
+			restUser: ko.observable(''),
+			restPassword: ko.observable('')
+		},
+		error : '',
+		warning : '',
+		info : '',
+		success: '',
+		
+		init: function(model){
+			json2model(this,model);
+/*			
+			this.error = model.error;
+			this.warning = model.warning;
+			this.info = model.info;
+			this.success = model.success;
+
+			this.settings.config(model.settings.config);
+			this.settings.date(model.settings.date);
+			this.settings.root(model.settings.root);
+			this.settings.restAuth(model.settings.restAuth);
+			this.settings.restUser(model.settings.restUser);
+			this.settings.restPassword(model.settings.restPassword);
+*/			
+		},
+		
+		message : function(){
+			if(this.error && this.error!=''){
+				new clpopup({
+					type: 'danger',
+					message: this.error
+				}).open();					 
+			}
+			if(this.success && this.success!=''){
+				new clpopup({
+					type: 'success',
+					message: this.success
+				}).open();					 
+			}	
+			if(this.info && this.info!=''){
+				new clpopup({
+					type: 'info',
+					message: this.info
+				}).open();					 
+			}
+			if(this.warning && this.warning!=''){
+				new clpopup({
+					type: 'warning',
+					message: this.warning
+				}).open();					 
+			}			
+		}
+					
+	}
+	
+	var ViewModel = function(serverModel) {
+		var self = this;
+		self.initialisation = true;
+		self.model = ko.observable(serverModel).extend({ trackChange: true });
+
+			
+	
+/*
+		self.compute = ko.computed({
+			read: function() {
+				if(!self.initialisation){
+					self.post(self.model);
+				}
+		        return ko.toJSON(self.model);
+		    },
+		    write: function (newValue) {
+		    	alert(2);
+		    },
+		    self,
+		    deferEvaluation: false
+		});
+*/
+
+		self.compute = ko.computed(
+				function (newValue) {
+					if(!self.initialisation){
+						self.post(newValue);
+					}
+					
+					return ko.toJSON(self.model);
+	        	}, 
+			    self,
+			    {
+	        		deferEvaluation: false
+	        	}
+		);				
+
+
+
+		
+		self.init = function(parsed){
+			self.initialisation = true;
+			try{
+				self.model().init(parsed.model);
+			}catch(e){
+				showException(e);
+			}
+			self.initialisation = false;					
+		}
+		
+		self.post = function(newValue){
+			if(!self.initialisation){
+				new clajax({
+					url:"settings-json",
+					json: ko.toJSON(self),
+					contentType: "application/json",
+					asJson: true,
+					success: function(http_request){ 
+						self.init(JSON.parse(http_request.responseText));
+					}
+				})	
+				.request("POST")
+				;
+			}			
+		}	
+		
+		self.message = function(){
+			self.model().message();
+		}
+	}
+	
+	document.onreadystatechange = function () {
+		
+		var state = document.readyState;
+		if (document.readyState == 'interactive') {
+
+		} else if (document.readyState == 'complete') {
+			
+			
+			var SettigsViewModel = new ViewModel(SettingsServerModel)
+
+			ko['track'] = function (model) {
+			    for (var key in model) {
+			        if (model.hasOwnProperty(key) && ko.isObservable(model[key])) {
+			            model[key].extend({ trackChange: true });
+			        }
+			    }
+			};
+			
+			ko.extenders.trackChange = function (target, track) {
+			    if (track) {
+			        target.isDirty = ko.observable(false);
+			        target.originalValue = target();
+			        target.subscribe(function (newValue) {
+			            
+			            target.isDirty(newValue != target.originalValue);
+			            target.originalValue = newValue;
+			            
+			        });
+			    }
+			    return target;
+			};
+			ko.track(SettigsViewModel.model().settings);			
+		
+			
+			
+
+			
+			ko.applyBindings(SettigsViewModel);
+			
+		
+			new clajax({
+				url:"pages/included/top_menu.html",
+				target: document.getElementById("top_menu"),
+				success: function(){ 
+					document.getElementById("top_menu_settings").className += " active";
+					document.getElementById("top_menu_settings_actions").style.display = "block";
+							
+					new clajax({
+						url:"settings-json",
+						success: function(http_request){ 
+							SettigsViewModel.init(JSON.parse(http_request.responseText));
+						},
+						fail: function(http_request){ 
+							
+						}
+					}).request("GET");	
+							
+				}
+			}).request("GET");
+					
+			var btnSave = document.getElementById('saveButton');
+			btnSave.addEventListener('click', function() {
+			  	new Button(btnSave,'loading'); 
+				new clajax({
+					url:'settings-save',
+					success: function(http_request){ 
+						SettigsViewModel.init(JSON.parse(http_request.responseText));
+						SettigsViewModel.message();
+					
+						new Button(btnSave,"reset");
+					}
+				}).request("POST");
+			});
+			
+			var btnLoad = document.getElementById('loadButton');
+			btnLoad.addEventListener('click', function() {
+			  	new Button(btnLoad,'loading'); 
+			  	new clajax({
+					url:'settings-load',
+					success: function(http_request){ 
+						SettigsViewModel.init(JSON.parse(http_request.responseText));
+						SettigsViewModel.message();
+					
+						new Button(btnLoad,"reset");
+					}
+				}).request("POST");
+			});			
+			
+		}
+	}
+		
+
+	
+	</script>
+  </body>
+</html>

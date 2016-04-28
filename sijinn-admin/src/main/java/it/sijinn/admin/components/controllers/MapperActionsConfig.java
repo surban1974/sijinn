@@ -5,18 +5,19 @@ import it.classhidra.annotation.elements.ActionMapping;
 
 
 @ActionMapping (
+		memoryInContainer_streams="true",
 		redirects={},
-			actions={
-					@Action (
-							path="operator",
-							redirect = "/menuCreator"
-					)					
-			}
+		actions={
+			@Action (
+					path="operator",
+					redirect = "/menuCreator"
+			)					
+		}
 		
-		)
+	)
 
 
 
-public class Mapper_redirects {
+public class MapperActionsConfig {
 
 }

@@ -21,6 +21,7 @@ import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import sun.misc.BASE64Decoder;
 
+/*
 @Stream(	
 		name="rest_control_permission",
 		applied={
@@ -28,7 +29,7 @@ import sun.misc.BASE64Decoder;
 		},
 		Redirect=@Redirect(contentType="application/json")
 )
-
+*/
 public class RestPermission extends stream implements i_stream{
 
 	private static final long serialVersionUID = 1L;

@@ -42,41 +42,40 @@
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron" >
-       	<h2 style="100%;text-align: right;"><b>Simple Java Implementation of Neural Network</b></h2>
-       	<ul>
-       		<li><h4>network structure: perseptron</h4></li>
-       		<li><h4>training algorithms: BPROP, QPROP, RPROP</h4></li>
-       		<li><h4>this tool allows to create new networks, edit existent, prepare training scenarios and run training in scheduled mode</h4></li>
-       		<li><h4>all your structures can be saved  - file system is used as storage</h4></li>
-       		<li><h4>status: 1.0.0.alfa - work in progress</h4></li>
-       	</ul>
-        
-        <p style="100%;text-align: right;">
-          <a class="btn btn-lg btn-primary" href="https://sourceforge.net/projects/sijinn/" role="button">Source Forge Download &raquo;</a>
-        </p>
+ 		<form id="networks" method="post" ng-app="networksApp" ng-controller="networksCtrl"> 
+ 		</form>
       </div>
 
     </div> <!-- /container -->
 
 
-    <!-- Navbar JavaScript -->
+    <!-- Bootstrap Native -->
     <script src="js/bootstrap-native.js"></script>
     
-	<!--  Knockout JavaScript -->
-	<script src='js/knockout-3.4.0.js'></script>   
+	<!--  Angular 1.5 JavaScript -->
+	<script src='js/angular.min.js'></script>
 	
 	<!--  ClassHidra Ajax JavaScript -->
-	<script src='js/classhidra-ajax.js'></script>  	 
+	<script src='js/classhidra-ajax.js'></script>  	
+	
+	<!--  ClassHidra Utils JavaScript -->
+	<script src='js/classhidra-bootstrap-utils.js'></script> 	 	 
 	
 	
 	<script>
-		new clajax()
-			.setUrl("pages/included/top_menu.html")
-			.setTarget(document.getElementById("top_menu"))
-			.setSuccess(function(){ 
-				document.getElementById("top_menu_home").className += " active";
-			})
-			.request("POST");
+	var app = angular.module('networksApp', []);
+	app.controller('networksCtrl', function($scope, $http) {
+
+
+		
+		$http({
+            method : 'GET',
+            url : 'pages/included/top_menu.html'
+	    }).success(function(data, status, headers, config) {
+	    	document.getElementById("top_menu").innerHTML = data;
+	    	document.getElementById("top_menu_networks").className += " active";
+	    });
+	});
 	
 	</script>
   </body>

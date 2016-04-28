@@ -4,26 +4,14 @@ package it.sijinn.admin.components.controllers;
 
 
 import java.io.Serializable;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.servlet.http.HttpServletRequest;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.serialize.JsonMapper;
 import it.classhidra.serialize.Serialized;
-import it.sijinn.admin.utils.JsonMapperUtils;
 
 
-public abstract class CBase extends action implements i_action, i_bean, Serializable{
+public abstract class AbstractBase extends action implements i_action, i_bean, Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -39,10 +27,10 @@ public abstract class CBase extends action implements i_action, i_bean, Serializ
 	@Serialized
 	private String success;
 
-public CBase(){
+public AbstractBase(){
 	super();
 }
-
+/*
 @Override
 public void init(HttpServletRequest request) throws bsControllerException {
 	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
@@ -111,12 +99,12 @@ public void init(HttpServletRequest request) throws bsControllerException {
 	}else
 		super.init(request);
 }
-
+*/
 public void clear(){
-	error=null;
-	warning=null;
-	info=null;
-	success=null;
+	error="";
+	warning="";
+	info="";
+	success="";
 }
 
 public String getError() {
