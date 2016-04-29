@@ -409,9 +409,9 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 
 	
 
-	public String toSaveString(){
+	public String getDefinition(){
 		return "algorithm="+this.getClass().getSimpleName()+","+etaNegative+","+etaPositive+","+minDelta+","+maxDelta+
-				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.toSaveString()+"");
+				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
 
 	}
 

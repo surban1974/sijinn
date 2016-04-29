@@ -289,9 +289,9 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		return learningMomentum;
 	}
 
-	public String toSaveString(){
+	public String getDefinition(){
 		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+learningMomentum+
-				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.toSaveString()+"");
+				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
 	}
 
 	public BPROP setLearningRate(float learningRate) {

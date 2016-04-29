@@ -8,7 +8,7 @@ public class SUMMATOR implements IDAFloatFunction {
 	}
 
 	@Override
-	public String toSaveString() {
+	public String getDefinition() {
 		return "deferredAggregateFunction="+this.getClass().getSimpleName();
 	}
 

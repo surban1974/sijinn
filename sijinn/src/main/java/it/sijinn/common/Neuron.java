@@ -247,6 +247,10 @@ public class Neuron implements Serializable{
 		return result;
 	}
 	
+	public String getPosition(){
+		return layer+","+order;
+	}
+	
 	public String toString(){
 		return toSaveString(null);
 	}

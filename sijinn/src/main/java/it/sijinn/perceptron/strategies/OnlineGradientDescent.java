@@ -112,8 +112,8 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 		result+= "<strategy>"+
 				Utils.normalXML(
 					this.getClass().getSimpleName()+
-					((algorithm==null)?"":";"+algorithm.toSaveString()+"")+
-					((errorFunction==null)?"":";"+errorFunction.toSaveString()+"")
+					((algorithm==null)?"":";"+algorithm.getDefinition()+"")+
+					((errorFunction==null)?"":";"+errorFunction.getDefinition()+"")
 				,"utf8")+
 				"</strategy>\n";
 		return result;

@@ -331,9 +331,9 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	}
 	
 	@Override
-	public String toSaveString() {
+	public String getDefinition() {
 		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+decay+","+epsilon+
-				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.toSaveString()+"");
+				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
 	}
 
 	public float getLearningRate() {

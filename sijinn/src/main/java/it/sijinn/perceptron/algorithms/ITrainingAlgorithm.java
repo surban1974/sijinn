@@ -12,5 +12,5 @@ public interface ITrainingAlgorithm {
 	ITrainingAlgorithm sync(Network network1, Network network2, int type) throws Exception;
 	IDAFloatFunction getDeferredAgregateFunction();
 	ITrainingAlgorithm setDeferredAgregateFunction(IDAFloatFunction deferredAgregateFunction);
-	String toSaveString();
+	String getDefinition();
 }

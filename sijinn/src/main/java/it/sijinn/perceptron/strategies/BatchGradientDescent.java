@@ -161,8 +161,8 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 	
 	public String toSaveString(){
 		return "strategy="+this.getClass().getSimpleName()+","+parallelLimit+
-				((algorithm==null)?"":"\n"+algorithm.toSaveString()+"")+
-				((errorFunction==null)?"":"\n"+errorFunction.toSaveString()+"");
+				((algorithm==null)?"":"\n"+algorithm.getDefinition()+"")+
+				((errorFunction==null)?"":"\n"+errorFunction.getDefinition()+"");
 	}
 	
 	

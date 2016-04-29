@@ -14,7 +14,7 @@ public class MMA implements IDAFloatFunction {
 	}
 
 	@Override
-	public String toSaveString() {
+	public String getDefinition() {
 		return "deferredAggregateFunction="+this.getClass().getSimpleName();
 	}
 

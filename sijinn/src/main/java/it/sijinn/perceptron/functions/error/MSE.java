@@ -16,7 +16,7 @@ public class MSE implements IErrorFunctionApplied {
 		return error;
 	}
 	
-	public String toSaveString(){
+	public String getDefinition(){
 		return "errorfunction="+this.getClass().getSimpleName();
 	}	
 

@@ -4,6 +4,7 @@ import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.utils.IStrategyListener;
+import it.sijinn.perceptron.utils.Utils;
 
 public abstract class TrainingStrategy implements ITrainingStrategy {
 
@@ -43,6 +44,17 @@ public abstract class TrainingStrategy implements ITrainingStrategy {
 		if(this.listener!=null)
 			this.listener.setTrainingStrategy(this);
 		return this;
+	}
+	
+	public String getDefinition(){
+		String result = "";
+		result+= 
+				Utils.normalXML(
+					this.getClass().getSimpleName()+
+					((algorithm==null)?"":";"+algorithm.getDefinition()+"")+
+					((errorFunction==null)?"":";"+errorFunction.getDefinition()+"")
+				,"utf8");
+		return result;
 	}
 
 }

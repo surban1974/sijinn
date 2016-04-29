@@ -76,10 +76,19 @@ public class Synapse implements Serializable{
 	}
 	
 
+	public String getDirection(){
+		return ""+
+				((from!=null)?from.getLayer():"-1")+","+
+				((from!=null)?from.getOrder():"-1")+"|"+
+				((to!=null)?to.getLayer():"-1")+","+
+				((to!=null)?to.getOrder():"-1");
+		
+	}
+	
 	public String toSaveString(String prefix){
 		String result=(prefix!=null)?prefix:"";
 		result+="<synapse>"+
-		Utils.normalXML(from.getLayer()+","+from.getOrder()+","+to.getLayer()+","+to.getOrder()+","+weight+ "," + ((property!=null)?property.toString():"{}"),"utf8")+
+		Utils.normalXML(((from!=null)?from.getLayer():"-1")+","+((from!=null)?from.getOrder():"-1")+","+((to!=null)?to.getLayer():"-1")+","+((to!=null)?to.getOrder():"-1")+","+weight+ "," + ((property!=null)?property.toString():"{}"),"utf8")+
 		"</synapse>\n";
 		return result;
 	}	
