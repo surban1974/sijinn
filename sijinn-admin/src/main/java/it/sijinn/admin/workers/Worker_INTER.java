@@ -172,7 +172,6 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 
 
 
-	@Serialized(children=true)
 	public Network getNetwork() {
 		return network;
 	}	
@@ -200,7 +199,7 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 		if(db==null)
 			return i_batch.STATE_SCHEDULED;
 		else
-			return db.getSt_exec();
+			return db.getState();
 	}
 
 

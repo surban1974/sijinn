@@ -110,9 +110,12 @@ function json2model(source,json){
 					else if(typeof source[property] === 'object'){
 						if(isEmpty(source[property]))
 							source[property] = json[property];
-						else if(Array === source[property].constructor)
-							source[property] = json[property];
-						else
+						else if(Array === source[property].constructor){
+							if(source[property].length != json[property].length)
+								source[property] = json[property];
+							else
+								json2model(source[property],json[property]);
+						}else
 							json2model(source[property],json[property]);
 					}
 					else	

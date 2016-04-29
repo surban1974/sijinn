@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.sijinn</groupId>
   <artifactId>sijinn-admin</artifactId>
-  <version>1.0.0-alfa</version>
+  <version>1.0.1-alfa</version>
   <packaging>war</packaging>
   <name>SIJINN - web admin tool</name>
   <description>Web (jetty) administration tool</description>

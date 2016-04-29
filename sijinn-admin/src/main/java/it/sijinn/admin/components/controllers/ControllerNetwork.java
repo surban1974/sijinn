@@ -3,6 +3,8 @@ package it.sijinn.admin.components.controllers;
 
 
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,10 +25,12 @@ import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
-
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
 import it.classhidra.scheduler.scheduling.thread.singleThreadEvent;
+import it.classhidra.serialize.JsonWriter;
+import it.classhidra.serialize.Serialized;
 import it.sijinn.admin.beans.NetworkWrapper;
 import it.sijinn.admin.workers.Worker_INTER;
 import it.sijinn.common.Network;
@@ -39,9 +43,7 @@ import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.classhidra.scheduler.common.i_batch;
-import it.classhidra.serialize.JsonWriter;
-import it.classhidra.serialize.Serialized;
+import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 
 @Action (
 	path="network",
@@ -129,6 +131,10 @@ public String stop(){
 	if(event!=null && event.getWorker()!=null){
 		((Worker_INTER)event.getWorker()).setForcedStop(true);
 		event.interrupt();
+		try{
+			SECONDS.sleep(3);
+		}catch(Exception e){			
+		}
 	}
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -139,16 +145,47 @@ public String stop(){
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String restart(){
-	if(event!=null)
+	if(event!=null){
 		event.interrupt();
+	}
+	wrapper.obtainInstance().clearSynapses(new RandomPositiveWeightGenerator(),true);
 	worker = new Worker_INTER()
 			.setNetwork(wrapper.obtainInstance())
 			.setTrainingStrategy(strategy)
-			.setApproximation(0.000001f);
+			.setApproximation(0.0005f);
 	event = new singleThreadEvent(new db_batch(), new db_batch_log(), worker);
-	event.start();	
+	event.start();
+	try{
+		SECONDS.sleep(3);
+	}catch(Exception e){			
+	}
+
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
+
+@ActionCall(
+		name="exec",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String exec(){
+	if(wrapper!=null){
+		wrapper.obtainInstance().calculation();
+	}
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+
+@ActionCall(
+		name="diff",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(method = Expose.POST))
+public String diffAsJson(HttpServletRequest request, HttpServletResponse response){
+	return "";
+}	
+
 
 public singleThreadEvent getEvent() {
 	return event;
