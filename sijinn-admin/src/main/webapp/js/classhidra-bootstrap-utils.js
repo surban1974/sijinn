@@ -92,31 +92,3 @@ function showException(e){
 	}).open();	
 }
 
-function json2model(source,json){
-	for(var property in source){
-		if (typeof json[property] === "undefined") {
-		}else{
-			if (typeof source[property] === 'function')
-				source[property](json[property]);		
-			else if(typeof source[property] === 'object')
-				json2model(source[property],json[property]);
-			else	
-				source[property] = json[property];
-		}
-	}
-}
-
-function dirtyModelElements(newModel,oldModel, array, prefix){
-	for(var property in newModel){
-	
-			if(typeof newModel[property] === 'object')
-				dirtyModelElements(newModel[property],oldModel[property],array,((!prefix || prefix=='')?'':prefix+'.')+property);
-			else{	
-				if(newModel[property] != oldModel[property]){
-					var data = {};
-					data[((!prefix || prefix=='')?'':prefix+'.')+property] = newModel[property];
-					array.push(data);
-				}
-			}
-	}
-}

@@ -24,6 +24,40 @@
       .navbar {
         margin-bottom: 20px;
       }
+      
+      div.neuron{
+      	color: white;
+		background-color: #87C5F0;
+		padding: 4px;
+		-moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
+		box-shadow: 1px 1px 6px gray;
+		border-radius: 15px;	
+		height:25px;
+		width: 25px;
+		cursor: pointer;
+      }
+      
+      div.neuron-expand{
+      	color: white;
+		background-color: white;
+		border-color: #87C5F0;
+		padding: 4px;
+		-moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
+		box-shadow: 1px 1px 6px gray;
+		border-radius: 25px;	
+		height:40px;
+		width: 40px;
+		cursor: pointer;
+      }      
+      
+	  td.neuron_place{
+	  	height: 50px;
+	  	min-height: 50px;
+	  	min-width: 50px;
+		vertical-align: middle;
+      }      
     </style>
     
     <!-- Styles for avoiding jQuery -->
@@ -42,7 +76,25 @@
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron" >
- 		<form id="networks" method="post" ng-app="networksApp" ng-controller="networksCtrl"> 
+ 		<form id="network" method="post" ng-app="networksApp" ng-controller="networksCtrl"> 
+ 		
+ 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons">
+ 			<tr>
+ 				<td style="height: 30px;"></td>
+ 			</tr>	
+			<tr >
+				<td data-ng-repeat="neuron in layer" class="neuron_place" align="center">
+					
+					<div id="n{{neuron.layer}}-{{neuron.order}}" class="neuron"></div>
+				
+				</td>
+			</tr>
+ 			<tr>
+ 				<td style="height: 30px;"></td>
+ 			</tr>			
+		</table>		
+ 		
+ 		
  		</form>
       </div>
 
@@ -59,14 +111,35 @@
 	<script src='js/classhidra-ajax.js'></script>  	
 	
 	<!--  ClassHidra Utils JavaScript -->
-	<script src='js/classhidra-bootstrap-utils.js'></script> 	 	 
+	<script src='js/classhidra-bootstrap-utils.js'></script> 
+	<script src='js/classhidra-models.js'></script> 
+	<script src='js/utils.js'></script> 	 	 
 	
 	
 	<script>
+	
+	var isPostRendered = false;
+	
 	var app = angular.module('networksApp', []);
-	app.controller('networksCtrl', function($scope, $http) {
+	app.controller('networksCtrl', function($scope, $http, $timeout) {
 
-
+		$scope.view = Object.create(GenericViewModel)
+		.extend({
+			post : function($http,newValue){
+			},
+			postDirty : function($http,newValue){
+			},
+		})
+		.set(
+				Object.create(GenericServerModel)
+				.extend({
+					worker:{},
+					network:{
+						neurons : [],
+						synapses : [] 
+				    }
+				})
+		);
 		
 		$http({
             method : 'GET',
@@ -74,8 +147,137 @@
 	    }).success(function(data, status, headers, config) {
 	    	document.getElementById("top_menu").innerHTML = data;
 	    	document.getElementById("top_menu_networks").className += " active";
+	    	
+			$http({
+	            method : 'GET',
+	            url : 'network-json'
+		    }).success(function(data, status, headers, config) {
+		    	$scope.view.init(data);
+		    	
+		    	$scope.$watch('view', function(newValue, oldValue) {
+		    		if(isPostRendered==false){
+							$timeout(function () {
+					    		postRendering($scope,$http);
+					    	});
+		    		}
+						
+		  		},true);
+
+		    	
+		    	
+		    	
+		    	
+		    });
+	    	
+	    	
 	    });
 	});
+	
+	
+	function postRendering($scope,$http){
+		
+		[].forEach.call(
+				document.getElementsByClassName('neuron'),
+				function(e){
+					e.addEventListener(
+						'click',
+						function() {
+						  	if(this.className){
+						  		if(this.className=='neuron'){
+						  			this.className='neuron-expand';
+						  			drawSynapses(this,$scope,true);
+						  		}else if(this.className=='neuron-expand'){
+						  			this.className='neuron';
+						  			drawSynapses(this,$scope,false);
+						  		}
+
+						  	}
+						},
+						false)
+				}
+		);
+		isPostRendered = true;
+		
+	}
+	
+	function drawSynapses(neuron,$scope,show){
+		if(neuron && neuron.id){
+			var id = neuron.id.replace("n","").replace("-",",");
+			var selected = [];
+			for(var i in $scope.view.model.network.synapses){
+				var synapse = $scope.view.model.network.synapses[i];
+				if(synapse.direction){
+					if(synapse.direction.indexOf(id)>-1)
+						selected.push(synapse);
+				}					
+			}
+			for(var i in selected){
+				var synapse = selected[i];
+				if(synapse.direction){
+					if(!synapse["drawcounter"])
+						synapse["drawcounter"] = 0;
+					var res = synapse.direction.split("|");
+					var from = document.getElementById("n"+res[0].replace(',','-'));
+					var to = document.getElementById("n"+res[1].replace(',','-'));
+					if(from && to){
+						var id_synapse = "s"+synapse.direction.replace(',','-').replace(',','-');
+
+						if(show){
+							if(synapse.drawcounter==0){
+								var rectFrom = from.getBoundingClientRect();
+								var rectTo = to.getBoundingClientRect();
+								
+								var rectFromX = rectFrom.left+rectFrom.width/2;
+								var rectFromY = rectFrom.top + rectFrom.height/2;
+								var rectToX = rectTo.left+rectTo.width/2;
+								var rectToY = rectTo.top + rectTo.height/2;
+								
+								var alfa = Math.atan((rectFromY - rectToY)/(rectFromX - rectToX));
+								var radius = 25;
+								
+								if(rectFromX <= rectTo.left){
+									rectFromX = rectFromX + Math.cos(alfa)*radius;
+									rectToX = rectToX - Math.cos(alfa)*radius;
+									rectFromY = rectFromY + Math.sin(alfa)*radius;
+									rectToY = rectToY  - Math.sin(alfa)*radius;
+								}else{
+									rectFromX = rectFromX - Math.cos(alfa)*radius;
+									rectToX = rectToX + Math.cos(alfa)*radius;
+									rectFromY = rectFromY - Math.sin(alfa)*radius;
+									rectToY = rectToY + Math.sin(alfa)*radius;									
+								}
+								
+								document.body.appendChild(
+									createLine(
+											id_synapse,
+											rectFromX + window.scrollX,
+											rectFromY + window.scrollY,
+											rectToX + window.scrollX,
+											rectToY + window.scrollY
+									)
+								);
+								
+							}
+							synapse.drawcounter=synapse.drawcounter+1;
+						}else
+							synapse.drawcounter=synapse.drawcounter-1;
+						
+						if(synapse.drawcounter<=0){
+							var element = document.getElementById(id_synapse);
+							if(element)
+								element.parentNode.removeChild(element);	
+							synapse.drawcounter=0;
+						}
+							
+						
+					}
+				}
+				
+			}
+		}
+		
+	}
+	
 	
 	</script>
   </body>

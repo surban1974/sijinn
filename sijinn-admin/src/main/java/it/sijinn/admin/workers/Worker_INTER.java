@@ -1,50 +1,34 @@
 package it.sijinn.admin.workers;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
+import it.classhidra.scheduler.common.generic_batch;
+import it.classhidra.scheduler.common.i_batch;
+import it.classhidra.serialize.Serialized;
 import it.sijinn.common.Network;
-import it.sijinn.common.Neuron;
-import it.sijinn.perceptron.algorithms.BPROP;
-import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
-import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 import it.sijinn.perceptron.utils.Utils;
 import it.sijinn.perceptron.utils.io.IStreamWrapper;
 import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.SimpleLineDataAggregator;
 
-import it.classhidra.scheduler.common.generic_batch;
-import it.classhidra.scheduler.common.i_batch;
-import it.classhidra.scheduler.scheduling.db.db_batch;
-import it.classhidra.serialize.Serialized;
-
-public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Serializable{
+public class Worker_INTER extends generic_batch implements i_batch, Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
 	final private String resource_training = "examples/resources/interpolation_training.txt";
 	final private String resource_test = "examples/resources/interpolation_test.txt";
 	
-	private float learningRate = 0.5f;
-	private float learningMomentum = 0.01f;
+
 	private float approximation = 0.001f;
 	private int maxSteps = 500000;
 
 	private Network network;
 	
-	private ITrainingStrategy trainingStrategy = new StochasticGradientDescent(
-			new BPROP().
-			setLearningRate(learningRate).
-			setLearningMomentum(learningMomentum)
-		).
-		setErrorFunction(new MSE());
+	private ITrainingStrategy trainingStrategy;
 	
 	private IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
 	private IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
@@ -114,29 +98,6 @@ public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Ser
 
 
 
-	public float getLearningRate() {
-		return learningRate;
-	}
-
-
-
-	public WorkerSGD_BPROP_INTER setLearningRate(float learningRate) {
-		this.learningRate = learningRate;
-		return this;
-	}
-
-
-
-	public float getLearningMomentum() {
-		return learningMomentum;
-	}
-
-
-
-	public WorkerSGD_BPROP_INTER setLearningMomentum(float learningMomentum) {
-		this.learningMomentum = learningMomentum;
-		return this;
-	}
 
 
 
@@ -146,7 +107,7 @@ public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Ser
 
 
 
-	public WorkerSGD_BPROP_INTER setApproximation(float approximation) {
+	public Worker_INTER setApproximation(float approximation) {
 		this.approximation = approximation;
 		return this;
 	}
@@ -159,19 +120,19 @@ public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Ser
 
 
 
-	public WorkerSGD_BPROP_INTER setMaxSteps(int maxSteps) {
+	public Worker_INTER setMaxSteps(int maxSteps) {
 		this.maxSteps = maxSteps;
 		return this;
 	}
 
 
-	@Serialized
+	@Serialized(children=true,depth=2)
 	public ITrainingStrategy getTrainingStrategy() {
 		return trainingStrategy;
 	}
 
 
-	public WorkerSGD_BPROP_INTER setTrainingStrategy(ITrainingStrategy trainingStrategy) {
+	public Worker_INTER setTrainingStrategy(ITrainingStrategy trainingStrategy) {
 		this.trainingStrategy = trainingStrategy;
 		return this;
 	}
@@ -183,7 +144,7 @@ public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Ser
 	}
 
 
-	public WorkerSGD_BPROP_INTER setStreamWrapper(IStreamWrapper streamWrapper) {
+	public Worker_INTER setStreamWrapper(IStreamWrapper streamWrapper) {
 		this.streamWrapper = streamWrapper;
 		return this;
 	}
@@ -194,7 +155,7 @@ public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Ser
 	}
 
 
-	public WorkerSGD_BPROP_INTER setStreamWrapperTest(IStreamWrapper streamWrapperTest) {
+	public Worker_INTER setStreamWrapperTest(IStreamWrapper streamWrapperTest) {
 		this.streamWrapperTest = streamWrapperTest;
 		return this;
 	}
@@ -211,19 +172,19 @@ public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Ser
 
 
 
-	@Serialized
+	@Serialized(children=true)
 	public Network getNetwork() {
 		return network;
 	}	
 	
-	public WorkerSGD_BPROP_INTER setNetwork(Network network) {
+	public Worker_INTER setNetwork(Network network) {
 		this.network = network;
 		return this;
 	}
 
 
 
-	public WorkerSGD_BPROP_INTER setReadLinesAggregator(IReadLinesAggregator readLinesAggregator) {
+	public Worker_INTER setReadLinesAggregator(IReadLinesAggregator readLinesAggregator) {
 		this.readLinesAggregator = readLinesAggregator;
 		return this;
 	}
@@ -235,8 +196,11 @@ public class WorkerSGD_BPROP_INTER extends generic_batch implements i_batch, Ser
 	}
 	
 	@Serialized(children=true)
-	public db_batch getDb(){
-		return db;
+	public int getExecutionState(){
+		if(db==null)
+			return i_batch.STATE_SCHEDULED;
+		else
+			return db.getSt_exec();
 	}
 
 
