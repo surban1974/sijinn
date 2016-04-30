@@ -1,0 +1,235 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.surban1974.sijinn</groupId>
+  <artifactId>sijinn-admin</artifactId>
+  <version>1.0.1-alfa</version>
+  <packaging>war</packaging>
+  <name>SIJINN - web admin tool</name>
+  <description>Web (jetty) administration tool</description>
+  	<issueManagement>
+		<url>https://github.com/surban1974/sijinn/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>  
+	
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2.0 (GPLv2)</name>
+			<url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>  
+  <build>
+    <resources>
+
+		<resource>
+ 			<directory>file:///C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+ 			<includes>
+ 				<include>config/messages/classhidra_messages.xml</include>
+ 				<include>it/classhidra/version.properties</include>
+ 				<include>it/classhidra/core/controller/resources/*.*</include>
+ 				<include>it/classhidra/framework/resources/**/*.*</include>
+ 				<include>it/classhidra/scheduler/*.properties</include>
+ 				<include>it/classhidra/scheduler/**/*.properties</include>
+ 				<include>it/classhidra/scheduler/**/*.sql</include>
+ 			</includes>
+ 			<excludes>
+ 				<exclude>config/**/*.*</exclude>
+ 			</excludes>
+ 		</resource>
+      
+    </resources>
+
+    <plugins>
+    
+		<plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                        
+                        	<pluginExecution>
+                                 <pluginExecutionFilter>
+                                       <groupId>org.apache.maven.plugins</groupId>
+                                       <artifactId>maven-compiler-plugin</artifactId>
+                                       <versionRange>[1.0.0,)</versionRange>
+                                     <goals>
+                                         <goal>compile</goal>
+                                     </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                      <ignore />
+                                 </action>
+                             </pluginExecution>
+
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-war-plugin</artifactId>
+                                    <versionRange>[2.0,)</versionRange>
+                                    <goals>
+                                        <goal>war</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute>
+                                        <runOnConfiguration>true</runOnConfiguration>
+                                        <runOnIncremental>true</runOnIncremental>
+                                    </execute>
+                                </action>
+                            </pluginExecution>
+
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-install-plugin</artifactId>
+                                    <versionRange>[2.5.0,)</versionRange>
+                                    <goals>
+                                        <goal>install</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute>
+                                        <runOnConfiguration>true</runOnConfiguration>
+                                        <runOnIncremental>true</runOnIncremental>
+                                    </execute>
+                                </action>
+                            </pluginExecution>
+
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
+                </configuration>
+            </plugin>    
+    
+    
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+		    <artifactId>build-helper-maven-plugin</artifactId>
+		    <version>1.7</version>
+		    <executions>
+		        <execution>
+		            <phase>generate-sources</phase>
+		            <goals>
+		            	<goal>add-source</goal>
+		            </goals>
+		            <configuration>
+		                <sources>
+		                    <source>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/sijinn/sijinn/src/main/java</source>
+		                    <source>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</source>
+		                </sources>
+		            </configuration>
+		        </execution>
+		    </executions>
+		</plugin>    
+    
+    
+      	<plugin>
+	        <artifactId>maven-war-plugin</artifactId>
+	        <version>2.6</version>
+	        <configuration>
+	          	<warName>sijinn-admin</warName>
+	          	<warSourceDirectory>src/main/webapp</warSourceDirectory>
+	          	<packagingExcludes>WEB-INF/lib/servlet-api-2.4.jar, WEB-INF/lib/jsp-api-2.2.jar</packagingExcludes>
+	          	<webResources>
+	          		<resource>
+						<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+						<includes>
+								<include>it/**/*.*</include>
+		            			<include>external_loaders/**/*.java</include>
+						</includes>      
+				 		<excludes>
+				 			<exclude>application/**/*.*</exclude>
+				 			<exclude>config/**/*.*</exclude>
+				 			<exclude>examples/**/*.*</exclude>
+				 			<exclude>test/**/*.*</exclude>
+							<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
+				            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
+				            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
+				            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
+				            <exclude>it/classhidra/plugin/**/*.java</exclude>
+						</excludes> 
+						                  
+	                    <targetPath>WEB-INF/classes</targetPath>	
+                    </resource>          	
+	          	</webResources>
+	        </configuration>
+      	</plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+		 		<excludes>
+					<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
+		            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
+		            <exclude>it/classhidra/plugin/**/*.java</exclude>
+				</excludes>
+		                  
+				<includes>
+					<include>it/**/*.java</include>
+		            <include>external_loaders/**/*.java</include>
+		            <include>pool/**/*.java</include> 
+		            <include>stubs/**/*.java</include>
+		            <include>neohort/**/*.java</include>
+	     
+				</includes>        
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+
+
+
+    </plugins>
+  </build>
+  
+  <dependencies>  
+		
+   		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.2</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>com.github.surban1974.neohort</groupId>
+			<artifactId>neoHort5</artifactId>
+			<version>5.2.5.2</version>
+		</dependency>			
+
+		<dependency>
+			<groupId>net.htmlparser.jericho</groupId>
+			<artifactId>jericho-html</artifactId>
+			<version>2.3</version>
+		</dependency>
+		
+	  <dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-api</artifactId>
+	    <version>2.5</version>
+	  </dependency>
+	  <dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+	    <version>2.5</version>
+	  </dependency>
+	 <dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.12</version>
+	 </dependency>	
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.json</artifactId>
+    <version>1.0.4</version>
+</dependency>    	
+  </dependencies>  
+</project>
