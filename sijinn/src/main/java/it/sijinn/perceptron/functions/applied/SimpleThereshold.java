@@ -33,4 +33,9 @@ public class SimpleThereshold implements IFunctionApplied {
 	public String getDefinition(){
 		return this.getClass().getSimpleName()+"{"+threshold+"}";
 	}
+	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 }

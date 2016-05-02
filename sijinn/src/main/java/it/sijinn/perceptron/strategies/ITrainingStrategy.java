@@ -21,4 +21,6 @@ public interface ITrainingStrategy {
 	IErrorFunctionApplied getErrorFunction();
 	String toSaveString(String prefix);
 	String getDefinition();
+	ITrainingStrategy setErrorFunction(IErrorFunctionApplied errorFunction);
+	String getId();
 }

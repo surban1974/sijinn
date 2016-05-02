@@ -24,6 +24,10 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 	private int parallelLimit=0; 
 	private long parallelTimeout=1000;
 	
+	public BatchGradientDescent(){
+		super();
+		parallelLimit=0;
+	}
 
 	public BatchGradientDescent(ITrainingAlgorithm _algorithm){
 		super(_algorithm);

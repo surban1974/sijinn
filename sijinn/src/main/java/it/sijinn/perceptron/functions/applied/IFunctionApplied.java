@@ -15,4 +15,5 @@ public interface IFunctionApplied extends Serializable{
 	float execution(float[] param);
 	float flatspot();
 	String getDefinition();
+	String getId();
 }

@@ -3,8 +3,10 @@ package it.sijinn.common;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -13,6 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.functions.generator.IGenerator;
@@ -209,6 +212,18 @@ public class Network extends Neuron implements Serializable{
 		}
 		
 		return this;
+	}
+	
+	public Network updateActivationFunctions(IFunctionApplied function){
+		for(List<Neuron> currentLayer: this.layers){
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null && neuron.getLayer()>0)
+					neuron.setFunction(function);
+				
+			}
+		}
+		return this;
+		
 	}
 	
 	
@@ -665,26 +680,7 @@ public class Network extends Neuron implements Serializable{
 		if(this.layers==null || this.layers.size()<2)
 			return new float[0];
 
-/*		
-		for(int i=0;i<input.length;i++){
-			if(this.layers.get(0).size()>i){
-				if(this.layers.get(0).get(i) instanceof Network){
-					
-				}
-				else this.layers.get(0).get(i).setOutput(input[i]);
-			}
-		}
-		if(output!=null){
-			for(int i=0;i<output.length;i++){
-				if(this.layers.get(this.layers.size()-1).size()>i)
-					this.layers.get(this.layers.size()-1).get(i).setTarget(output[i]);
-			}
-		}		
-*/		
-		
 
-
-		
 
 		
 		setInputValues(0, input);
@@ -1016,8 +1012,86 @@ public class Network extends Neuron implements Serializable{
 
 		return network;
 	}
-
 	
+	
+	public static ITrainingAlgorithm createAlgorithmById(String algorithm, Logger logger){
+		ITrainingAlgorithm trainingAlgorithm = null;
+		String input = algorithm;
+		try{
+			if(algorithm!=null && !algorithm.trim().equals("")){
+				if(algorithm.indexOf("algorithm=")==0)
+					algorithm = algorithm.replace("algorithm=", "");
+				if(algorithm.indexOf("{")==-1){
+					if(algorithm.indexOf(".")>-1)
+						trainingAlgorithm = (ITrainingAlgorithm)Class.forName(algorithm).newInstance();
+					else
+						trainingAlgorithm = (ITrainingAlgorithm)Class.forName("it.sijinn.perceptron.algorithms."+algorithm).newInstance();
+				}else{
+					String parameters = algorithm.substring(algorithm.indexOf("{")+1, algorithm.lastIndexOf("}"));
+					algorithm = algorithm.substring(0, algorithm.indexOf("{"));
+					StringTokenizer stp = new StringTokenizer(parameters, "|");
+					List<Float> param = new ArrayList<Float>();
+					while(stp.hasMoreTokens())
+						param.add(Float.valueOf(stp.nextToken()));
+					Float[] fParam = new Float[param.size()];
+					fParam = param.toArray(fParam);
+	
+					
+					Class<?> clazz = null;
+					if(algorithm.indexOf(".")>-1)
+						clazz = (Class<?>)Class.forName(algorithm).asSubclass(ITrainingAlgorithm.class);
+					else
+						clazz = (Class<?>)Class.forName("it.sijinn.perceptron.algorithms."+algorithm);
+					
+					Constructor<?> clazzConstructor = null;
+					for(Constructor<?> constructor: (Constructor<?>[])clazz.getConstructors()){
+						if(constructor.getParameterTypes().length==fParam.length){
+							boolean isCorrect=true;
+							for(Class<?> paramClass: constructor.getParameterTypes())
+								isCorrect&=(paramClass.isPrimitive() &&  paramClass.getName().equals("float"));
+							if(isCorrect){
+								clazzConstructor = constructor;
+								break;
+							}
+						}
+					}
+					
+					if(clazzConstructor!=null)
+						trainingAlgorithm = (ITrainingAlgorithm)clazzConstructor.newInstance((Object[])fParam);
+					else{
+						if(logger!=null)
+							logger.error("Training Algorithm instance Error: properties=["+input+"] is incomplet for initialization.");
+						return null;
+					}
+				}	
+			}
+		}catch(Exception e){
+			if(logger!=null)
+				logger.error(e);
+			return null;
+		}
+		return trainingAlgorithm;		
+	}
+
+	public static ITrainingStrategy createStrategyById(String strategy, Logger logger){
+		ITrainingStrategy trainingStrategy = null;
+		try{
+			if(strategy!=null && !strategy.trim().equals("")){
+				if(strategy.indexOf(";")==0)
+					strategy = strategy.substring(0, strategy.indexOf(";"));
+
+				if(strategy.indexOf(".")>-1)
+					trainingStrategy = (ITrainingStrategy)Class.forName(strategy).newInstance();
+				else
+					trainingStrategy = (ITrainingStrategy)Class.forName("it.sijinn.perceptron.strategies."+strategy).newInstance();
+			}
+		}catch(Exception e){
+			if(logger!=null)
+				logger.error(e);
+			return null;
+		}
+		return trainingStrategy;		
+	}	
 	
 	
 }

@@ -29,4 +29,9 @@ public class SimpleSin implements IFunctionApplied {
 	public String getDefinition(){
 		return this.getClass().getSimpleName();
 	}
+	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 }

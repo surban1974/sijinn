@@ -5,6 +5,10 @@ public class SMA implements IDAFloatFunction {
 	private Float _first=null;
 	private long counter=0;
 	
+	public SMA(){
+		super();
+	}
+	
 	@Override
 	public float apply(float aggregator, float value) {
 		if(_first==null || counter==0)
@@ -27,5 +31,9 @@ public class SMA implements IDAFloatFunction {
 		_first=null;
 		
 	}
-
+	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 }

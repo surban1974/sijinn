@@ -93,6 +93,13 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	public RPROP(){
 		super();
 	}
+	public RPROP(float etaNegative, float etaPositive, float minDelta, float maxDelta){
+		super();
+		this.etaNegative = etaNegative;
+		this.etaPositive = etaPositive;
+		this.minDelta = minDelta;
+		this.maxDelta = maxDelta;
+	}
 	
 	@Override
 	protected ISynapseProperty instanceProperty() {
@@ -410,8 +417,9 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 
 	public String getDefinition(){
-		return "algorithm="+this.getClass().getSimpleName()+","+etaNegative+","+etaPositive+","+minDelta+","+maxDelta+
-				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
+//		return "algorithm="+this.getClass().getSimpleName()+","+etaNegative+","+etaPositive+","+minDelta+","+maxDelta+
+//				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
+		return "algorithm="+this.getClass().getSimpleName()+"{"+etaNegative+"|"+etaPositive+"|"+minDelta+"|"+maxDelta+"}";
 
 	}
 

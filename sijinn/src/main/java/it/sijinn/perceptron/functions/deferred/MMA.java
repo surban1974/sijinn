@@ -4,6 +4,10 @@ public class MMA implements IDAFloatFunction {
 
 	private long counter=0;
 	
+	public MMA(){
+		super();
+	}
+	
 	@Override
 	public float apply(float aggregator, float value) {
 		counter++;
@@ -23,4 +27,8 @@ public class MMA implements IDAFloatFunction {
 		counter=0;
 	}
 
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}	
 }

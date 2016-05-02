@@ -112,4 +112,9 @@ public abstract class TrainAlgorithm implements ITrainingAlgorithm {
 		this.deferredAgregateFunction = deferredAgregateFunction;
 		return this;
 	}
+	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 }

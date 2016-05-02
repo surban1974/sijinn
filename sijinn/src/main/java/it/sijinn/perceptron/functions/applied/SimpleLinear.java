@@ -33,4 +33,9 @@ public class SimpleLinear implements IFunctionApplied {
 	public String getDefinition(){
 		return this.getClass().getSimpleName()+"{"+slope+"}";
 	}
+	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 }

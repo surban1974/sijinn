@@ -13,6 +13,10 @@ public abstract class TrainingStrategy implements ITrainingStrategy {
 	protected IStrategyListener listener;
 	
 
+	public TrainingStrategy(){
+		super();
+		this.errorFunction = new MSE();
+	}
 
 	public TrainingStrategy(ITrainingAlgorithm _algorithm){
 		super();
@@ -57,4 +61,8 @@ public abstract class TrainingStrategy implements ITrainingStrategy {
 		return result;
 	}
 
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 }

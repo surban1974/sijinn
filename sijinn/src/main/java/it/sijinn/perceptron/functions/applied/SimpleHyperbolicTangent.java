@@ -36,4 +36,9 @@ public class SimpleHyperbolicTangent implements IFunctionApplied {
 		return this.getClass().getSimpleName();
 	}
 	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
+	
 }

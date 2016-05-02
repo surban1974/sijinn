@@ -10,6 +10,9 @@ import it.sijinn.perceptron.utils.parser.PairIO;
 
 public class StochasticGradientDescent extends OnlineGradientDescent implements ITrainingStrategy { 
 	
+	public StochasticGradientDescent(){
+		super();
+	}
 	
 	public StochasticGradientDescent(ITrainingAlgorithm _algorithm){
 		super(_algorithm);
@@ -66,5 +69,7 @@ public class StochasticGradientDescent extends OnlineGradientDescent implements 
 		if(this.listener!=null)
 			this.listener.setTrainingStrategy(this);
 		return this;
-	}		
+	}	
+	
+
 }

@@ -71,6 +71,17 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 	}
 	
+	
+	public QPROP(){
+		super();
+	}
+	public QPROP(float learningRate, float decay, float epsilon){
+		super();
+		this.learningRate = learningRate;
+		this.decay = decay;
+		this.epsilon = epsilon;
+	}
+	
 	@Override
 	protected ISynapseProperty instanceProperty() {
 		return new QPROPSynapseProperty();
@@ -332,8 +343,9 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 	@Override
 	public String getDefinition() {
-		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+decay+","+epsilon+
-				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
+//		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+decay+","+epsilon+
+//				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
+		return "algorithm="+this.getClass().getSimpleName()+"{"+learningRate+"|"+decay+"|"+epsilon+"}";		
 	}
 
 	public float getLearningRate() {

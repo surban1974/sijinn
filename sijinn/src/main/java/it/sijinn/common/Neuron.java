@@ -130,7 +130,8 @@ public class Neuron implements Serializable{
 			for(Synapse synapse:children){
 				synapse.setWeight(0f);
 				if(clearProperties && synapse.getProperty()!=null)
-					synapse.getProperty().clear();
+//					synapse.getProperty().clear();
+					synapse.setProperty(null);
 			}
 		}
 		return true;
@@ -141,7 +142,8 @@ public class Neuron implements Serializable{
 			for(Synapse synapse:children){
 				synapse.setWeight(weight);
 				if(clearProperties && synapse.getProperty()!=null)
-					synapse.getProperty().clear();
+//					synapse.getProperty().clear();
+					synapse.setProperty(null);
 			}
 		}
 		return true;
@@ -154,7 +156,8 @@ public class Neuron implements Serializable{
 			for(Synapse synapse:children){
 				synapse.setWeight(weightGenerator.generate(synapse.getFrom(), synapse.getTo()));
 				if(clearProperties && synapse.getProperty()!=null)
-					synapse.getProperty().clear();
+//					synapse.getProperty().clear();
+					synapse.setProperty(null);
 			}
 		}
 		return true;
@@ -331,8 +334,10 @@ public class Neuron implements Serializable{
 			}
 			if(properties!=null)
 				return create(_network, properties, logger);
-			else
-				logger.error("Neuron instance Error: xml node is incomplet for initialization.");
+			else{
+				if(logger!=null)
+					logger.error("Neuron instance Error: xml node is incomplet for initialization.");
+			}
 		}
 		return null;
 	}
@@ -362,18 +367,21 @@ public class Neuron implements Serializable{
 			if(layer>-1 && order>-1)
 				return new Neuron(_network, functionApplied,layer,order,bias);
 			else{
-				logger.error("Neuron instance Error: properties=["+properties+"] is incomplet for initialization.");
+				if(logger!=null)
+					logger.error("Neuron instance Error: properties=["+properties+"] is incomplet for initialization.");
 				return null;
 			}
 			
 		}catch(Exception e){
-			logger.error(e);
+			if(logger!=null)
+				logger.error(e);
 			return null;
 		}
 	}	
 	
 	public static IFunctionApplied create(String function, Logger logger){
 		IFunctionApplied functionApplied = null;
+		String input = function;
 		try{
 			if(function!=null && !function.trim().equals("")){
 				if(function.indexOf("{")==-1){
@@ -414,16 +422,22 @@ public class Neuron implements Serializable{
 					if(clazzConstructor!=null)
 						functionApplied = (IFunctionApplied)clazzConstructor.newInstance((Object[])fParam);
 					else{
-						logger.error("FunctionApplied instance Error: properties=["+function+"] is incomplet for initialization.");
+						if(logger!=null)
+							logger.error("FunctionApplied instance Error: properties=["+input+"] is incomplet for initialization.");
 						return null;
 					}
 				}	
 			}
 		}catch(Exception e){
-			logger.error(e);
+			if(logger!=null)
+				logger.error(e);
 			return null;
 		}
 		return functionApplied;
+	}
+
+	public Logger obtainLogger() {
+		return logger;
 	}
 
 

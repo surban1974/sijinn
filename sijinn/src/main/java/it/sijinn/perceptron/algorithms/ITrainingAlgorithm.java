@@ -13,4 +13,5 @@ public interface ITrainingAlgorithm {
 	IDAFloatFunction getDeferredAgregateFunction();
 	ITrainingAlgorithm setDeferredAgregateFunction(IDAFloatFunction deferredAgregateFunction);
 	String getDefinition();
+	String getId();
 }

@@ -18,6 +18,10 @@ import it.sijinn.perceptron.utils.parser.SimpleArrayDataAggregator;
 
 public class OnlineGradientDescent extends TrainingStrategy implements ITrainingStrategy { 
 	
+	public OnlineGradientDescent(){
+		super();
+	}
+	
 	public OnlineGradientDescent(ITrainingAlgorithm _algorithm){
 		super(_algorithm);
 	}
@@ -63,7 +67,8 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 			return -1;
 	
 		
-		final IDataReader reader = new SimpleStreamReader(streamWrapper);		return apply(network, reader, dataAggregator);
+		final IDataReader reader = new SimpleStreamReader(streamWrapper);		
+		return apply(network, reader, dataAggregator);
 		
 
 	}
@@ -134,5 +139,7 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 			this.listener.setTrainingStrategy(this);
 		return this;
 	}	
+	
+
 	
 }

@@ -40,4 +40,9 @@ public class SimpleGaussian implements IFunctionApplied {
 	public float flatspot() {
 		return 0;
 	}
+	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 }

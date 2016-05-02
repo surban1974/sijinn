@@ -57,6 +57,16 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			return "{"+sigma+","+delta+","+aggregated+"}";
 		}		
 	}
+
+	
+	public BPROP(){
+		super();
+	}
+	public BPROP(float learningRate, float learningMomentum){
+		super();
+		this.learningRate = learningRate;
+		this.learningMomentum = learningMomentum;
+	}
 	
 	@Override
 	protected ISynapseProperty instanceProperty() {
@@ -290,8 +300,10 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	}
 
 	public String getDefinition(){
-		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+learningMomentum+
-				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
+//		return "algorithm="+this.getClass().getSimpleName()+","+learningRate+","+learningMomentum+
+//				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
+		return "algorithm="+this.getClass().getSimpleName()+"{"+learningRate+"|"+learningMomentum+"}";
+
 	}
 
 	public BPROP setLearningRate(float learningRate) {

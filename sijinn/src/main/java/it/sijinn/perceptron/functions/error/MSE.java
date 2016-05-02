@@ -19,5 +19,10 @@ public class MSE implements IErrorFunctionApplied {
 	public String getDefinition(){
 		return "errorfunction="+this.getClass().getSimpleName();
 	}	
+	
+	@Override
+	public String getId(){
+		return this.getClass().getSimpleName();
+	}
 
 }
