@@ -83,9 +83,9 @@ GenericViewModel.extend(
 		postDirty : function($http,newValue){
 		},		
 		
-		getDirty : function(oldModel){
+		getDirty : function(oldModel,exclude){
 			var result = [];
-			dirtyModelElements(this,oldModel,result);
+			dirtyModelElements(this,oldModel,result,null,exclude);
 			return result;
 		},
 		
@@ -135,16 +135,22 @@ function isEmpty(obj) {
     return true && JSON.stringify(obj) === JSON.stringify({});
 }
 
-function dirtyModelElements(newModel,oldModel, array, prefix){
+function dirtyModelElements(newModel,oldModel, array, prefix, exclude){
 	for(var property in newModel){
 	
 			if(typeof newModel[property] === 'object')
-				dirtyModelElements(newModel[property],oldModel[property],array,((!prefix || prefix=='')?'':prefix+'.')+property);
+				dirtyModelElements(newModel[property],oldModel[property],array,((!prefix || prefix=='')?'':prefix+'.')+property,exclude);
 			else{	
-				if(newModel[property] != oldModel[property]){
-					var data = {};
-					data[((!prefix || prefix=='')?'':prefix+'.')+property] = newModel[property];
-					array.push(data);
+				var exc=false;
+				if(exclude && typeof exclude === 'function')
+					exc = exclude(property);
+				
+				if(!exc){
+					if(newModel[property] != oldModel[property]){
+						var data = {};
+						data[((!prefix || prefix=='')?'':prefix+'.')+property] = newModel[property];
+						array.push(data);
+					}
 				}
 			}
 	}

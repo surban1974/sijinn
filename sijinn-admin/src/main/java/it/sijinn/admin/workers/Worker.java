@@ -7,32 +7,28 @@ import it.classhidra.scheduler.common.generic_batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.serialize.Serialized;
 import it.sijinn.common.Network;
-import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.sijinn.perceptron.utils.Utils;
 import it.sijinn.perceptron.utils.io.IStreamWrapper;
-import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
-import it.sijinn.perceptron.utils.parser.SimpleLineDataAggregator;
 
-public class Worker_INTER extends generic_batch implements i_batch, Serializable{
+public class Worker extends generic_batch implements i_batch, Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	final private String resource_training = "examples/resources/interpolation_training.txt";
-	final private String resource_test = "examples/resources/interpolation_test.txt";
+	
+//	final private String resource_test = "examples/resources/interpolation_test.txt";
 	
 
-	private float approximation = 0.001f;
+	private float approximation = 0.0005f;
 	private int maxSteps = 500000;
 
 	private Network network;
 	
 	private ITrainingStrategy trainingStrategy;
 	
-	private IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
-	private IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
-	private IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");	
+	private IStreamWrapper streamWrapper;
+//	private IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
+	private IReadLinesAggregator readLinesAggregator;	
 	
 	private float delta=0;
 	private int step=0;
@@ -51,7 +47,7 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 					trainingStrategy,
 					readLinesAggregator
 					);
-			System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
+//			System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
 			
 			while(step<maxSteps && delta>approximation && !forcedStop){
 				if(delta>approximation){
@@ -59,8 +55,8 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 							streamWrapper,
 							trainingStrategy,
 							readLinesAggregator);
-					if(step % 1000 == 0)
-						System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
+//					if(step % 1000 == 0)
+//						System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
 				}else
 					break;
 				step++;
@@ -68,14 +64,14 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 			if(forcedStop)
 				forcedStop=false;
 			
-			System.out.println("Time: " + (new Date().getTime()-startTime)/1000+"s");
-			System.out.println("Steps: " + step);
-			System.out.println("MSE: " + delta);
+//			System.out.println("Time: " + (new Date().getTime()-startTime)/1000+"s");
+//			System.out.println("Steps: " + step);
+//			System.out.println("MSE: " + delta);
 			
 			
 			
-			final float error_test = network.test(streamWrapperTest, readLinesAggregator, new MSE());
-			System.out.println("MSE Test: " + error_test);
+//			final float error_test = network.test(streamWrapperTest, readLinesAggregator, new MSE());
+//			System.out.println("MSE Test: " + error_test);
 			
 
 
@@ -87,6 +83,10 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 		return null;
 		
 
+	}
+	
+	public Worker clear(){
+		return this;
 	}
 
 
@@ -107,7 +107,7 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 
 
 
-	public Worker_INTER setApproximation(float approximation) {
+	public Worker setApproximation(float approximation) {
 		this.approximation = approximation;
 		return this;
 	}
@@ -120,7 +120,7 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 
 
 
-	public Worker_INTER setMaxSteps(int maxSteps) {
+	public Worker setMaxSteps(int maxSteps) {
 		this.maxSteps = maxSteps;
 		return this;
 	}
@@ -132,7 +132,7 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 	}
 
 
-	public Worker_INTER setTrainingStrategy(ITrainingStrategy trainingStrategy) {
+	public Worker setTrainingStrategy(ITrainingStrategy trainingStrategy) {
 		this.trainingStrategy = trainingStrategy;
 		return this;
 	}
@@ -144,21 +144,12 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 	}
 
 
-	public Worker_INTER setStreamWrapper(IStreamWrapper streamWrapper) {
+	public Worker setStreamWrapper(IStreamWrapper streamWrapper) {
 		this.streamWrapper = streamWrapper;
 		return this;
 	}
 
 
-	public IStreamWrapper getStreamWrapperTest() {
-		return streamWrapperTest;
-	}
-
-
-	public Worker_INTER setStreamWrapperTest(IStreamWrapper streamWrapperTest) {
-		this.streamWrapperTest = streamWrapperTest;
-		return this;
-	}
 
 
 	public float getDelta() {
@@ -176,14 +167,14 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 		return network;
 	}	
 	
-	public Worker_INTER setNetwork(Network network) {
+	public Worker setNetwork(Network network) {
 		this.network = network;
 		return this;
 	}
 
 
 
-	public Worker_INTER setReadLinesAggregator(IReadLinesAggregator readLinesAggregator) {
+	public Worker setReadLinesAggregator(IReadLinesAggregator readLinesAggregator) {
 		this.readLinesAggregator = readLinesAggregator;
 		return this;
 	}
@@ -201,6 +192,19 @@ public class Worker_INTER extends generic_batch implements i_batch, Serializable
 		else
 			return db.getState();
 	}
+	
+	public void setExecutionState(int Int){
+	}
+
+	public Worker setStep(int step) {
+		this.step = step;
+		return this;
+	}
+
+	public Worker setDelta(float delta) {
+		this.delta = delta;
+		return this;
+	}	
 
 
 
