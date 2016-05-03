@@ -135,21 +135,24 @@ function isEmpty(obj) {
     return true && JSON.stringify(obj) === JSON.stringify({});
 }
 
-function dirtyModelElements(newModel,oldModel, array, prefix, exclude){
+function dirtyModelElements(newModel, oldModel, array, prefix, exclude){
 	for(var property in newModel){
 	
-			if(typeof newModel[property] === 'object')
-				dirtyModelElements(newModel[property],oldModel[property],array,((!prefix || prefix=='')?'':prefix+'.')+property,exclude);
-			else{	
+			if(typeof newModel[property] === 'object'){
+				if(newModel[property] && oldModel[property])
+					dirtyModelElements(newModel[property],oldModel[property],array,((!prefix || prefix=='')?'':prefix+'.')+property,exclude);
+			}else{	
 				var exc=false;
 				if(exclude && typeof exclude === 'function')
 					exc = exclude(property);
 				
 				if(!exc){
-					if(newModel[property] != oldModel[property]){
-						var data = {};
-						data[((!prefix || prefix=='')?'':prefix+'.')+property] = newModel[property];
-						array.push(data);
+					if(newModel[property] && oldModel[property]){
+						if(newModel[property] != oldModel[property]){
+							var data = {};
+							data[((!prefix || prefix=='')?'':prefix+'.')+property] = newModel[property];
+							array.push(data);
+						}
 					}
 				}
 			}

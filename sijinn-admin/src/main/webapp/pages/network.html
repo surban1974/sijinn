@@ -38,6 +38,8 @@
 		cursor: pointer;
       }
       
+     
+      
       div.neuron-expand{
       	color: white;
 		background-color: white;
@@ -115,26 +117,49 @@
 			<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 90px; ">
 	 		<div class="form-group" style="padding-top: 10px">
 	 			<table>
-			 		<tr>	
-				 		<td class="label_datas"  >
-				  			<label>Type:</label>	
-				  		</td>
-				  		<td>			  			
-				  			<span>Perseptron</span>
-				  		</td>
+			 		<tr>
+			 			<td>
+			 				<table>
+								<tr>	
+							 		<td class="label_datas"  >
+							  			<label>Type:</label>	
+							  		</td>
+							  		<td>			  			
+							  			<span>Perseptron</span>
+							  		</td>
+							  	</tr>
+							  </table>
+						</td>	  		
 				  	</tr>
-				  	<tr>	
-				  		<td class="label_datas">	
-					  		<label >Activation functions:</label>
-					  	</td>
-					  	<td >
-					  		<select id="activationFunctions" class="bs-select form-control" >
-		    					<option value="SimpleGaussian">Gaussian</option>
-						    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
-						    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
-						    	<option value="SimpleSin">Sin</option>
-							</select>
-					  	</td>	
+				  	<tr>
+			 			<td>
+			 				<table>
+								<tr>	
+							  		<td class="label_datas">	
+								  		<label >Activation functions:</label>
+								  	</td>
+								  	<td >
+								  		<select id="activationFunctions" class="bs-select form-control" >
+					    					<option value="SimpleGaussian">Gaussian</option>
+									    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
+									    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
+									    	<option value="SimpleSin">Sin</option>
+										</select>
+								  	</td>
+							  		<td class="label_datas">	
+								  		<label >Layers:</label>
+								  	</td>
+							  		<td class="label_datas">	
+								  		<span >{{view.model.network.neurons.length}}</span>
+								  	</td>
+					 				<td >
+					 					<button type="button" id="addLayerButton" data-toggle="button" data-loading-text="+" class="btn btn-primary" autocomplete="off">
+										  	+
+										</button>
+					 				</td>								  									  		
+								</tr>
+							</table>
+						</td>										  	
 			  		</tr>
 			  	</table>	
 	
@@ -186,10 +211,9 @@
 							<table>
 								<tr>
 							 		<td >
-										<button type="button" id="dataButton" data-toggle="button" class="btn btn-info" autocomplete="off">
+										<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" autocomplete="off">
 										  	Training Data
-										</button>
-							 		
+										</button>							 		
 										<button type="button" id="loadButton" data-toggle="button" data-loading-text="Training..." class="btn btn-primary" autocomplete="off">
 										  	Start training
 										</button>
@@ -223,44 +247,66 @@
  		
 
 		</div> 		
- 		<div>		
- 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons">
- 			<cycle>
- 			<tr>
- 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center">
- 					<div data-ng-if="neuron.layer == 0">
- 						<input id="i{{neuron.layer}}-{{neuron.order}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
- 					</div>
- 				</td>
- 			</tr>	
-			<tr >
-				<td data-ng-repeat="neuron in layer" class="neuron_place" align="center" >
-					<div id="n{{neuron.layer}}-{{neuron.order}}" class="neuron"></div>
-				
-				</td>
-			</tr>
- 			<tr>
- 				<td data-ng-repeat="neuron in layer" style="height: 30px;" align="center">
- 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse" style="position: relative;display: block;" >
- 						{{neuron.output}}
- 					</div>
- 				
- 				</td>
- 			</tr>	
-		</table>
-		<table style="width:100%">
-			<tr>
- 				<td align="center">
-					<button type="button" id="execButton" data-toggle="button" data-loading-text="Execution..." class="btn btn-primary" autocomplete="off">
-					  	Calculate
-					</button>
-				</td>					
-			</tr>
-		</table>	
+ 		<div resize>		
+	 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0">
+	
+	 			<tr>
+	 				<td style="width:60px; background-color: white; border-radius:3px;" align="center" data-ng-if="$index == 0">
+						<b>Layers</b>
+					</td>
+					<td style="width:60px; border-right: 1px solid silver;" align="center" data-ng-if="$index > 0"></td>
+	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center">
+	 					<div data-ng-if="neuron.layer == 0">
+	 						<input id="i{{neuron.position}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
+	 					</div>
+	 				</td>
+	 				<td style="width:60px; background-color: white; border-radius:3px;" align="center" data-ng-if="$index == 0">
+						<b>Neurons</b>
+					</td>
+	 				<td style="width:60px; border-left: 1px solid silver;" align="center" data-ng-if="$index > 0"></td>
+	 			</tr>	
+				<tr >
+					<td style="width:60px; border-right: 1px solid silver;" >
+						<span data-ng-if="$index == 0"><b>input</b></span>
+						<span data-ng-if="$index == view.model.network.neurons.length-1"><b>output</b></span>
+	 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger" autocomplete="off"
+	 						ng-click="removeLayer($index)"
+	 					>
+						  	x
+						</button>						
+					</td>
+					<td data-ng-repeat="neuron in layer" class="neuron_place" align="center" >
+						<div id="n{{neuron.position}}" class="neuron" data-toggle="tooltip" title="..."></div>
+					</td>
+					<td style="width:60px; border-left: 1px solid silver;" align="right">
+	 					<button  type="button" data-toggle="button" data-loading-text="X" class="btn btn-primary" autocomplete="off"
+	 						ng-click="addNeuron($index)"
+	 					>
+						  	+
+						</button>						
+					</td>					
+				</tr>
+	 			<tr data-ng-if="$index == view.model.network.neurons.length-1">
+	 				<td style="width:60px; " >	 				
+	 					<button  type="button" id="execButton" data-toggle="button" data-loading-text=">" class="btn btn-primary" autocomplete="off">
+						  	>
+						</button>
+	 				</td>
+	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" align="center">
+	 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse" style="position: relative;display: block;" >
+	 						{{neuron.output}}
+	 					</div>
+	 				
+	 				</td>
+	 				<td style="width:60px; " ></td>
+	 			</tr>	
+	
+			</table>	
 		</div>
+		
 		<cycle data-ng-repeat="synapse in view.model.network.synapses">
 		
-			<div id="s{{synapse.direction}}" class="synapse">{{synapse.weight}}</div>
+			<div id="sl{{synapse.direction}}" class="synapse">{{synapse.weight}}</div>
 		
 		</cycle>	
  		
@@ -288,10 +334,12 @@
 	
 	<script>
 	
-	var isPostRendered = false;
+var isPostRendered = false;
+var isAddEvents = false;
 	
-	var app = angular.module('networksApp', []);
-	app.controller('networksCtrl', function($scope, $http, $timeout) {
+var app = angular.module('networksApp', []);
+app.controller('networksCtrl', 	
+	function($scope, $http, $timeout) {
 
 		$scope.view = Object.create(GenericViewModel)
 		.extend({
@@ -315,6 +363,63 @@
 				    }
 				})
 		);
+		
+		$scope.removeLayer = function(layer) {
+			if($scope.view.model.worker.executionState!=1){
+				if(confirm('Are you sure to remove the layer #'+layer+'?')){
+					$http
+					.post('network-removelayer',JSON.stringify({layer:layer}))
+					.success(function(data, status, headers, config) { 
+				    	isPostRendered=false;
+				    	cleanSynapses($scope);
+				    	$scope.view.model.network = {
+							neurons : [],
+							synapses : [] 
+					    };
+				    	$scope.view.init(data);
+	
+					});	
+				}
+			}
+	    };
+	    
+	    $scope.addNeuron = function(layer) {
+	    	if($scope.view.model.worker.executionState!=1){
+				$http
+				.post('network-addneuron',JSON.stringify({layer:layer}))
+				.success(function(data, status, headers, config) { 
+			    	isPostRendered=false;
+			    	cleanSynapses($scope);
+			    	$scope.view.model.network = {
+						neurons : [],
+						synapses : [] 
+				    };
+			    	$scope.view.init(data);
+	
+				});
+	    	}
+	    	
+	    }
+	    
+	    $scope.removeNeuron = function(layer,order) {
+	    	if($scope.view.model.worker.executionState!=1){
+	    		if(confirm('Are you sure to remove the neuron #'+layer+'-'+order+'?')){
+					$http
+					.post('network-removeneuron',JSON.stringify({layer:layer,order:order}))
+					.success(function(data, status, headers, config) { 
+				    	isPostRendered=false;
+				    	cleanSynapses($scope);
+				    	$scope.view.model.network = {
+							neurons : [],
+							synapses : [] 
+					    };
+				    	$scope.view.init(data);
+		
+					});
+	    		}
+	    	}
+	    	
+	    }	    
 		
 		$http({
             method : 'GET',
@@ -352,7 +457,16 @@
 	    	
 	    	
 	    });
-	});
+});
+
+app.directive('resize', function ($window) {
+    return function (scope, element, attr) {
+        angular.element($window).bind('resize', function () {
+        	reDrawSynapses(scope);
+        });
+        
+    }
+}); 
 	
 	
 	function postRendering($scope,$http,$timeout){
@@ -360,15 +474,18 @@
 		[].forEach.call(
 				document.getElementsByClassName('neuron'),
 				function(e){
-					if(e.id && e.id.indexOf('n0-')==0)
-						document.getElementById(e.id.replace('n0-','i0-')).style.display='block';
+					if(e.id && e.id.indexOf('n0,')==0)
+						document.getElementById(e.id.replace('n0,','i0,')).style.display='block';
 					
 					e.addEventListener(
 						'click',
 						function() {
 						  	if(this.className){
 						  		if(this.className=='neuron'){
-						  			this.className='neuron-expand';
+						  			this.className='neuron-expand';	
+						  			
+						  			
+						  			
 						  			drawSynapses(this,$scope,true);
 						  		}else if(this.className=='neuron-expand'){
 						  			this.className='neuron';
@@ -380,128 +497,171 @@
 						false)
 				}
 		);
+
+		
+//		document.querySelectorAll('[data-toggle="tooltip"]').tooltip();
 		isPostRendered = true;
 		
 	}
 	
 	function addEventToElements($scope,$http,$timeout){
-		var btnLoad = document.getElementById('loadButton');
-		btnLoad.addEventListener('click', function() {
-		  	new Button(btnLoad,'loading'); 
-		  	$http({
-				url:'network-restart',
-				method : 'GET'
-		    }).success(function(data, status, headers, config) { 
-		    	$scope.view.init(data);
-		    	if($scope.view.model.worker && $scope.view.model.worker.executionState){
-		    		if($scope.view.model.worker.executionState==1){		    			
-		    			$timeout(function () {
-		    				queryWorker($scope,$http,$timeout);
-		    				addEventToHideElements($scope,$http,$timeout);
-		    			});
-
-		    		}else
-		    			new Button(btnLoad,"reset");
-
-		    	}else
-					new Button(btnLoad,"reset");
-			});
-		});			
-		var btnExec = document.getElementById('execButton');
-		btnExec.addEventListener('click', function() {
-		  	new Button(btnExec,'loading'); 
-		  	$http({
-				url:'network-exec',
-				method : 'GET'
-		    }).success(function(data, status, headers, config) { 
-		    	$scope.view.init(data);
-				new Button(btnExec,"reset");
-			});
-		});
-
-		var btnData = document.getElementById('dataButton');
-		btnData.addEventListener('click', function() {
-		  	new Button(btnData,'loading'); 
-
-			$http({
-				url:'network-viewdata',
-				method : 'GET'
-		    }).success(function(data, status, headers, config) { 
-		    	var txt = '<div style="width:100%;height:400px;overflow:auto;">';
-		    	if(data){
-		    		[].forEach.call(
-		    				data.data,
-		    				function(d){
-		    					for(var i=0;i<d.length;i++)
-		    						txt+=d[i]+';';
-		    					txt+='<br>';	
-		    				}
-		    			);
-		    	}
-		    	txt+='</div>';
-				new clpopup({
-					type: 'info',
-					message: txt
-				}).open();					 
-
-				new Button(btnData,"reset");
-			});
-		});
 		
+		if(isAddEvents==false){
 		
-		var selectActivationFunctions = document.getElementById('activationFunctions');
-		if(selectActivationFunctions){
-			selectActivationFunctions.value = $scope.view.model.activationFunctions;
-			selectActivationFunctions.addEventListener('change', function() {
-				$http
-				.post('network-change',JSON.stringify({type:'activationFunctions',value:selectActivationFunctions.value}))
-				.success(function(data, status, headers, config) { 
+			var btnLoad = document.getElementById('loadButton');
+			btnLoad.addEventListener('click', function() {
+				
+			  	new Button(btnLoad,'loading'); 
+			  	$http({
+					url:'network-restart',
+					method : 'GET'
+			    }).success(function(data, status, headers, config) { 
 			    	$scope.view.init(data);
-			    	$scope.view.message();
+			    	if($scope.view.model.worker && $scope.view.model.worker.executionState){
+			    		if($scope.view.model.worker.executionState==1){		    			
+			    			$timeout(function () {
+			    				queryWorker($scope,$http,$timeout);
+			    				addEventToHideElements($scope,$http,$timeout);
+			    			});
+	
+			    		}else
+			    			new Button(btnLoad,"reset");
+	
+			    	}else
+						new Button(btnLoad,"reset");
 				});
-			}
-			);
-		}
+			});	
+			
+			var btnExec = document.getElementById('execButton');
+			btnExec.addEventListener('click', function() {
+				if($scope.view.model.worker.executionState!=1){
+				  	new Button(btnExec,'loading'); 
+				  	$http({
+						url:'network-exec',
+						method : 'GET'
+				    }).success(function(data, status, headers, config) { 
+				    	$scope.view.init(data);
+						new Button(btnExec,"reset");
+					});
+				}
+			});
+			
+			var btnAddLayer = document.getElementById('addLayerButton');
+			btnAddLayer.addEventListener('click', function() {
+				if($scope.view.model.worker.executionState!=1){
+				  	new Button(btnAddLayer,'loading'); 
+				  	$http({
+						url:'network-addlayer',
+						method : 'GET'
+				    }).success(function(data, status, headers, config) { 
+				    	isPostRendered=false;
+				    	cleanSynapses($scope);
+				    	$scope.view.model.network = {
+							neurons : [],
+							synapses : [] 
+					    };
+				    	$scope.view.init(data);
 		
-		
-		var selectTrainingStrategy = document.getElementById('trainingStrategy');
-		if(selectActivationFunctions){
-			selectTrainingStrategy.value = $scope.view.model.strategy;
-			selectTrainingStrategy.addEventListener('change', function() {
-				$http
-				.post('network-change',JSON.stringify({type:'trainingStrategy',value:selectTrainingStrategy.value}))
-				.success(function(data, status, headers, config) { 
-			    	$scope.view.init(data);
-			    	$scope.view.message();
+		//		    	isPostRendered==true;
+						new Button(btnAddLayer,"reset");
+					});
+				}
+			});
+			
+	
+	
+			var btnData = document.getElementById('dataButton');
+			btnData.addEventListener('click', function() {
+			  	new Button(btnData,'loading'); 
+	
+				$http({
+					url:'network-viewdata',
+					method : 'GET'
+			    }).success(function(data, status, headers, config) { 
+			    	var txt = '<div style="width:100%;height:400px;overflow:auto;">';
+			    	if(data){
+			    		[].forEach.call(
+			    				data.data,
+			    				function(d){
+			    					for(var i=0;i<d.length;i++)
+			    						txt+=d[i]+';';
+			    					txt+='<br>';	
+			    				}
+			    			);
+			    	}
+			    	txt+='</div>';
+					new clpopup({
+						type: 'info',
+						message: txt
+					}).open();					 
+	
+					new Button(btnData,"reset");
 				});
+			});
+			
+			
+			var selectActivationFunctions = document.getElementById('activationFunctions');
+			if(selectActivationFunctions){
+				selectActivationFunctions.value = $scope.view.model.activationFunctions;
+				selectActivationFunctions.addEventListener('change', function() {
+					if($scope.view.model.worker.executionState!=1){
+						$http
+						.post('network-change',JSON.stringify({type:'activationFunctions',value:selectActivationFunctions.value}))
+						.success(function(data, status, headers, config) { 
+					    	$scope.view.init(data);
+					    	$scope.view.message();
+						});
+					}
+				}
+				);
 			}
-			);
-		}
-		
-		var selectTrainingAlgorithm = document.getElementById('trainingAlgorithm');
-		if(selectTrainingAlgorithm){
-			selectTrainingAlgorithm.value = $scope.view.model.algorithm;
-			selectTrainingAlgorithm.addEventListener('change', function() {
-				$http
-				.post('network-change',JSON.stringify({type:'trainingAlgorithm',value:selectTrainingAlgorithm.value}))
-				.success(function(data, status, headers, config) { 
-			    	$scope.view.init(data);
-			    	$scope.view.message();
+			
+			
+			var selectTrainingStrategy = document.getElementById('trainingStrategy');
+			if(selectActivationFunctions){
+				selectTrainingStrategy.value = $scope.view.model.strategy;
+				selectTrainingStrategy.addEventListener('change', function() {
+					if($scope.view.model.worker.executionState!=1){
+						$http
+						.post('network-change',JSON.stringify({type:'trainingStrategy',value:selectTrainingStrategy.value}))
+						.success(function(data, status, headers, config) { 
+					    	$scope.view.init(data);
+					    	$scope.view.message();
+						});
+					}
+				}
+				);
+			}
+			
+			var selectTrainingAlgorithm = document.getElementById('trainingAlgorithm');
+			if(selectTrainingAlgorithm){
+				selectTrainingAlgorithm.value = $scope.view.model.algorithm;
+				selectTrainingAlgorithm.addEventListener('change', function() {
+					if($scope.view.model.worker.executionState!=1){
+						$http
+						.post('network-change',JSON.stringify({type:'trainingAlgorithm',value:selectTrainingAlgorithm.value}))
+						.success(function(data, status, headers, config) { 
+					    	$scope.view.init(data);
+					    	$scope.view.message();
+						});
+					}
+				}
+				);
+			}
+			
+			
+			if($scope.view.model.worker.executionState==1){		    			
+				$timeout(function () {
+					new Button(document.getElementById('loadButton'),'loading'); 
+					queryWorker($scope,$http,$timeout);
+					addEventToHideElements($scope,$http,$timeout);
 				});
-			}
-			);
-		}
-		
-		
-		if($scope.view.model.worker.executionState==1){		    			
-			$timeout(function () {
-				new Button(document.getElementById('loadButton'),'loading'); 
-				queryWorker($scope,$http,$timeout);
+	
+			}else
 				addEventToHideElements($scope,$http,$timeout);
-			});
-
-		}else
-			addEventToHideElements($scope,$http,$timeout);
+			
+			isAddEvents=true;
+		}
 		
 	}
 
@@ -521,6 +681,7 @@
 		}
 	
 	}	
+	
 	function queryWorker($scope,$http,$timeout){
 		var btnLoad = document.getElementById('loadButton');
 		$timeout(function () {
@@ -546,7 +707,7 @@
 	
 	function drawSynapses(neuron,$scope,show){
 		if(neuron && neuron.id){
-			var id = neuron.id.replace("n","").replace("-",",");
+			var id = neuron.id.replace('n','');
 			var selected = [];
 			for(var i in $scope.view.model.network.synapses){
 				var synapse = $scope.view.model.network.synapses[i];
@@ -558,95 +719,140 @@
 			for(var i in selected){
 				var synapse = selected[i];
 				if(synapse.direction){
-					if(!synapse["drawcounter"])
-						synapse["drawcounter"] = 0;
-					var res = synapse.direction.split("|");
-					var from = document.getElementById("n"+res[0].replace(',','-'));
-					var to = document.getElementById("n"+res[1].replace(',','-'));
-					if(from && to){
-						var id_synapse = "s"+synapse.direction.replace(',','-').replace(',','-');
-						var label = document.getElementById('s'+synapse.direction);
-
-						if(show){
-							if(synapse.drawcounter==0){
-								var rectFrom = from.getBoundingClientRect();
-								var rectTo = to.getBoundingClientRect();
-								
-								var centerFromX = rectFromX = rectFrom.left+rectFrom.width/2;
-								var centerFromY = rectFromY = rectFrom.top + rectFrom.height/2;
-								var centerToX = rectToX = rectTo.left+rectTo.width/2;
-								var centerToY = rectToY =rectTo.top + rectTo.height/2;
-								
-								var alfa = Math.atan((rectFromY - rectToY)/(rectFromX - rectToX));
-								var radius = 25;
-								
-								if(rectFromX <= rectToX){
-									rectFromX = rectFromX + Math.cos(alfa)*radius;
-									rectToX = rectToX - Math.cos(alfa)*radius;
-									rectFromY = rectFromY + Math.sin(alfa)*radius;
-									rectToY = rectToY  - Math.sin(alfa)*radius;
-								}else if(rectFromX > rectToX){
-									rectFromX = rectFromX - Math.cos(alfa)*radius;
-									rectToX = rectToX + Math.cos(alfa)*radius;
-									rectFromY = rectFromY - Math.sin(alfa)*radius;
-									rectToY = rectToY + Math.sin(alfa)*radius;									
-								}
-								
-								var maxZIndex = 0;
-								var line;
-								document.body.appendChild(
-									line = createLine(
-											id_synapse,
-											rectFromX + window.scrollX,
-											rectFromY + window.scrollY,
-											rectToX + window.scrollX,
-											rectToY + window.scrollY
-									)
-								);
-								if(line && line.style && line.style.zIndex){
-									if(maxZIndex<line.style.zIndex)
-										maxZIndex = line.style.zIndex;
-								}
-
-								if(label){
-									label.style.position = "absolute";
-									label.style.display = "block";
-
-									
-									var rectLabel = label.getBoundingClientRect();
-									var centerLabelX = Math.min(centerFromX,centerToX) + Math.abs(centerFromX-centerToX)/2 + window.scrollX;
-									var centerLabelY = Math.min(centerFromY,centerToY) + Math.abs(centerFromY-centerToY)/2 + window.scrollY;
-									
-									label.style.left = (centerLabelX-label.getBoundingClientRect().width/2)+'px';
-									label.style.top = (centerLabelY-label.getBoundingClientRect().height/2)+'px';
-									
-									label.style.zIndex = (maxZIndex+1);
-								}
-								
-
-							}
-							synapse.drawcounter=synapse.drawcounter+1;
-						}else
-							synapse.drawcounter=synapse.drawcounter-1;
-						
-						if(synapse.drawcounter<=0){
-							var element = document.getElementById(id_synapse);
-							if(element)
-								element.parentNode.removeChild(element);	
-							synapse.drawcounter=0;
-							if(label)
-								label.style.display = "none";
-						}
-							
-						
-					}
+					if(!synapse['drawcounter'])
+						synapse['drawcounter'] = 0;					
+					drawLineAndLabel(synapse, show);
 				}
 				
 			}
-		}
-		
+		}		
 	}
 	
+	function reDrawSynapses($scope){
+		var selected = [];
+		for(var i in $scope.view.model.network.synapses){
+			var synapse = $scope.view.model.network.synapses[i];
+			if(synapse['drawcounter'] && synapse['drawcounter']>0)
+				selected.push(synapse);
+									
+		}
+		for(var i in selected){
+			var synapse = selected[i];
+			if(synapse.direction){
+				drawLineAndLabel(synapse, true, true);
+			}
+			
+		}
+	}	
+	
+	function cleanSynapses($scope){
+		var selected = [];
+		for(var i in $scope.view.model.network.synapses){
+			var synapse = $scope.view.model.network.synapses[i];
+			if(synapse['drawcounter'] && synapse['drawcounter']>0)
+				selected.push(synapse);
+									
+		}
+		for(var i in selected){
+			var synapse = selected[i];
+			if(synapse.direction){
+				drawLineAndLabel(synapse, false, false);
+			}
+			
+		}
+	}	
+
+	
+	function drawLineAndLabel(synapse, show, redraw){
+		var res = synapse.direction.split('|');
+		var from = document.getElementById('n'+res[0]);
+		var to = document.getElementById('n'+res[1]);
+		if(from && to){
+			var id_synapse = 's'+synapse.direction;
+			var label = document.getElementById('sl'+synapse.direction);
+
+			if(show){
+				if(synapse.drawcounter==0 || (redraw && redraw==true)){
+					var rectFrom = from.getBoundingClientRect();
+					var rectTo = to.getBoundingClientRect();
+					
+					var centerFromX = rectFromX = rectFrom.left+rectFrom.width/2 + window.scrollX;
+					var centerFromY = rectFromY = rectFrom.top + rectFrom.height/2 + window.scrollY;
+					var centerToX = rectToX = rectTo.left+rectTo.width/2 + window.scrollX;
+					var centerToY = rectToY =rectTo.top + rectTo.height/2 + window.scrollY;
+					
+					var alfa = Math.atan((rectFromY - rectToY)/(rectFromX - rectToX));
+					var radius = 25;
+					
+					if(rectFromX <= rectToX){
+						rectFromX = rectFromX + Math.cos(alfa)*radius;
+						rectToX = rectToX - Math.cos(alfa)*radius;
+						rectFromY = rectFromY + Math.abs(Math.sin(alfa)*radius);
+						rectToY = rectToY  - Math.abs(Math.sin(alfa)*radius);
+					}else if(rectFromX > rectToX){
+						rectFromX = rectFromX - Math.cos(alfa)*radius;
+						rectToX = rectToX + Math.cos(alfa)*radius;
+						rectFromY = rectFromY + Math.abs(Math.sin(alfa)*radius);
+						rectToY = rectToY - Math.abs(Math.sin(alfa)*radius);									
+					}
+					
+					var maxZIndex = 0;
+					var line;
+					if(redraw && redraw==true){
+						var element = document.getElementById(id_synapse);
+						if(element)
+							element.parentNode.removeChild(element);
+					}
+					
+					document.body.appendChild(
+						line = createLine(
+								id_synapse,
+								rectFromX,
+								rectFromY,
+								rectToX,
+								rectToY
+						)
+					);
+					if(line && line.style && line.style.zIndex){
+						if(maxZIndex<line.style.zIndex)
+							maxZIndex = line.style.zIndex;
+					}
+
+					if(label){
+						label.style.position = 'absolute';
+						label.style.display = 'block';
+
+						
+						var rectLabel = label.getBoundingClientRect();
+						var centerLabelX = Math.min(centerFromX,centerToX) + Math.abs(centerFromX-centerToX)/2 ;
+						var centerLabelY = Math.min(centerFromY,centerToY) + Math.abs(centerFromY-centerToY)/2 ;
+						
+						label.style.left = (centerLabelX-label.getBoundingClientRect().width/2)+'px';
+						label.style.top = (centerLabelY-label.getBoundingClientRect().height/2)+'px';
+						
+						label.style.zIndex = (maxZIndex+1);
+					}
+					
+
+				}
+				if(redraw && redraw==true){
+					
+				}else
+					synapse.drawcounter=synapse.drawcounter+1;
+			}else
+				synapse.drawcounter=synapse.drawcounter-1;
+			
+			if(synapse.drawcounter<=0){
+				var element = document.getElementById(id_synapse);
+				if(element)
+					element.parentNode.removeChild(element);	
+				synapse.drawcounter=0;
+				if(label)
+					label.style.display = 'none';
+			}
+		}
+
+	}
 	
 	</script>
   </body>

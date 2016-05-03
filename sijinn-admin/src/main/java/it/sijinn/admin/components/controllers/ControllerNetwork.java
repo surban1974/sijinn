@@ -239,7 +239,7 @@ public String restart(){
 		.setStep(0)
 		.setDelta(0)
 		
-		.setNetwork(wrapper.obtainInstance())
+		.setNetwork(wrapper.obtainInstance().clearSynapses(new RandomPositiveWeightGenerator(), true))
 		.setTrainingStrategy(strategy)
 		.setStreamWrapper(streamWrapper)
 		.setReadLinesAggregator(readLinesAggregator)
@@ -270,11 +270,68 @@ public String exec(){
 
 
 @ActionCall(
+		name="addlayer",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String addlayer(){
+	
+	if(wrapper!=null)
+		wrapper.obtainInstance()
+		.removeSynapses()
+		.insertLayer(wrapper.obtainInstance().getLayers().size()-1, 1, Neuron.create(activationFunctions, null), false)
+		.createSynapses(0);
+	
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+@ActionCall(
+		name="removelayer",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String removelayer(@Parameter(name="layer") int layer){
+	
+	if(wrapper!=null)
+		wrapper.obtainInstance()
+		.removeSynapses()
+		.removeLayer(layer)
+		.createSynapses(0);
+	
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+@ActionCall(
+		name="addneuron",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String addneuron(@Parameter(name="layer") int layer){
+	
+	if(wrapper!=null){
+		if(layer>=0 && layer<wrapper.obtainInstance().getLayers().size()){
+			List<Neuron> neurons = wrapper.obtainInstance().getLayers().get(layer);
+			Neuron neuron = new Neuron(wrapper.obtainInstance(),  Neuron.create(activationFunctions, null), layer, neurons.size(), false) ;
+			wrapper.obtainInstance()
+			.removeSynapses()
+			.addNeuron(neuron, true)
+			.createSynapses(0);
+		}
+	}
+	
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+
+@ActionCall(
 		name="diff",
 		navigated="false",
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(method = Expose.POST))
-public String diffAsJson(HttpServletRequest request, HttpServletResponse response){
+public String diffAsJson(){
 	return "";
 }	
 
@@ -284,7 +341,7 @@ public String diffAsJson(HttpServletRequest request, HttpServletResponse respons
 		navigated="false",
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(method = Expose.POST))
-public String viewdata(HttpServletRequest request, HttpServletResponse response){
+public String viewdata(){
 	
 	List<float[]> aggr = new ArrayList<float[]>(); 
 	if(streamWrapper!=null && readLinesAggregator!=null){
