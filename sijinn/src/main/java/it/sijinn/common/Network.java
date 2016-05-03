@@ -139,6 +139,61 @@ public class Network extends Neuron implements Serializable{
 		indexingPositionOfNeurons();
 		return this;
 	}
+	public Network insertLayer(int afterLayer, int neurons, IFunctionApplied function, boolean bias){
+		if(neurons<=0)
+			return this;
+
+		if(this.layers==null)
+			this.layers = new ArrayList<List<Neuron>>();
+
+		List<Neuron> layer = new ArrayList<Neuron>();
+		if(bias)
+			layer.add(new Neuron(null, function, true));
+		for(int i=0;i<neurons;i++)
+			layer.add(new Neuron(this, function));
+		
+		
+		if(afterLayer>=this.layers.size())
+			layers.add(layer);
+		else if(afterLayer>=0){
+			int current = 0;
+			
+			List<List<Neuron>> newLayers = new ArrayList<List<Neuron>>();
+			while(current<this.layers.size()){
+				if(current==afterLayer){
+					newLayers.add(layer);
+					newLayers.add(this.layers.get(current));
+				}else
+					newLayers.add(this.layers.get(current));
+				current++;
+			}
+			this.layers = newLayers;
+		}
+		
+		indexingPositionOfNeurons();
+		return this;
+	}
+	
+	public Network removeLayer(int index){
+		if(this.layers==null)
+			this.layers = new ArrayList<List<Neuron>>();
+		
+		if(index>=0){
+			int current = 0;
+			
+			List<List<Neuron>> newLayers = new ArrayList<List<Neuron>>();
+			while(current<this.layers.size()){
+				if(current!=index)
+					newLayers.add(this.layers.get(current));
+				current++;
+			}
+			this.layers = newLayers;
+		}
+		
+		indexingPositionOfNeurons();
+		return this;
+		
+	}
 	
 	
 	public Network release(){
@@ -167,6 +222,29 @@ public class Network extends Neuron implements Serializable{
 		return this;
 	}
 	
+	public Network removeSynapses(){
+		indexingPositionOfNeurons();
+
+		if(layers==null || layers.size()==0)
+			return this;
+		
+		
+		for(int i=0;i<this.layers.size();i++){
+			List<Neuron> currentLayer = layers.get(i);
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null){
+					List<Synapse> children=neuron.obtainChildren();
+					if(children!=null)
+						children.clear();
+					List<Synapse> parents=neuron.obtainParents();
+					if(parents!=null)
+						parents.clear();					
+				}
+			}
+		}
+		
+		return this;
+	}
 
 	public Network createSynapses(float initalWeight){
 		indexingPositionOfNeurons();
