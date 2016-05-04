@@ -100,29 +100,33 @@ public class Synapse implements Serializable{
 	public float getWeight() {
 		return weight;
 	}
-	public void setWeight(float weight) {
+	public Synapse setWeight(float weight) {
 		this.weight = weight;
+		return this;
 	}
 	public Neuron getFrom() {
 		return from;
 	}
-	public void setFrom(Neuron from) {
+	public Synapse setFrom(Neuron from) {
 		this.from = from;
+		return this;
 	}
 	
 	public Neuron getTo() {
 		return to;
 	}
-	public void setTo(Neuron to) {
+	public Synapse setTo(Neuron to) {
 		this.to = to;
+		return this;
 	}
 	
 	public ISynapseProperty getProperty() {
 		return property;
 	}
 
-	public void setProperty(ISynapseProperty property) {
+	public Synapse setProperty(ISynapseProperty property) {
 		this.property = property;
+		return this;
 	}
 	
 	
@@ -137,8 +141,10 @@ public class Synapse implements Serializable{
 			}
 			if(properties!=null)
 				return create(properties, logger);
-			else
+			else{
 				logger.error("Synapse instance Error: xml node is incomplet for initialization.");
+				Network.error("Synapse instance Error: xml node is incomplet for initialization.");
+			}
 		}
 		return null;
 	}
@@ -170,10 +176,12 @@ public class Synapse implements Serializable{
 				return new Synapse(layerFrom,orderFrom,layerTo,orderTo, weight);
 			else{ 
 				logger.error("Synapse instance Error: properties=["+properties+"] is incomplet for initialization.");
+				Network.error("Synapse instance Error: properties=["+properties+"] is incomplet for initialization.");
 				return null;
 			}
 		}catch(Exception e){
 			logger.error(e);
+			Network.error(e);
 			return null;
 		}
 		

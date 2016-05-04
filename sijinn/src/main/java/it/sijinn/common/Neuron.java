@@ -125,6 +125,33 @@ public class Neuron implements Serializable{
 		return true;
 	}
 	
+	public boolean makeRelation(Neuron neuron, float initialWeight){
+		if(neuron==null)
+			return false;
+
+			Synapse relation = new Synapse(this, neuron, initialWeight);
+			if(children==null)
+				children = new ArrayList<Synapse>();
+			children.add(relation);
+			if(!neuron.isBias())
+				neuron.addParentRelation(relation);
+		return true;
+	}
+	
+	public boolean makeRelation(Neuron neuron, IGenerator weightGenerator){
+		if(neuron==null)
+			return false;
+
+			Synapse relation = new Synapse(this, neuron, weightGenerator);
+			if(children==null)
+				children = new ArrayList<Synapse>();
+			children.add(relation);
+			if(!neuron.isBias())
+				neuron.addParentRelation(relation);
+
+		return true;
+	}	
+	
 	public boolean updateWeights(boolean clearProperties){
 		if(children!=null){
 			for(Synapse synapse:children){
@@ -245,7 +272,7 @@ public class Neuron implements Serializable{
 	public String toSaveString(String prefix){
 		String result = (prefix!=null)?prefix:"";
 		result+="<neuron>"+
-				Utils.normalXML(getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getDefinition():""),"utf8")+","+isBias()+
+				Utils.normalXML(getLayer()+","+getOrder()+","+((getFunction()!=null)?getFunction().getDefinition():" "),"utf8")+","+isBias()+
 		"</neuron>\n";
 		return result;
 	}
@@ -261,65 +288,74 @@ public class Neuron implements Serializable{
 	public int getLayer() {
 		return layer;
 	}
-	public void setLayer(int layer) {
+	public Neuron setLayer(int layer) {
 		this.layer = layer;
+		return this;
 	}
 	public int getOrder() {
 		return order;
 	}
-	public void setOrder(int order) {
+	public Neuron setOrder(int order) {
 		this.order = order;
+		return this;
 	}
 	public List<Synapse> obtainChildren() {
 		return children;
 	}
-	public void setChildren(List<Synapse> children) {
+	public Neuron setChildren(List<Synapse> children) {
 		this.children = children;
+		return this;
 	}
 	public List<Synapse> obtainParents() {
 		return parents;
 	}
-	public void setParents(List<Synapse> parent) {
+	public Neuron setParents(List<Synapse> parent) {
 		this.parents = parent;
+		return this;
 	}
 	public float getOutput() {
 		if(isBias())
 			return 1;
 		return output;
 	}
-	public void setOutput(float output) {
+	public Neuron setOutput(float output) {
 		if(!isBias())
 			this.output = output;
+		return this;
 	}
 	public IFunctionApplied getFunction() {
 		return function;
 	}
-	public void setFunction(IFunctionApplied function) {
+	public Neuron setFunction(IFunctionApplied function) {
 		this.function = function;
+		return this;
 	}
 	
 	public float getTarget() {
 		return target;
 	}
 
-	public void setTarget(float target) {
+	public Neuron setTarget(float target) {
 		this.target = target;
+		return this;
 	}
 
 	public Network obtainNetwork() {
 		return network;
 	}
 
-	public void setNetwork(Network network) {
+	public Neuron setNetwork(Network network) {
 		this.network = network;
+		return this;
 	}
 	
 	public boolean isBias() {
 		return bias;
 	}
 
-	public void setBias(boolean bias) {
+	public Neuron setBias(boolean bias) {
 		this.bias = bias;
+		return this;
 	}
 	
 	
@@ -335,8 +371,10 @@ public class Neuron implements Serializable{
 			if(properties!=null)
 				return create(_network, properties, logger);
 			else{
-				if(logger!=null)
+				if(logger!=null){
 					logger.error("Neuron instance Error: xml node is incomplet for initialization.");
+					Network.error("Neuron instance Error: xml node is incomplet for initialization.");
+				}
 			}
 		}
 		return null;
@@ -344,7 +382,7 @@ public class Neuron implements Serializable{
 	
 	public static Neuron create(Network _network, String properties, Logger logger){
 		
-		if(properties==null || properties.length()==0)
+		if(properties==null || properties.trim().length()==0)
 			return null;
 		try{
 			StringTokenizer st = new StringTokenizer(properties, ",");
@@ -367,14 +405,18 @@ public class Neuron implements Serializable{
 			if(layer>-1 && order>-1)
 				return new Neuron(_network, functionApplied,layer,order,bias);
 			else{
-				if(logger!=null)
+				if(logger!=null){
 					logger.error("Neuron instance Error: properties=["+properties+"] is incomplet for initialization.");
+					Network.error("Neuron instance Error: properties=["+properties+"] is incomplet for initialization.");
+				}
 				return null;
 			}
 			
 		}catch(Exception e){
-			if(logger!=null)
+			if(logger!=null){
 				logger.error(e);
+				Network.error(e);
+			}
 			return null;
 		}
 	}	
@@ -422,15 +464,19 @@ public class Neuron implements Serializable{
 					if(clazzConstructor!=null)
 						functionApplied = (IFunctionApplied)clazzConstructor.newInstance((Object[])fParam);
 					else{
-						if(logger!=null)
+						if(logger!=null){
 							logger.error("FunctionApplied instance Error: properties=["+input+"] is incomplet for initialization.");
+							Network.error("FunctionApplied instance Error: properties=["+input+"] is incomplet for initialization.");
+						}
 						return null;
 					}
 				}	
 			}
 		}catch(Exception e){
-			if(logger!=null)
+			if(logger!=null){
 				logger.error(e);
+				Network.error(e);
+			}
 			return null;
 		}
 		return functionApplied;
