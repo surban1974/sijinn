@@ -1,0 +1,653 @@
+
+ <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SIJINN</title>
+	<link rel="SHORTCUT ICON" href="images/application.ico">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <style>
+      body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
+      .navbar {
+        margin-bottom: 20px;
+      }
+      
+      div.neuron{
+      	color: white;
+		background-color: #87C5F0;
+		padding: 4px;
+		-moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
+		box-shadow: 1px 1px 6px gray;
+		border-radius: 15px;	
+		height:25px;
+		width: 25px;
+		cursor: pointer;
+      }
+      
+      div.neuron-expand{
+      	color: white;
+		background-color: white;
+		border-color: #87C5F0;
+		padding: 4px;
+		-moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
+		box-shadow: 1px 1px 6px gray;
+		border-radius: 25px;	
+		height:40px;
+		width: 40px;
+		cursor: pointer;
+      }      
+      
+	  td.neuron_place{
+	  	height: 50px;
+	  	min-height: 50px;
+	  	min-width: 50px;
+		vertical-align: middle;
+      }
+      
+      td.label_datas{
+      	padding: 5px;
+      	vertical-align: middle;
+      }
+      
+      div.synapse{
+		position: absolute;
+		background-color: white;
+		padding: 4px;
+		-moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
+		box-shadow: 1px 1px 6px gray;
+		border-radius: 7px;	
+		height:25px;
+		max-width:100px;
+		text-align: center;
+		display: none;
+      }
+      
+            
+    </style>
+    
+    <!-- Styles for avoiding jQuery -->
+    <link rel="stylesheet" href="css/navbar.css">
+
+  </head>
+
+  <body>
+
+    <div class="container" style="padding-top: 45px">
+
+      <!-- Navbar -->
+
+      <nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
+
+
+
+      <!-- Main component for a primary marketing message or call to action -->
+      
+       <div class="jumbotron" style="padding:5px;">
+ 
+ 		<form id="network" method="post" ng-app="networksApp" ng-controller="networksCtrl"> 
+ 		
+  		
+ 		
+ 		<div>
+ 		
+			<ul id="tab-header" class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active"><a href="#net" id="net-tab" role="tab" data-toggle="tab" aria-controls="net" aria-expanded="true">Network</a></li>
+				<li role="presentation"><a href="#training" role="tab" id="training-tab" data-toggle="tab" aria-controls="training">Training</a></li>
+			</ul>
+ 		
+		<div id="networkTabContent" class="tab-content" >
+			<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 90px; ">
+	 		<div class="form-group" style="padding-top: 10px">
+	 			<table>
+			 		<tr>	
+				 		<td class="label_datas"  >
+				  			<label>Type:</label>	
+				  		</td>
+				  		<td>			  			
+				  			<span>Perseptron</span>
+				  		</td>
+				  	</tr>
+				  	<tr>	
+				  		<td class="label_datas">	
+					  		<label >Activation functions:</label>
+					  	</td>
+					  	<td >
+					  		<select id="activationFunctions" class="bs-select form-control" >
+		    					<option value="SimpleGaussian">Gaussian</option>
+						    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
+						    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
+						    	<option value="SimpleSin">Sin</option>
+							</select>
+					  	</td>	
+			  		</tr>
+			  	</table>	
+	
+			</div>
+		</div>
+		
+			<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 90px">
+	 		<div class="form-group"  style="padding-top: 10px">
+
+		 		<table>
+			 		<tr>	
+						<td>
+							<table>
+								<tr>
+							  		<td class="label_datas">	
+								  		<label >Strategy:</label>
+								  	</td>
+								  	<td >
+								  		<select id="trainingStrategy" class="bs-select form-control" >
+									    	<option value="BatchGradientDescent">Batch Gradient Descent</option>
+									    	<option value="StochasticGradientDescent">Stochastic Gradient Descent</option>
+										</select>
+								  	</td>	
+							  		<td class="label_datas">	
+								  		<label >Algorithm:</label>
+								  	</td>
+								  	<td >
+								  		<select id="trainingAlgorithm" class="bs-select form-control" >
+									    	<option value="BPROP">Back Propagation</option>
+									    	<option value="QPROP">Quick Propagation</option>
+									    	<option value="RPROP">Resilient Propagation</option>
+										</select>
+								  	</td>
+								  	<td class="label_datas">
+								  		<label for="settings.root">Approximation error (MSE):</label>
+			  						</td>
+			  						<td>	
+			  							<input type="text" class="form-control" style="max-width: 120px; text-align: center;" data-ng-model="view.model.worker.approximation"/>
+			  						</td>
+			  						<td>
+			  							&nbsp;&nbsp;
+			  						</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table>
+								<tr>
+							 		<td >
+										<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" autocomplete="off">
+										  	Training Data
+										</button>
+							 		
+										<button type="button" id="loadButton" data-toggle="button" data-loading-text="Training..." class="btn btn-primary" autocomplete="off">
+										  	Start training
+										</button>
+										<button type="button" id="stopButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off"  ng-if="view.model.worker.executionState == 1">
+										  	Interrupt
+										</button>
+							
+									</td>	
+											
+									<td valign="middle" style="padding: 10px; min-width: 150px">
+								  			<label>Epoch:</label>
+								  			<span>{{ view.model.worker.step}}</span>
+								  	</td>
+								  	<td valign="middle" style="padding: 10px; min-width: 150px">	
+								  			<label>MSE:</label>
+								  			<span>{{ view.model.worker.delta}}</span>
+									</td>
+								</tr>
+							</table>
+						</td>								
+					</tr>
+				</table>
+			</div>					
+			</div>
+		</div>	
+ 		
+ 		
+ 
+
+ 
+ 		
+
+		</div> 		
+ 		<div>		
+ 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons">
+ 			<cycle>
+ 			<tr>
+ 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center">
+ 					<div data-ng-if="neuron.layer == 0">
+ 						<input id="i{{neuron.layer}}-{{neuron.order}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
+ 					</div>
+ 				</td>
+ 			</tr>	
+			<tr >
+				<td data-ng-repeat="neuron in layer" class="neuron_place" align="center" >
+					<div id="n{{neuron.layer}}-{{neuron.order}}" class="neuron"></div>
+				
+				</td>
+			</tr>
+ 			<tr>
+ 				<td data-ng-repeat="neuron in layer" style="height: 30px;" align="center">
+ 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse" style="position: relative;display: block;" >
+ 						{{neuron.output}}
+ 					</div>
+ 				
+ 				</td>
+ 			</tr>	
+		</table>
+		<table style="width:100%">
+			<tr>
+ 				<td align="center">
+					<button type="button" id="execButton" data-toggle="button" data-loading-text="Execution..." class="btn btn-primary" autocomplete="off">
+					  	Calculate
+					</button>
+				</td>					
+			</tr>
+		</table>	
+		</div>
+		<cycle data-ng-repeat="synapse in view.model.network.synapses">
+		
+			<div id="s{{synapse.direction}}" class="synapse">{{synapse.weight}}</div>
+		
+		</cycle>	
+ 		
+ 		
+ 		</form>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap Native -->
+    <script src="js/bootstrap-native.js"></script>
+    
+	<!--  Angular 1.5 JavaScript -->
+	<script src='js/angular.min.js'></script>
+	
+	<!--  ClassHidra Ajax JavaScript -->
+	<script src='js/classhidra-ajax.js'></script>  	
+	
+	<!--  ClassHidra Utils JavaScript -->
+	<script src='js/classhidra-bootstrap-utils.js'></script> 
+	<script src='js/classhidra-models.js'></script> 
+	<script src='js/utils.js'></script> 	 	 
+	
+	
+	<script>
+	
+	var isPostRendered = false;
+	
+	var app = angular.module('networksApp', []);
+	app.controller('networksCtrl', function($scope, $http, $timeout) {
+
+		$scope.view = Object.create(GenericViewModel)
+		.extend({
+			post : function($http,newValue){
+			},
+			postDirty : function($http,newValue){
+				if(!self.initialisation)
+					$http.post('network-diff', JSON.stringify(newValue));
+			}
+		})
+		.set(
+				Object.create(GenericServerModel)
+				.extend({
+					activationFunctions:"",
+					algorithm:"",
+					strategy:"",
+					worker:{},
+					network:{
+						neurons : [],
+						synapses : [] 
+				    }
+				})
+		);
+		
+		$http({
+            method : 'GET',
+            url : 'pages/included/top_menu.html'
+	    }).success(function(data, status, headers, config) {
+	    	document.getElementById("top_menu").innerHTML = data;
+	    	document.getElementById("top_menu_networks").className += " active";
+	    	
+			$http({
+	            method : 'GET',
+	            url : 'network-json'
+		    }).success(function(data, status, headers, config) {
+		    	$scope.view.init(data);
+		    	
+		    	$scope.$watch('view', function(newValue, oldValue) {
+		    		if(isPostRendered==false){
+							$timeout(function () {
+					    		postRendering($scope,$http,$timeout);
+					    		addEventToElements($scope,$http,$timeout);
+					    	});
+		    		}else if($scope.view.model.worker && $scope.view.model.worker.executionState && $scope.view.model.worker.executionState==1){
+		    			
+		    		}else{
+			    		var diff = newValue.getDirty(oldValue,function(property){
+			    			if(property && property.indexOf('$$')>-1)
+			    				return true;
+			    			return false;
+			    		});
+						if(diff.length>0)
+							$scope.view.postDirty($http,diff);	
+		    		}
+					
+		  		},true);
+		    });
+	    	
+	    	
+	    });
+	});
+	
+	
+	function postRendering($scope,$http,$timeout){
+		
+		[].forEach.call(
+				document.getElementsByClassName('neuron'),
+				function(e){
+					if(e.id && e.id.indexOf('n0-')==0)
+						document.getElementById(e.id.replace('n0-','i0-')).style.display='block';
+					
+					e.addEventListener(
+						'click',
+						function() {
+						  	if(this.className){
+						  		if(this.className=='neuron'){
+						  			this.className='neuron-expand';
+						  			drawSynapses(this,$scope,true);
+						  		}else if(this.className=='neuron-expand'){
+						  			this.className='neuron';
+						  			drawSynapses(this,$scope,false);
+						  		}
+
+						  	}
+						},
+						false)
+				}
+		);
+		isPostRendered = true;
+		
+	}
+	
+	function addEventToElements($scope,$http,$timeout){
+		var btnLoad = document.getElementById('loadButton');
+		btnLoad.addEventListener('click', function() {
+		  	new Button(btnLoad,'loading'); 
+		  	$http({
+				url:'network-restart',
+				method : 'GET'
+		    }).success(function(data, status, headers, config) { 
+		    	$scope.view.init(data);
+		    	if($scope.view.model.worker && $scope.view.model.worker.executionState){
+		    		if($scope.view.model.worker.executionState==1){		    			
+		    			$timeout(function () {
+		    				queryWorker($scope,$http,$timeout);
+		    				addEventToHideElements($scope,$http,$timeout);
+		    			});
+
+		    		}else
+		    			new Button(btnLoad,"reset");
+
+		    	}else
+					new Button(btnLoad,"reset");
+			});
+		});			
+		var btnExec = document.getElementById('execButton');
+		btnExec.addEventListener('click', function() {
+		  	new Button(btnExec,'loading'); 
+		  	$http({
+				url:'network-exec',
+				method : 'GET'
+		    }).success(function(data, status, headers, config) { 
+		    	$scope.view.init(data);
+				new Button(btnExec,"reset");
+			});
+		});
+
+		var btnData = document.getElementById('dataButton');
+		btnData.addEventListener('click', function() {
+		  	new Button(btnData,'loading'); 
+
+			$http({
+				url:'network-viewdata',
+				method : 'GET'
+		    }).success(function(data, status, headers, config) { 
+		    	var txt = '<div style="width:100%;height:400px;overflow:auto;">';
+		    	if(data){
+		    		[].forEach.call(
+		    				data.data,
+		    				function(d){
+		    					for(var i=0;i<d.length;i++)
+		    						txt+=d[i]+';';
+		    					txt+='<br>';	
+		    				}
+		    			);
+		    	}
+		    	txt+='</div>';
+				new clpopup({
+					type: 'info',
+					message: txt
+				}).open();					 
+
+				new Button(btnData,"reset");
+			});
+		});
+		
+		
+		var selectActivationFunctions = document.getElementById('activationFunctions');
+		if(selectActivationFunctions){
+			selectActivationFunctions.value = $scope.view.model.activationFunctions;
+			selectActivationFunctions.addEventListener('change', function() {
+				$http
+				.post('network-change',JSON.stringify({type:'activationFunctions',value:selectActivationFunctions.value}))
+				.success(function(data, status, headers, config) { 
+			    	$scope.view.init(data);
+			    	$scope.view.message();
+				});
+			}
+			);
+		}
+		
+		
+		var selectTrainingStrategy = document.getElementById('trainingStrategy');
+		if(selectActivationFunctions){
+			selectTrainingStrategy.value = $scope.view.model.strategy;
+			selectTrainingStrategy.addEventListener('change', function() {
+				$http
+				.post('network-change',JSON.stringify({type:'trainingStrategy',value:selectTrainingStrategy.value}))
+				.success(function(data, status, headers, config) { 
+			    	$scope.view.init(data);
+			    	$scope.view.message();
+				});
+			}
+			);
+		}
+		
+		var selectTrainingAlgorithm = document.getElementById('trainingAlgorithm');
+		if(selectTrainingAlgorithm){
+			selectTrainingAlgorithm.value = $scope.view.model.algorithm;
+			selectTrainingAlgorithm.addEventListener('change', function() {
+				$http
+				.post('network-change',JSON.stringify({type:'trainingAlgorithm',value:selectTrainingAlgorithm.value}))
+				.success(function(data, status, headers, config) { 
+			    	$scope.view.init(data);
+			    	$scope.view.message();
+				});
+			}
+			);
+		}
+		
+		
+		if($scope.view.model.worker.executionState==1){		    			
+			$timeout(function () {
+				new Button(document.getElementById('loadButton'),'loading'); 
+				queryWorker($scope,$http,$timeout);
+				addEventToHideElements($scope,$http,$timeout);
+			});
+
+		}else
+			addEventToHideElements($scope,$http,$timeout);
+		
+	}
+
+	function addEventToHideElements($scope,$http,$timeout){
+		var btnStop = document.getElementById('stopButton');
+		if(btnStop){
+			btnStop.addEventListener('click', function() {
+			  	new Button(btnStop,'loading'); 
+			  	$http({
+					url:'network-stop',
+					method : 'GET'
+			    }).success(function(data, status, headers, config) { 
+			    	$scope.view.init(data);
+					new Button(btnStop,"reset");
+				});
+			});
+		}
+	
+	}	
+	function queryWorker($scope,$http,$timeout){
+		var btnLoad = document.getElementById('loadButton');
+		$timeout(function () {
+		  	$http({
+				url:'network-check',
+				method : 'GET'
+		    }).success(function(data, status, headers, config) { 
+		    	$scope.view.init(data);
+		    	if($scope.view.model.worker && $scope.view.model.worker.executionState){
+		    		if($scope.view.model.worker.executionState==1)
+		    			queryWorker($scope,$http,$timeout)	
+		    		else
+		    			new Button(btnLoad,"reset");
+		    	}else
+					new Button(btnLoad,"reset");
+			});
+
+    	},
+    	500);
+
+	}
+	
+	
+	function drawSynapses(neuron,$scope,show){
+		if(neuron && neuron.id){
+			var id = neuron.id.replace("n","").replace("-",",");
+			var selected = [];
+			for(var i in $scope.view.model.network.synapses){
+				var synapse = $scope.view.model.network.synapses[i];
+				if(synapse.direction){
+					if(synapse.direction.indexOf(id)>-1)
+						selected.push(synapse);
+				}					
+			}
+			for(var i in selected){
+				var synapse = selected[i];
+				if(synapse.direction){
+					if(!synapse["drawcounter"])
+						synapse["drawcounter"] = 0;
+					var res = synapse.direction.split("|");
+					var from = document.getElementById("n"+res[0].replace(',','-'));
+					var to = document.getElementById("n"+res[1].replace(',','-'));
+					if(from && to){
+						var id_synapse = "s"+synapse.direction.replace(',','-').replace(',','-');
+						var label = document.getElementById('s'+synapse.direction);
+
+						if(show){
+							if(synapse.drawcounter==0){
+								var rectFrom = from.getBoundingClientRect();
+								var rectTo = to.getBoundingClientRect();
+								
+								var centerFromX = rectFromX = rectFrom.left+rectFrom.width/2;
+								var centerFromY = rectFromY = rectFrom.top + rectFrom.height/2;
+								var centerToX = rectToX = rectTo.left+rectTo.width/2;
+								var centerToY = rectToY =rectTo.top + rectTo.height/2;
+								
+								var alfa = Math.atan((rectFromY - rectToY)/(rectFromX - rectToX));
+								var radius = 25;
+								
+								if(rectFromX <= rectToX){
+									rectFromX = rectFromX + Math.cos(alfa)*radius;
+									rectToX = rectToX - Math.cos(alfa)*radius;
+									rectFromY = rectFromY + Math.sin(alfa)*radius;
+									rectToY = rectToY  - Math.sin(alfa)*radius;
+								}else if(rectFromX > rectToX){
+									rectFromX = rectFromX - Math.cos(alfa)*radius;
+									rectToX = rectToX + Math.cos(alfa)*radius;
+									rectFromY = rectFromY - Math.sin(alfa)*radius;
+									rectToY = rectToY + Math.sin(alfa)*radius;									
+								}
+								
+								var maxZIndex = 0;
+								var line;
+								document.body.appendChild(
+									line = createLine(
+											id_synapse,
+											rectFromX + window.scrollX,
+											rectFromY + window.scrollY,
+											rectToX + window.scrollX,
+											rectToY + window.scrollY
+									)
+								);
+								if(line && line.style && line.style.zIndex){
+									if(maxZIndex<line.style.zIndex)
+										maxZIndex = line.style.zIndex;
+								}
+
+								if(label){
+									label.style.position = "absolute";
+									label.style.display = "block";
+
+									
+									var rectLabel = label.getBoundingClientRect();
+									var centerLabelX = Math.min(centerFromX,centerToX) + Math.abs(centerFromX-centerToX)/2 + window.scrollX;
+									var centerLabelY = Math.min(centerFromY,centerToY) + Math.abs(centerFromY-centerToY)/2 + window.scrollY;
+									
+									label.style.left = (centerLabelX-label.getBoundingClientRect().width/2)+'px';
+									label.style.top = (centerLabelY-label.getBoundingClientRect().height/2)+'px';
+									
+									label.style.zIndex = (maxZIndex+1);
+								}
+								
+
+							}
+							synapse.drawcounter=synapse.drawcounter+1;
+						}else
+							synapse.drawcounter=synapse.drawcounter-1;
+						
+						if(synapse.drawcounter<=0){
+							var element = document.getElementById(id_synapse);
+							if(element)
+								element.parentNode.removeChild(element);	
+							synapse.drawcounter=0;
+							if(label)
+								label.style.display = "none";
+						}
+							
+						
+					}
+				}
+				
+			}
+		}
+		
+	}
+	
+	
+	</script>
+  </body>
+</html>

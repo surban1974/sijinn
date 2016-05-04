@@ -25,6 +25,17 @@
         margin-bottom: 20px;
       }
       
+      div.canvas{
+
+		background-color_: white;
+		padding: 4px;
+		border-radius: 5px;
+		-moz-box-shadow: 1px 1px 6px silver;
+		-webkit-box-shadow: 1px 1px 6px silver;
+		box-shadow: 1px 1px 6px silver;
+
+      }      
+      
       div.neuron{
       	color: white;
 		background-color: #87C5F0;
@@ -32,7 +43,7 @@
 		-moz-box-shadow: 1px 1px 6px gray;
 		-webkit-box-shadow: 1px 1px 6px gray;
 		box-shadow: 1px 1px 6px gray;
-		border-radius: 15px;	
+		border-radius: 100%;	
 		height:25px;
 		width: 25px;
 		cursor: pointer;
@@ -48,7 +59,7 @@
 		-moz-box-shadow: 1px 1px 6px gray;
 		-webkit-box-shadow: 1px 1px 6px gray;
 		box-shadow: 1px 1px 6px gray;
-		border-radius: 25px;	
+		border-radius: 100%;	
 		height:40px;
 		width: 40px;
 		cursor: pointer;
@@ -135,6 +146,14 @@
 			 			<td>
 			 				<table>
 								<tr>	
+					 				<td >
+					 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off">
+										  	Reset default
+										</button>
+					 				</td>								
+					 				<td>
+			  							&nbsp;&nbsp;
+			  						</td>								
 							  		<td class="label_datas">	
 								  		<label >Activation functions:</label>
 								  	</td>
@@ -152,11 +171,15 @@
 							  		<td class="label_datas">	
 								  		<span >{{view.model.network.neurons.length}}</span>
 								  	</td>
+			  						<td>
+			  							&nbsp;&nbsp;
+			  						</td>	
 					 				<td >
-					 					<button type="button" id="addLayerButton" data-toggle="button" data-loading-text="+" class="btn btn-primary" autocomplete="off">
-										  	+
+					 					<button type="button" id="previewButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-info" autocomplete="off">
+										  	Network source
 										</button>
-					 				</td>								  									  		
+					 				</td>
+					 											  									  		
 								</tr>
 							</table>
 						</td>										  	
@@ -247,29 +270,36 @@
  		
 
 		</div> 		
- 		<div resize>		
-	 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0">
+ 		<div resize class="canvas">		
+	 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
 	
 	 			<tr>
-	 				<td style="width:60px; background-color: white; border-radius:3px;" align="center" data-ng-if="$index == 0">
-						<b>Layers</b>
+	 				<td style="width:50px; padding: 2px" data-ng-if="$index == 0" >
+						<nobr>
+	 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary" autocomplete="off"
+	 					ng-click="addLayer()"
+	 					>
+					  	+
+						</button>
+						<span >{{view.model.network.neurons.length}}</span>
+						</nobr>
 					</td>
-					<td style="width:60px; border-right: 1px solid silver;" align="center" data-ng-if="$index > 0"></td>
-	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center">
+					<td style="width:50px; " align="center" data-ng-if="$index > 0"></td>
+	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center" style="">
 	 					<div data-ng-if="neuron.layer == 0">
 	 						<input id="i{{neuron.position}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
 	 					</div>
 	 				</td>
-	 				<td style="width:60px; background-color: white; border-radius:3px;" align="center" data-ng-if="$index == 0">
-						<b>Neurons</b>
+	 				<td style="width:87px;  padding: 2px" align="center" data-ng-if="$index == 0" class="btn btn-default">
+						Neurons
 					</td>
-	 				<td style="width:60px; border-left: 1px solid silver;" align="center" data-ng-if="$index > 0"></td>
+	 				<td style="width:87px; " align="center" data-ng-if="$index > 0"></td>
 	 			</tr>	
 				<tr >
-					<td style="width:60px; border-right: 1px solid silver;" >
-						<span data-ng-if="$index == 0"><b>input</b></span>
-						<span data-ng-if="$index == view.model.network.neurons.length-1"><b>output</b></span>
-	 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger" autocomplete="off"
+					<td style="width:50px; " >
+						<span data-ng-if="$index == 0" class="btn btn-default" style="padding:2px;">input</span>
+						<span data-ng-if="$index == view.model.network.neurons.length-1" class="btn btn-default" style="padding:2px;">output</span>
+	 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger" autocomplete="off" 
 	 						ng-click="removeLayer($index)"
 	 					>
 						  	x
@@ -278,17 +308,24 @@
 					<td data-ng-repeat="neuron in layer" class="neuron_place" align="center" >
 						<div id="n{{neuron.position}}" class="neuron" data-toggle="tooltip" title="..."></div>
 					</td>
-					<td style="width:60px; border-left: 1px solid silver;" align="right">
+					<td style="width:50px; " align="right">
+						<nobr>
 	 					<button  type="button" data-toggle="button" data-loading-text="X" class="btn btn-primary" autocomplete="off"
 	 						ng-click="addNeuron($index)"
-	 					>
-						  	+
-						</button>						
+	 						data-ng-if="layer.length < 10"
+	 					>+</button>	
+						<span>{{layer.length}}</span>
+	 					<button type="button" data-toggle="button" data-loading-text="X" class="btn btn-danger" autocomplete="off"
+	 						ng-click="removeNeuron($index,-1)"
+	 						data-ng-if="layer.length > 1" 
+	 					>-</button>
+						</nobr>											
 					</td>					
 				</tr>
 	 			<tr data-ng-if="$index == view.model.network.neurons.length-1">
-	 				<td style="width:60px; " >	 				
-	 					<button  type="button" id="execButton" data-toggle="button" data-loading-text=">" class="btn btn-primary" autocomplete="off">
+	 				<td style="width:50px; " >	 				
+	 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary" autocomplete="off"
+	 					ng-click="calculation()">
 						  	>
 						</button>
 	 				</td>
@@ -298,7 +335,7 @@
 	 					</div>
 	 				
 	 				</td>
-	 				<td style="width:60px; " ></td>
+	 				<td style="width:87px; " ></td>
 	 			</tr>	
 	
 			</table>	
@@ -364,6 +401,38 @@ app.controller('networksCtrl',
 				})
 		);
 		
+		$scope.addLayer = function() {
+
+				if($scope.view.model.worker.executionState!=1){
+				  	$http
+				  	.post('network-addlayer')
+				  	.success(function(data, status, headers, config) { 
+				    	isPostRendered=false;
+				    	cleanSynapses($scope);
+				    	$scope.view.model.network = {
+							neurons : [],
+							synapses : [] 
+					    };
+				    	$scope.view.init(data);
+
+					});
+				}
+
+			
+		}
+		
+		$scope.calculation = function() {
+
+				if($scope.view.model.worker.executionState!=1){
+				  	$http
+				  	.post('network-exec')
+				  	.success(function(data, status, headers, config) { 
+				    	$scope.view.init(data);
+					});
+				}
+		
+		}		
+		
 		$scope.removeLayer = function(layer) {
 			if($scope.view.model.worker.executionState!=1){
 				if(confirm('Are you sure to remove the layer #'+layer+'?')){
@@ -403,7 +472,7 @@ app.controller('networksCtrl',
 	    
 	    $scope.removeNeuron = function(layer,order) {
 	    	if($scope.view.model.worker.executionState!=1){
-	    		if(confirm('Are you sure to remove the neuron #'+layer+'-'+order+'?')){
+	    		if(confirm('Are you sure to remove the last neuron from layer #'+layer+'?')){
 					$http
 					.post('network-removeneuron',JSON.stringify({layer:layer,order:order}))
 					.success(function(data, status, headers, config) { 
@@ -483,9 +552,6 @@ app.directive('resize', function ($window) {
 						  	if(this.className){
 						  		if(this.className=='neuron'){
 						  			this.className='neuron-expand';	
-						  			
-						  			
-						  			
 						  			drawSynapses(this,$scope,true);
 						  		}else if(this.className=='neuron-expand'){
 						  			this.className='neuron';
@@ -499,7 +565,7 @@ app.directive('resize', function ($window) {
 		);
 
 		
-//		document.querySelectorAll('[data-toggle="tooltip"]').tooltip();
+
 		isPostRendered = true;
 		
 	}
@@ -532,26 +598,12 @@ app.directive('resize', function ($window) {
 				});
 			});	
 			
-			var btnExec = document.getElementById('execButton');
-			btnExec.addEventListener('click', function() {
+			var btnReset = document.getElementById('resetButton');
+			btnReset.addEventListener('click', function() {
 				if($scope.view.model.worker.executionState!=1){
-				  	new Button(btnExec,'loading'); 
+				  	new Button(btnReset,'loading'); 
 				  	$http({
-						url:'network-exec',
-						method : 'GET'
-				    }).success(function(data, status, headers, config) { 
-				    	$scope.view.init(data);
-						new Button(btnExec,"reset");
-					});
-				}
-			});
-			
-			var btnAddLayer = document.getElementById('addLayerButton');
-			btnAddLayer.addEventListener('click', function() {
-				if($scope.view.model.worker.executionState!=1){
-				  	new Button(btnAddLayer,'loading'); 
-				  	$http({
-						url:'network-addlayer',
+						url:'network-reset',
 						method : 'GET'
 				    }).success(function(data, status, headers, config) { 
 				    	isPostRendered=false;
@@ -563,12 +615,10 @@ app.directive('resize', function ($window) {
 				    	$scope.view.init(data);
 		
 		//		    	isPostRendered==true;
-						new Button(btnAddLayer,"reset");
+						new Button(btnReset,"reset");
 					});
 				}
-			});
-			
-	
+			});			
 	
 			var btnData = document.getElementById('dataButton');
 			btnData.addEventListener('click', function() {
@@ -578,26 +628,97 @@ app.directive('resize', function ($window) {
 					url:'network-viewdata',
 					method : 'GET'
 			    }).success(function(data, status, headers, config) { 
-			    	var txt = '<div style="width:100%;height:400px;overflow:auto;">';
+			    	var btnid = '_'+new Date().getTime();
+			    	var txt = '<textarea id="txtUpdateData'+btnid+'" style="width:100%;height:400px;white-space: pre; word-wrap: normal;">';
 			    	if(data){
 			    		[].forEach.call(
 			    				data.data,
 			    				function(d){
 			    					for(var i=0;i<d.length;i++)
 			    						txt+=d[i]+';';
-			    					txt+='<br>';	
+			    					txt+='\n';	
 			    				}
 			    			);
 			    	}
-			    	txt+='</div>';
+			    	txt+='</textarea>';
 					new clpopup({
 						type: 'info',
-						message: txt
+						footer: '<button id="btnUpdateData'+btnid+'" type="button" class="btn btn-danger" data-loading-text="Wait..." >Update</button>',
+						message: txt,
+						success: function(){
+							var instance = this;
+							var btnUpdate = document.getElementById('btnUpdateData'+btnid);
+							btnUpdate.addEventListener('click', function() {
+							  	new Button(btnUpdate,'loading'); 
+								$http
+								.post('network-updatedata',JSON.stringify({data:document.getElementById('txtUpdateData'+btnid).value}))
+								.success(function(data, status, headers, config) { 
+									new Button(btnUpdate,"reset");
+									instance.close();
+								});
+							});
+						}
 					}).open();					 
+				 
 	
 					new Button(btnData,"reset");
 				});
 			});
+			
+			var btnPreview = document.getElementById('previewButton');
+			btnPreview.addEventListener('click', function() {
+			  	new Button(btnPreview,'loading'); 
+	
+				$http({
+					url:'network-viewnetwork',
+					method : 'GET'
+			    }).success(function(data, status, headers, config) { 
+			    	
+			    	var btnid = '_'+new Date().getTime();
+			    	var txt = ''
+			    	if(data){
+			    		txt+=data.network;	
+			    		txt=txt.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"');
+			    		txt=txt.replace(/\\/g, '');
+			    	}
+			    	txt='<textarea  id="txtUpdateNetwork'+btnid+'" style="width:100%;height:400px;white-space: pre; word-wrap: normal;">'+txt+'</textarea>';
+			    	
+					new clpopup({
+						type: 'info',
+						footer: '<button id="btnUpdateNetwork'+btnid+'" type="button" class="btn btn-danger" data-loading-text="Wait..." >Update</button>',
+						message: txt,
+						success: function(modal){
+							var instance = this;
+							var btnUpdate = document.getElementById('btnUpdateNetwork'+btnid);
+							btnUpdate.addEventListener('click', function() {
+							  	new Button(btnUpdate,'loading'); 
+					
+								$http
+								.post('network-updatenetwork',JSON.stringify({networksource:document.getElementById('txtUpdateNetwork'+btnid).value}))
+								.success(function(data, status, headers, config) { 
+									new Button(btnUpdate,"reset");
+									instance.close();
+									if(data.model.error && data.model.error!=""){
+								    	$scope.view.init(data);
+								    	$scope.view.message();
+									}else{
+								    	isPostRendered=false;
+								    	cleanSynapses($scope);
+								    	$scope.view.model.network = {
+											neurons : [],
+											synapses : [] 
+									    };
+								    	$scope.view.init(data);
+									}
+								});
+							});
+						}
+					}).open();					 
+	
+					new Button(btnPreview,"reset");
+				});
+			});
+			
 			
 			
 			var selectActivationFunctions = document.getElementById('activationFunctions');
@@ -749,21 +870,21 @@ app.directive('resize', function ($window) {
 		var selected = [];
 		for(var i in $scope.view.model.network.synapses){
 			var synapse = $scope.view.model.network.synapses[i];
-			if(synapse['drawcounter'] && synapse['drawcounter']>0)
+//			if(synapse['drawcounter'] && synapse['drawcounter']>0)
 				selected.push(synapse);
 									
 		}
 		for(var i in selected){
 			var synapse = selected[i];
 			if(synapse.direction){
-				drawLineAndLabel(synapse, false, false);
+				drawLineAndLabel(synapse, false, false, true);
 			}
 			
 		}
 	}	
 
 	
-	function drawLineAndLabel(synapse, show, redraw){
+	function drawLineAndLabel(synapse, show, redraw, ignoreDrawcounter){
 		var res = synapse.direction.split('|');
 		var from = document.getElementById('n'+res[0]);
 		var to = document.getElementById('n'+res[1]);
@@ -842,7 +963,7 @@ app.directive('resize', function ($window) {
 			}else
 				synapse.drawcounter=synapse.drawcounter-1;
 			
-			if(synapse.drawcounter<=0){
+			if(synapse.drawcounter<=0 || (ignoreDrawcounter && ignoreDrawcounter==true)){
 				var element = document.getElementById(id_synapse);
 				if(element)
 					element.parentNode.removeChild(element);	

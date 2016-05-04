@@ -8,7 +8,7 @@ import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.serialize.Serialized;
 import it.sijinn.common.Network;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
-import it.sijinn.perceptron.utils.io.IStreamWrapper;
+import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 
 public class Worker extends generic_batch implements i_batch, Serializable{
@@ -26,13 +26,15 @@ public class Worker extends generic_batch implements i_batch, Serializable{
 	
 	private ITrainingStrategy trainingStrategy;
 	
-	private IStreamWrapper streamWrapper;
+	private IDataReader dataReader;
 //	private IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
 	private IReadLinesAggregator readLinesAggregator;	
 	
 	private float delta=0;
+	private long deltaTime=0;
 	private int step=0;
 	private boolean forcedStop = false;
+	
 
 	@Override
 	public String execute() throws Exception {
@@ -43,7 +45,7 @@ public class Worker extends generic_batch implements i_batch, Serializable{
 			startTime = new Date().getTime();
 			
 			delta = network.training(
-					streamWrapper,
+					dataReader,
 					trainingStrategy,
 					readLinesAggregator
 					);
@@ -52,7 +54,7 @@ public class Worker extends generic_batch implements i_batch, Serializable{
 			while(step<maxSteps && delta>approximation && !forcedStop){
 				if(delta>approximation){
 					delta = network.training(
-							streamWrapper,
+							dataReader,
 							trainingStrategy,
 							readLinesAggregator);
 //					if(step % 1000 == 0)
@@ -75,7 +77,7 @@ public class Worker extends generic_batch implements i_batch, Serializable{
 			
 
 
-
+			deltaTime = new Date().getTime() - startTime;
 		}catch(Exception e){
 			
 		}
@@ -139,18 +141,6 @@ public class Worker extends generic_batch implements i_batch, Serializable{
 
 
 
-	public IStreamWrapper getStreamWrapper() {
-		return streamWrapper;
-	}
-
-
-	public Worker setStreamWrapper(IStreamWrapper streamWrapper) {
-		this.streamWrapper = streamWrapper;
-		return this;
-	}
-
-
-
 
 	public float getDelta() {
 		return delta;
@@ -203,6 +193,23 @@ public class Worker extends generic_batch implements i_batch, Serializable{
 
 	public Worker setDelta(float delta) {
 		this.delta = delta;
+		return this;
+	}
+
+	public long getDeltaTime() {
+		return deltaTime;
+	}
+
+	public void setDeltaTime(long deltaTime) {
+		this.deltaTime = deltaTime;
+	}
+
+	public IDataReader getDataReader() {
+		return dataReader;
+	}
+
+	public Worker setDataReader(IDataReader dataReader) {
+		this.dataReader = dataReader;
 		return this;
 	}	
 

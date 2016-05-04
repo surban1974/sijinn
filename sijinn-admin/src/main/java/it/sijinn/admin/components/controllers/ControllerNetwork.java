@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -32,6 +33,7 @@ import it.classhidra.scheduler.scheduling.db.db_batch_log;
 import it.classhidra.scheduler.scheduling.thread.singleThreadEvent;
 import it.classhidra.serialize.JsonWriter;
 import it.classhidra.serialize.Serialized;
+import it.sijinn.admin.beans.ExtLogger;
 import it.sijinn.admin.beans.NetworkWrapper;
 import it.sijinn.admin.workers.Worker;
 import it.sijinn.common.Network;
@@ -44,10 +46,11 @@ import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
+import it.sijinn.perceptron.utils.IExtLogger;
 import it.sijinn.perceptron.utils.io.IDataReader;
-import it.sijinn.perceptron.utils.io.IStreamWrapper;
 import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
 import it.sijinn.perceptron.utils.io.SimpleStreamReader;
+import it.sijinn.perceptron.utils.io.SimpleStringReader;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 import it.sijinn.perceptron.utils.parser.SimpleLineDataAggregator;
@@ -70,7 +73,7 @@ public class ControllerNetwork extends AbstractBase implements i_action, i_bean,
 	private static final long serialVersionUID = 1L;
 	
 	final private String resource_training = "examples/resources/interpolation_training.txt";
-	private IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
+	private IDataReader dataReader;
 	private IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");	
 	
 	private singleThreadEvent event;
@@ -94,7 +97,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		throws ServletException, UnavailableException, bsControllerException {
 	
 	
-	if(wrapper==null){
+	if(wrapper==null)
 		wrapper = new NetworkWrapper(new Network(
 			new ArrayList<List<Neuron>>(Arrays.asList(
 					Network.createLayer(2),
@@ -104,23 +107,27 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					)),
 			new RandomPositiveWeightGenerator()
 		));
-	}
 	
-	if(algorithm==null){
+	
+	if(algorithm==null)
 		algorithm = new BPROP()
 				.setDeferredAgregateFunction(new SUMMATOR());
-	}	
+		
 	
-	if(strategy==null){
+	if(strategy==null)
 		strategy = new BatchGradientDescent()
 				.setTrainingAlgorithm(algorithm)
 				.setErrorFunction(new MSE());
-	}
+	
 	
 	if(worker==null)
 		worker = new Worker();
 	
+	if(dataReader==null)
+		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
+	
 
+	Network.addExtLogger(new ExtLogger());
 	
 	return super.actionservice(request, response);
 }
@@ -241,7 +248,7 @@ public String restart(){
 		
 		.setNetwork(wrapper.obtainInstance().clearSynapses(new RandomPositiveWeightGenerator(), true))
 		.setTrainingStrategy(strategy)
-		.setStreamWrapper(streamWrapper)
+		.setDataReader(dataReader)
 		.setReadLinesAggregator(readLinesAggregator)
 		;
 	
@@ -278,9 +285,10 @@ public String addlayer(){
 	
 	if(wrapper!=null)
 		wrapper.obtainInstance()
-		.removeSynapses()
-		.insertLayer(wrapper.obtainInstance().getLayers().size()-1, 1, Neuron.create(activationFunctions, null), false)
-		.createSynapses(0);
+//		.removeSynapses()
+		.insertLayer(wrapper.obtainInstance().getLayers().size()-2, 1, Neuron.create(activationFunctions, null), false,true)
+//		.createSynapses(0)
+		;
 	
 
 	return JsonWriter.object2json(this.get_bean(), "model");
@@ -295,9 +303,10 @@ public String removelayer(@Parameter(name="layer") int layer){
 	
 	if(wrapper!=null)
 		wrapper.obtainInstance()
-		.removeSynapses()
-		.removeLayer(layer)
-		.createSynapses(0);
+//		.removeSynapses()
+		.removeLayer(layer,true)
+//		.createSynapses(0)
+		;
 	
 
 	return JsonWriter.object2json(this.get_bean(), "model");
@@ -315,9 +324,33 @@ public String addneuron(@Parameter(name="layer") int layer){
 			List<Neuron> neurons = wrapper.obtainInstance().getLayers().get(layer);
 			Neuron neuron = new Neuron(wrapper.obtainInstance(),  Neuron.create(activationFunctions, null), layer, neurons.size(), false) ;
 			wrapper.obtainInstance()
-			.removeSynapses()
-			.addNeuron(neuron, true)
-			.createSynapses(0);
+//			.removeSynapses()
+			.addNeuron(neuron, true, true)
+//			.createSynapses(0)
+			;
+		}
+	}
+	
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+@ActionCall(
+		name="removeneuron",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String removeneuron(@Parameter(name="layer") int layer, @Parameter(name="order") int order){
+	
+	if(wrapper!=null){
+		if(layer>=0 && layer<wrapper.obtainInstance().getLayers().size()){
+			List<Neuron> neurons = wrapper.obtainInstance().getLayers().get(layer);
+			Neuron neuron = new Neuron(wrapper.obtainInstance(),  Neuron.create(activationFunctions, null), layer, neurons.size()-1, false) ;
+			wrapper.obtainInstance()
+//			.removeSynapses()
+			.removeNeuron(neuron, true)
+//			.createSynapses(0)
+			;
 		}
 	}
 	
@@ -340,13 +373,13 @@ public String diffAsJson(){
 		name="viewdata",
 		navigated="false",
 		Redirect=@Redirect(contentType="application/json"),
-		Expose=@Expose(method = Expose.POST))
+		Expose=@Expose(method = Expose.GET))
 public String viewdata(){
 	
 	List<float[]> aggr = new ArrayList<float[]>(); 
-	if(streamWrapper!=null && readLinesAggregator!=null){
+	if(dataReader!=null && readLinesAggregator!=null){
 		try{
-			final IDataReader dataReader = new SimpleStreamReader(streamWrapper);		
+
 			if(dataReader.open()){
 				Object next=null;
 				int linenumber=0;
@@ -371,6 +404,126 @@ public String viewdata(){
 	return JsonWriter.object2json(aggr, "data", null,true,3);
 }	
 
+@ActionCall(
+		name="setdata",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(method = Expose.GET))
+public void setdata(@Parameter(name="data") String data){
+	
+	if(data!=null){
+		dataReader = new SimpleStringReader(data, null);
+	}
+
+}
+
+
+@ActionCall(
+		name="reset",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String reset(){
+	
+
+		readLinesAggregator = new SimpleLineDataAggregator(";");	
+		
+		
+		learningRate = 0.5f;
+		learningMomentum = 0.01f;
+		activationFunctions = "SimpleSigmoidFermi";
+	
+	
+		wrapper = new NetworkWrapper(new Network(
+			new ArrayList<List<Neuron>>(Arrays.asList(
+					Network.createLayer(2),
+					Network.createLayer(4, Neuron.create(activationFunctions, null)),
+					Network.createLayer(3, Neuron.create(activationFunctions, null)),
+					Network.createLayer(1, Neuron.create(activationFunctions, null))
+					)),
+			new RandomPositiveWeightGenerator()
+		));
+	
+	
+		algorithm = new BPROP()
+				.setDeferredAgregateFunction(new SUMMATOR());
+		
+	
+		strategy = new BatchGradientDescent()
+				.setTrainingAlgorithm(algorithm)
+				.setErrorFunction(new MSE());
+	
+	
+		worker = new Worker();
+	
+		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
+
+	
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+@ActionCall(
+		name="viewnetwork",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(method = Expose.GET))
+public String viewnetwork(){
+	
+	String result = ""; 
+	if(wrapper!=null && wrapper.obtainInstance()!=null)
+		result = wrapper.obtainInstance().save();
+	
+	result = result.replace("\n", "\\\\n").replace("\r", "\\\\r").replace("\t", "\\\\t").replace("\"", "\\\"");
+	
+	return JsonWriter.object2json(result, "network", null,true,1);
+}	
+
+@ActionCall(
+		name="updatenetwork",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(method = Expose.POST))
+public String updatenetwork(@Parameter(name="networksource") String networksource){
+
+
+	
+	Network newnetwork = new Network().open(networksource);
+	
+	if(Network.obtainExtLogger()!=null){
+		Map<String, List<String>> log = (Map<String, List<String>>)Network.obtainExtLogger().export();
+		String err="";
+		if(log!=null && log.get(IExtLogger.log_ERROR)!=null){
+			for(String mess:log.get(IExtLogger.log_ERROR))
+				err+=mess+" ";
+		}
+		if(!err.equals("")){
+			clear();
+			setError(err);
+			String json = JsonWriter.object2json(this.get_bean(), "model");
+			clear();
+			return json;
+		}else{
+			if(networksource!=null && wrapper!=null && wrapper.obtainInstance()!=null)
+				wrapper.setInstance(newnetwork);			
+		}
+	}
+	
+	return JsonWriter.object2json(this.get_bean(), "model");
+}	
+
+@ActionCall(
+		name="updatedata",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(method = Expose.POST))
+public String updatedata(@Parameter(name="data") String updatedata){
+
+	if(updatedata!=null)
+		dataReader = new SimpleStringReader(updatedata,null);
+	
+	return JsonWriter.object2json(this.get_bean(), "model");
+}	
 
 public singleThreadEvent getEvent() {
 	return event;

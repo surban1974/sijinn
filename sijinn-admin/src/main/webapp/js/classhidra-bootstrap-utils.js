@@ -19,8 +19,11 @@
 
 	var clpopup = function(prot){
 	
-		this.type 	= (prot)?prot.type:'info';
+		this.type 		= (prot)?prot.type:'info';
+		this.footer 	= (prot)?prot.footer:null;
 		this.message	= (prot)?prot.message:null;
+		this.success 	= (prot)?prot.success:null;
+		this.modal 		= null;
 	
 	}
 	
@@ -46,19 +49,30 @@
 		},
 	
 		show : function(){
-			var modal = new Modal(
-					document.getElementById('modalpopup'), 
-					{
-						content: '<div class="modal-header">'
-								+'<div id="modalpopup.body" class="'+this.getClassByType()+'" ></div>'
-								+'<div class="modal-footer">'
-								+'<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
-								+'</div>'
-					}
+			this.modal = new Modal(
+						document.getElementById('modalpopup'), 
+						{
+							content: '<div class="modal-header">'
+									+'<div id="modalpopup.body" class="'+this.getClassByType()+'" ></div>'
+									+'<div class="modal-footer">'
+									+((this.footer && this.footer!='')?this.footer:'')
+									+'<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
+									+'</div>'
+						}
 				);
-				modal.open();
-				if(this.message)
-					document.getElementById('modalpopup.body').innerHTML = this.message;
+			this.modal.open();
+
+			if(this.message)
+				document.getElementById('modalpopup.body').innerHTML = this.message;
+    		if(this.success){
+				if (typeof this.success === 'function') 
+					this.success();
+			}
+		},
+		
+		close : function(){
+			if(this.modal)
+				this.modal.close();
 		},
 	
 		getClassByType : function(){
