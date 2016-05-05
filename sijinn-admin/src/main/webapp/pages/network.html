@@ -147,7 +147,7 @@
 						 				<table>
 											<tr>	
 								 				<td >
-								 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off">
+								 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Reset default" class="btn btn-danger" autocomplete="off">
 													  	Reset default
 													</button>
 								 				</td>								
@@ -263,10 +263,10 @@
 					</div>
 				</div>	
 	 		
-			 		<div id="waiter" style="width:100%;">
-			 			<table style="width:100%">
+			 		<div style="width:100%;">
+			 			<table style="width:100%" >
 			 				<tr>
-			 					<td style="width:100%" align="center"><img src="images/wait.gif" border="0"/></td>
+			 					<td style="width:100%;height: 25px;" align="center"><img id="waiter" src="images/wait.gif" border="0"/></td>
 			 				</tr>
 			 			</table>
 			 		</div>		 		
@@ -442,7 +442,7 @@ app.controller('networksCtrl',
 				  	$http
 				  	.post('network-addlayer')
 				  	.success(function(data, status, headers, config) { 
-				    	isPostRendered=false;
+				  		setPostRendered(false);
 				    	cleanSynapses($scope);
 				    	$scope.view.model.network = {
 							neurons : [],
@@ -474,7 +474,7 @@ app.controller('networksCtrl',
 					$http
 					.post('network-removelayer',JSON.stringify({layer:layer}))
 					.success(function(data, status, headers, config) { 
-				    	isPostRendered=false;
+						setPostRendered(false);
 				    	cleanSynapses($scope);
 				    	$scope.view.model.network = {
 							neurons : [],
@@ -492,7 +492,7 @@ app.controller('networksCtrl',
 				$http
 				.post('network-addneuron',JSON.stringify({layer:layer}))
 				.success(function(data, status, headers, config) { 
-			    	isPostRendered=false;
+					setPostRendered(false);
 			    	cleanSynapses($scope);
 			    	$scope.view.model.network = {
 						neurons : [],
@@ -511,7 +511,7 @@ app.controller('networksCtrl',
 					$http
 					.post('network-removeneuron',JSON.stringify({layer:layer,order:order}))
 					.success(function(data, status, headers, config) { 
-				    	isPostRendered=false;
+						setPostRendered(false);
 				    	cleanSynapses($scope);
 				    	$scope.view.model.network = {
 							neurons : [],
@@ -612,10 +612,21 @@ app.directive('resize', function ($window) {
 
 		
 
-		isPostRendered = true;
-		document.getElementById("waiter").style.display='none';
-		if(document.getElementById("canvas").style.display=='none')
-			document.getElementById("canvas").style.display='block';
+		setPostRendered(true);
+
+		
+	}
+	
+	function setPostRendered(val){
+		isPostRendered = val;
+		if(val==true){
+			window.setTimeout(function(){
+				document.getElementById("waiter").style.visibility='hidden';
+			},400);
+			if(document.getElementById("canvas").style.display=='none')
+				document.getElementById("canvas").style.display='block';
+		}else
+			document.getElementById("waiter").style.visibility='visible';
 		
 	}
 	
@@ -655,7 +666,7 @@ app.directive('resize', function ($window) {
 						url:'network-reset',
 						method : 'GET'
 				    }).success(function(data, status, headers, config) { 
-				    	isPostRendered=false;
+				    	setPostRendered(false);
 				    	cleanSynapses($scope);
 				    	$scope.view.model.network = {
 							neurons : [],
@@ -751,13 +762,14 @@ app.directive('resize', function ($window) {
 								    	$scope.view.init(data);
 								    	$scope.view.message();
 									}else{
-								    	isPostRendered=false;
+								    	setPostRendered(false);
 								    	cleanSynapses($scope);
 								    	$scope.view.model.network = {
 											neurons : [],
 											synapses : [] 
 									    };
 								    	$scope.view.init(data);
+								    	setPostRendered(true);
 									}
 								});
 							});
