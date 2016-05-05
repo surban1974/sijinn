@@ -25,6 +25,13 @@
         margin-bottom: 20px;
       }
       
+      .btn-border{
+		border-radius: 100%;
+		-moz-box-shadow: 1px 1px 6px silver;
+		-webkit-box-shadow: 1px 1px 6px silver;
+		box-shadow: 1px 1px 6px silver;      
+      }
+      
       div.canvas{
 
 		background-color_: white;
@@ -75,6 +82,11 @@
       td.label_datas{
       	padding: 5px;
       	vertical-align: middle;
+      }
+      
+      td.separator{
+		width: 1px;
+		
       }
       
       div.synapse{
@@ -270,26 +282,25 @@
  		
 
 		</div> 		
- 		<div resize class="canvas">		
+ 		<div resize  class="canvas">		
 	 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
 	
 	 			<tr>
-	 				<td style="width:50px; padding: 2px" data-ng-if="$index == 0" >
-						<nobr>
-	 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary" autocomplete="off"
-	 					ng-click="addLayer()"
-	 					>
-					  	+
-						</button>
-						<span >{{view.model.network.neurons.length}}</span>
-						</nobr>
+	 				<td style="width:50px; padding: 2px" data-ng-if="$index == 0" class="btn btn-default">
+						Layers
 					</td>
 					<td style="width:50px; " align="center" data-ng-if="$index > 0"></td>
+					
+						<td class="separator"></td>
+					
 	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center" style="">
 	 					<div data-ng-if="neuron.layer == 0">
 	 						<input id="i{{neuron.position}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
 	 					</div>
 	 				</td>
+	 				
+	 					<td class="separator"></td>
+	 				
 	 				<td style="width:87px;  padding: 2px" align="center" data-ng-if="$index == 0" class="btn btn-default">
 						Neurons
 					</td>
@@ -297,26 +308,55 @@
 	 			</tr>	
 				<tr >
 					<td style="width:50px; " >
-						<span data-ng-if="$index == 0" class="btn btn-default" style="padding:2px;">input</span>
-						<span data-ng-if="$index == view.model.network.neurons.length-1" class="btn btn-default" style="padding:2px;">output</span>
-	 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger" autocomplete="off" 
+
+						<nobr data-ng-if="$index == 0">
+	 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off" 
+	 					ng-click="addLayer()"
+	 					title="Add New layer"
+	 					>
+					  	+
+						</button>
+						<span >{{view.model.network.neurons.length}}</span>
+						</nobr>						
+						
+
+
+	 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger btn-border" autocomplete="off" 
 	 						ng-click="removeLayer($index)"
+	 						title="Remove layer"
 	 					>
 						  	x
 						</button>						
 					</td>
-					<td data-ng-repeat="neuron in layer" class="neuron_place" align="center" >
-						<div id="n{{neuron.position}}" class="neuron" data-toggle="tooltip" title="..."></div>
+					
+						<td class="separator"></td>
+					
+					<td data-ng-repeat="neuron in layer" class="neuron_place" align="center">
+						<div id="n{{neuron.position}}" class="neuron"
+							data-title="Neuron"
+							data-content="
+							<i>layer:</i>&nbsp;{{neuron.layer}}<br/>
+							<i>order:</i>&nbsp;{{neuron.order}}<br/>
+							<i>activation:</i>&nbsp;{{neuron.function.id}}<br/>
+							<i>contain:</i>&nbsp;{{neuron.output}}							
+							"
+						></div>
+
 					</td>
+					
+						<td class="separator"></td>
+						
 					<td style="width:50px; " align="right">
 						<nobr>
-	 					<button  type="button" data-toggle="button" data-loading-text="X" class="btn btn-primary" autocomplete="off"
+	 					<button  type="button" data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off"
 	 						ng-click="addNeuron($index)"
+	 						title="Add new neuron for current layer"
 	 						data-ng-if="layer.length < 10"
 	 					>+</button>	
 						<span>{{layer.length}}</span>
-	 					<button type="button" data-toggle="button" data-loading-text="X" class="btn btn-danger" autocomplete="off"
+	 					<button type="button" data-toggle="button" data-loading-text="-" class="btn btn-danger btn-border" autocomplete="off"
 	 						ng-click="removeNeuron($index,-1)"
+	 						title="Remove last neuron from current layer"
 	 						data-ng-if="layer.length > 1" 
 	 					>-</button>
 						</nobr>											
@@ -324,24 +364,32 @@
 				</tr>
 	 			<tr data-ng-if="$index == view.model.network.neurons.length-1">
 	 				<td style="width:50px; " >	 				
-	 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary" autocomplete="off"
-	 					ng-click="calculation()">
+	 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary btn-border" autocomplete="off"
+	 					ng-click="calculation()"
+	 					title="Calculate output layer"
+	 					>
 						  	>
 						</button>
 	 				</td>
+	 				
+	 					<td class="separator"></td>
+	 				
 	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" align="center">
 	 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse" style="position: relative;display: block;" >
 	 						{{neuron.output}}
 	 					</div>
 	 				
 	 				</td>
+	 				
+	 					<td class="separator"></td>
+	 				
 	 				<td style="width:87px; " ></td>
 	 			</tr>	
 	
 			</table>	
 		</div>
 		
-		<cycle data-ng-repeat="synapse in view.model.network.synapses">
+		<cycle data-ng-repeat="synapse in view.model.network.synapses"  >
 		
 			<div id="sl{{synapse.direction}}" class="synapse">{{synapse.weight}}</div>
 		
@@ -536,6 +584,7 @@ app.directive('resize', function ($window) {
         
     }
 }); 
+
 	
 	
 	function postRendering($scope,$http,$timeout){
@@ -560,7 +609,17 @@ app.directive('resize', function ($window) {
 
 						  	}
 						},
-						false)
+						false);
+					e.addEventListener(
+							'mouseover',
+							function() {
+								var someTitleFromOtherCode = 'Sample title';
+								var someContentFromOuterSpace = '<p>Some sample message.</p>';
+
+								//initiate Popover with the template
+								var popover2 = new Popover(this);	
+							},
+							false)
 				}
 		);
 
