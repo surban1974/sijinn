@@ -113,293 +113,280 @@
 
   <body>
 
-    <div class="container" style="padding-top: 45px">
-
-      <!-- Navbar -->
-
-      <nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
-
-
-
-      <!-- Main component for a primary marketing message or call to action -->
+	<div class="container" style="padding-top: 45px">
+		<nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
       
-       <div class="jumbotron" style="padding:5px;">
- 
- 		<form id="network" method="post" ng-app="networksApp" ng-controller="networksCtrl"> 
+       	<div class="jumbotron" style="padding:5px;"> 
+ 			<form id="network" method="post" ng-app="networksApp" ng-controller="networksCtrl">  		
+ 				<div> 		
+					<ul id="tab-header" class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active"><a href="#net" id="net-tab" role="tab" data-toggle="tab" aria-controls="net" aria-expanded="true">Network</a></li>
+						<li role="presentation"><a href="#training" role="tab" id="training-tab" data-toggle="tab" aria-controls="training">Training</a></li>
+					</ul>
  		
-  		
- 		
- 		<div>
- 		
-			<ul id="tab-header" class="nav nav-tabs" role="tablist">
-				<li role="presentation" class="active"><a href="#net" id="net-tab" role="tab" data-toggle="tab" aria-controls="net" aria-expanded="true">Network</a></li>
-				<li role="presentation"><a href="#training" role="tab" id="training-tab" data-toggle="tab" aria-controls="training">Training</a></li>
-			</ul>
- 		
-		<div id="networkTabContent" class="tab-content" >
-			<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 90px; ">
-	 		<div class="form-group" style="padding-top: 10px">
-	 			<table>
-			 		<tr>
-			 			<td>
-			 				<table>
-								<tr>	
-							 		<td class="label_datas"  >
-							  			<label>Type:</label>	
-							  		</td>
-							  		<td>			  			
-							  			<span>Perseptron</span>
-							  		</td>
+					<div id="networkTabContent" class="tab-content" >
+						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 90px; ">
+				 		<div class="form-group" style="padding-top: 10px">
+				 			<table>
+						 		<tr>
+						 			<td>
+						 				<table>
+											<tr>	
+										 		<td class="label_datas"  >
+										  			<label>Type:</label>	
+										  		</td>
+										  		<td>			  			
+										  			<span>Perseptron</span>
+										  		</td>
+										  	</tr>
+										  </table>
+									</td>	  		
 							  	</tr>
-							  </table>
-						</td>	  		
-				  	</tr>
-				  	<tr>
-			 			<td>
-			 				<table>
-								<tr>	
-					 				<td >
-					 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off">
-										  	Reset default
-										</button>
-					 				</td>								
-					 				<td>
-			  							&nbsp;&nbsp;
-			  						</td>								
-							  		<td class="label_datas">	
-								  		<label >Activation functions:</label>
-								  	</td>
-								  	<td >
-								  		<select id="activationFunctions" class="bs-select form-control" >
-					    					<option value="SimpleGaussian">Gaussian</option>
-									    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
-									    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
-									    	<option value="SimpleSin">Sin</option>
-										</select>
-								  	</td>
-							  		<td class="label_datas">	
-								  		<label >Layers:</label>
-								  	</td>
-							  		<td class="label_datas">	
-								  		<span >{{view.model.network.neurons.length}}</span>
-								  	</td>
-			  						<td>
-			  							&nbsp;&nbsp;
-			  						</td>	
-					 				<td >
-					 					<button type="button" id="previewButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-info" autocomplete="off">
-										  	Network source
-										</button>
-					 				</td>
-					 											  									  		
-								</tr>
-							</table>
-						</td>										  	
-			  		</tr>
-			  	</table>	
-	
-			</div>
-		</div>
-		
-			<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 90px">
-	 		<div class="form-group"  style="padding-top: 10px">
-
-		 		<table>
-			 		<tr>	
-						<td>
-							<table>
-								<tr>
-							  		<td class="label_datas">	
-								  		<label >Strategy:</label>
-								  	</td>
-								  	<td >
-								  		<select id="trainingStrategy" class="bs-select form-control" >
-									    	<option value="BatchGradientDescent">Batch Gradient Descent</option>
-									    	<option value="StochasticGradientDescent">Stochastic Gradient Descent</option>
-										</select>
-								  	</td>	
-							  		<td class="label_datas">	
-								  		<label >Algorithm:</label>
-								  	</td>
-								  	<td >
-								  		<select id="trainingAlgorithm" class="bs-select form-control" >
-									    	<option value="BPROP">Back Propagation</option>
-									    	<option value="QPROP">Quick Propagation</option>
-									    	<option value="RPROP">Resilient Propagation</option>
-										</select>
-								  	</td>
-								  	<td class="label_datas">
-								  		<label for="settings.root">Approximation error (MSE):</label>
-			  						</td>
-			  						<td>	
-			  							<input type="text" class="form-control" style="max-width: 120px; text-align: center;" data-ng-model="view.model.worker.approximation"/>
-			  						</td>
-			  						<td>
-			  							&nbsp;&nbsp;
-			  						</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<table>
-								<tr>
-							 		<td >
-										<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" autocomplete="off">
-										  	Training Data
-										</button>							 		
-										<button type="button" id="loadButton" data-toggle="button" data-loading-text="Training..." class="btn btn-primary" autocomplete="off">
-										  	Start training
-										</button>
-										<button type="button" id="stopButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off"  ng-if="view.model.worker.executionState == 1">
-										  	Interrupt
-										</button>
-							
-									</td>	
-											
-									<td valign="middle" style="padding: 10px; min-width: 150px">
-								  			<label>Epoch:</label>
-								  			<span>{{ view.model.worker.step}}</span>
-								  	</td>
-								  	<td valign="middle" style="padding: 10px; min-width: 150px">	
-								  			<label>MSE:</label>
-								  			<span>{{ view.model.worker.delta}}</span>
+							  	<tr>
+						 			<td>
+						 				<table>
+											<tr>	
+								 				<td >
+								 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off">
+													  	Reset default
+													</button>
+								 				</td>								
+								 				<td>
+						  							&nbsp;&nbsp;
+						  						</td>								
+										  		<td class="label_datas">	
+											  		<label >Activation functions:</label>
+											  	</td>
+											  	<td >
+											  		<select id="activationFunctions" class="bs-select form-control" >
+								    					<option value="SimpleGaussian">Gaussian</option>
+												    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
+												    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
+												    	<option value="SimpleSin">Sin</option>
+													</select>
+											  	</td>
+										  		<td class="label_datas">	
+											  		<label >Layers:</label>
+											  	</td>
+										  		<td class="label_datas">	
+											  		<span >{{view.model.network.neurons.length}}</span>
+											  	</td>
+						  						<td>
+						  							&nbsp;&nbsp;
+						  						</td>	
+								 				<td >
+								 					<button type="button" id="previewButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-info" autocomplete="off">
+													  	Network source
+													</button>
+								 				</td>
+								 											  									  		
+											</tr>
+										</table>
+									</td>										  	
+						  		</tr>
+						  	</table>	
+				
+						</div>
+					</div>
+			
+					<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 90px">
+				 		<div class="form-group"  style="padding-top: 10px">
+			
+					 		<table>
+						 		<tr>	
+									<td>
+										<table>
+											<tr>
+										  		<td class="label_datas">	
+											  		<label >Strategy:</label>
+											  	</td>
+											  	<td >
+											  		<select id="trainingStrategy" class="bs-select form-control" >
+												    	<option value="BatchGradientDescent">Batch Gradient Descent</option>
+												    	<option value="StochasticGradientDescent">Stochastic Gradient Descent</option>
+													</select>
+											  	</td>	
+										  		<td class="label_datas">	
+											  		<label >Algorithm:</label>
+											  	</td>
+											  	<td >
+											  		<select id="trainingAlgorithm" class="bs-select form-control" >
+												    	<option value="BPROP">Back Propagation</option>
+												    	<option value="QPROP">Quick Propagation</option>
+												    	<option value="RPROP">Resilient Propagation</option>
+													</select>
+											  	</td>
+											  	<td class="label_datas">
+											  		<label for="settings.root">Approximation error (MSE):</label>
+						  						</td>
+						  						<td>	
+						  							<input type="text" class="form-control" style="max-width: 120px; text-align: center;" data-ng-model="view.model.worker.approximation"/>
+						  						</td>
+						  						<td>
+						  							&nbsp;&nbsp;
+						  						</td>
+											</tr>
+										</table>
 									</td>
 								</tr>
+								<tr>
+									<td>
+										<table>
+											<tr>
+										 		<td >
+													<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" autocomplete="off">
+													  	Training Data
+													</button>							 		
+													<button type="button" id="loadButton" data-toggle="button" data-loading-text="Training..." class="btn btn-primary" autocomplete="off">
+													  	Start training
+													</button>
+													<button type="button" id="stopButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off"  ng-if="view.model.worker.executionState == 1">
+													  	Interrupt
+													</button>
+										
+												</td>	
+														
+												<td valign="middle" style="padding: 10px; min-width: 150px">
+											  			<label>Epoch:</label>
+											  			<span>{{ view.model.worker.step}}</span>
+											  	</td>
+											  	<td valign="middle" style="padding: 10px; min-width: 150px">	
+											  			<label>MSE:</label>
+											  			<span>{{ view.model.worker.delta}}</span>
+												</td>
+											</tr>
+										</table>
+									</td>								
+								</tr>
 							</table>
-						</td>								
-					</tr>
-				</table>
-			</div>					
-			</div>
-		</div>	
- 		
- 		
- 
-
- 
- 		
-
-		</div> 		
- 		<div resize  class="canvas">		
-	 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
+						</div>					
+					</div>
+				</div>	
+	 		
+			 		<div id="waiter" style="width:100%;">
+			 			<table style="width:100%">
+			 				<tr>
+			 					<td style="width:100%" align="center"><img src="images/wait.gif" border="0"/></td>
+			 				</tr>
+			 			</table>
+			 		</div>		 		
+			 		<div id="canvas" resize  class="canvas" style="display:none;">
 	
-	 			<tr>
-	 				<td style="width:50px; padding: 2px" data-ng-if="$index == 0" class="btn btn-default">
-						Layers
-					</td>
-					<td style="width:50px; " align="center" data-ng-if="$index > 0"></td>
-					
-						<td class="separator"></td>
-					
-	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center" style="">
-	 					<div data-ng-if="neuron.layer == 0">
-	 						<input id="i{{neuron.position}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
-	 					</div>
-	 				</td>
-	 				
-	 					<td class="separator"></td>
-	 				
-	 				<td style="width:87px;  padding: 2px" align="center" data-ng-if="$index == 0" class="btn btn-default">
-						Neurons
-					</td>
-	 				<td style="width:87px; " align="center" data-ng-if="$index > 0"></td>
-	 			</tr>	
-				<tr >
-					<td style="width:50px; " >
+				 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
+				
+				 			<tr>
+				 				<td style="width:50px; padding: 2px" data-ng-if="$index == 0" class="btn btn-default">
+									Layers
+								</td>
+								<td style="width:50px; " align="center" data-ng-if="$index > 0"></td>
+								
+									<td class="separator"></td>
+								
+				 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center" style="">
+				 					<div data-ng-if="neuron.layer == 0">
+				 						<input id="i{{neuron.position}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
+				 					</div>
+				 				</td>
+				 				
+				 					<td class="separator"></td>
+				 				
+				 				<td style="width:87px;  padding: 2px" align="center" data-ng-if="$index == 0" class="btn btn-default">
+									Neurons
+								</td>
+				 				<td style="width:87px; " align="center" data-ng-if="$index > 0"></td>
+				 			</tr>	
+							<tr >
+								<td style="width:50px; " >
+			
+									<nobr data-ng-if="$index == 0">
+				 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off" 
+				 					ng-click="addLayer()"
+				 					title="Add New layer"
+				 					>
+								  	+
+									</button>
+									<span >{{view.model.network.neurons.length}}</span>
+									</nobr>						
+									
+			
+			
+				 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger btn-border" autocomplete="off" 
+				 						ng-click="removeLayer($index)"
+				 						title="Remove layer"
+				 					>
+									  	x
+									</button>						
+								</td>
+								
+									<td class="separator"></td>
+								
+								<td data-ng-repeat="neuron in layer" class="neuron_place" align="center">
+									<div id="n{{neuron.position}}" class="neuron"
+										data-title="Neuron"
+										data-content="
+										<i>layer:</i>&nbsp;{{neuron.layer}}<br/>
+										<i>order:</i>&nbsp;{{neuron.order}}<br/>
+										<i>activation:</i>&nbsp;{{neuron.function.id}}<br/>
+										<i>contain:</i>&nbsp;{{neuron.output}}							
+										"
+									></div>
+			
+								</td>
+								
+									<td class="separator"></td>
+									
+								<td style="width:50px; " align="right">
+									<nobr>
+				 					<button  type="button" data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off"
+				 						ng-click="addNeuron($index)"
+				 						title="Add new neuron for current layer"
+				 						data-ng-if="layer.length < 10"
+				 					>+</button>	
+									<span>{{layer.length}}</span>
+				 					<button type="button" data-toggle="button" data-loading-text="-" class="btn btn-danger btn-border" autocomplete="off"
+				 						ng-click="removeNeuron($index,-1)"
+				 						title="Remove last neuron from current layer"
+				 						data-ng-if="layer.length > 1" 
+				 					>-</button>
+									</nobr>											
+								</td>					
+							</tr>
+				 			<tr data-ng-if="$index == view.model.network.neurons.length-1">
+				 				<td style="width:50px; " >	 				
+				 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary btn-border" autocomplete="off"
+				 					ng-click="calculation()"
+				 					title="Calculate output layer"
+				 					>
+									  	>
+									</button>
+				 				</td>
+				 				
+				 					<td class="separator"></td>
+				 				
+				 				<td data-ng-repeat="neuron in layer" style="height: 30px;" align="center">
+				 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse" style="position: relative;display: block;" >
+				 						{{neuron.output}}
+				 					</div>
+				 				
+				 				</td>
+				 				
+				 					<td class="separator"></td>
+				 				
+				 				<td style="width:87px; " ></td>
+				 			</tr>	
+				
+						</table>	
+					</div>
+			
+					<cycle data-ng-repeat="synapse in view.model.network.synapses"  >			
+						<div id="sl{{synapse.direction}}" class="synapse">{{synapse.weight}}</div>			
+					</cycle>	
+	 		
+				</div> 		
+ 			</form>
+ 		</div>
 
-						<nobr data-ng-if="$index == 0">
-	 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off" 
-	 					ng-click="addLayer()"
-	 					title="Add New layer"
-	 					>
-					  	+
-						</button>
-						<span >{{view.model.network.neurons.length}}</span>
-						</nobr>						
-						
-
-
-	 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger btn-border" autocomplete="off" 
-	 						ng-click="removeLayer($index)"
-	 						title="Remove layer"
-	 					>
-						  	x
-						</button>						
-					</td>
-					
-						<td class="separator"></td>
-					
-					<td data-ng-repeat="neuron in layer" class="neuron_place" align="center">
-						<div id="n{{neuron.position}}" class="neuron"
-							data-title="Neuron"
-							data-content="
-							<i>layer:</i>&nbsp;{{neuron.layer}}<br/>
-							<i>order:</i>&nbsp;{{neuron.order}}<br/>
-							<i>activation:</i>&nbsp;{{neuron.function.id}}<br/>
-							<i>contain:</i>&nbsp;{{neuron.output}}							
-							"
-						></div>
-
-					</td>
-					
-						<td class="separator"></td>
-						
-					<td style="width:50px; " align="right">
-						<nobr>
-	 					<button  type="button" data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off"
-	 						ng-click="addNeuron($index)"
-	 						title="Add new neuron for current layer"
-	 						data-ng-if="layer.length < 10"
-	 					>+</button>	
-						<span>{{layer.length}}</span>
-	 					<button type="button" data-toggle="button" data-loading-text="-" class="btn btn-danger btn-border" autocomplete="off"
-	 						ng-click="removeNeuron($index,-1)"
-	 						title="Remove last neuron from current layer"
-	 						data-ng-if="layer.length > 1" 
-	 					>-</button>
-						</nobr>											
-					</td>					
-				</tr>
-	 			<tr data-ng-if="$index == view.model.network.neurons.length-1">
-	 				<td style="width:50px; " >	 				
-	 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary btn-border" autocomplete="off"
-	 					ng-click="calculation()"
-	 					title="Calculate output layer"
-	 					>
-						  	>
-						</button>
-	 				</td>
-	 				
-	 					<td class="separator"></td>
-	 				
-	 				<td data-ng-repeat="neuron in layer" style="height: 30px;" align="center">
-	 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse" style="position: relative;display: block;" >
-	 						{{neuron.output}}
-	 					</div>
-	 				
-	 				</td>
-	 				
-	 					<td class="separator"></td>
-	 				
-	 				<td style="width:87px; " ></td>
-	 			</tr>	
-	
-			</table>	
-		</div>
-		
-		<cycle data-ng-repeat="synapse in view.model.network.synapses"  >
-		
-			<div id="sl{{synapse.direction}}" class="synapse">{{synapse.weight}}</div>
-		
-		</cycle>	
- 		
- 		
- 		</form>
-      </div>
-
-    </div> <!-- /container -->
+	</div> <!-- /container -->
 
 
     <!-- Bootstrap Native -->
@@ -626,6 +613,9 @@ app.directive('resize', function ($window) {
 		
 
 		isPostRendered = true;
+		document.getElementById("waiter").style.display='none';
+		if(document.getElementById("canvas").style.display=='none')
+			document.getElementById("canvas").style.display='block';
 		
 	}
 	

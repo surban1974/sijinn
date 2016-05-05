@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:web="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp">
   <display-name>sijinn-admin</display-name>
+  
   <filter>
     <display-name>bsFilter</display-name>
     <filter-name>bsFilter</filter-name>
@@ -37,6 +38,8 @@
     <dispatcher>FORWARD</dispatcher>
     <dispatcher>INCLUDE</dispatcher>
   </filter-mapping>
+ 
+   
   <servlet>
     <display-name>bsController</display-name>
     <servlet-name>bsController</servlet-name>
@@ -57,7 +60,7 @@
     <servlet-name>creator_iHort</servlet-name>
     <url-pattern>/report_creator</url-pattern>
   </servlet-mapping>
-  
+
 
   
   <welcome-file-list>

@@ -95,40 +95,7 @@ public ControllerNetwork(){
 @Override
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, UnavailableException, bsControllerException {
-	
-	
-	if(wrapper==null)
-		wrapper = new NetworkWrapper(new Network(
-			new ArrayList<List<Neuron>>(Arrays.asList(
-					Network.createLayer(2),
-					Network.createLayer(4, Neuron.create(activationFunctions, null)),
-					Network.createLayer(3, Neuron.create(activationFunctions, null)),
-					Network.createLayer(1, Neuron.create(activationFunctions, null))
-					)),
-			new RandomPositiveWeightGenerator()
-		));
-	
-	
-	if(algorithm==null)
-		algorithm = new BPROP()
-				.setDeferredAgregateFunction(new SUMMATOR());
-		
-	
-	if(strategy==null)
-		strategy = new BatchGradientDescent()
-				.setTrainingAlgorithm(algorithm)
-				.setErrorFunction(new MSE());
-	
-	
-	if(worker==null)
-		worker = new Worker();
-	
-	if(dataReader==null)
-		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
-	
-
-	Network.addExtLogger(new ExtLogger());
-	
+	initController();
 	return super.actionservice(request, response);
 }
 
@@ -523,7 +490,54 @@ public String updatedata(@Parameter(name="data") String updatedata){
 		dataReader = new SimpleStringReader(updatedata,null);
 	
 	return JsonWriter.object2json(this.get_bean(), "model");
-}	
+}
+
+
+@Override
+public String modelAsJson(HttpServletRequest request, HttpServletResponse response) {
+	initController();
+	return super.modelAsJson(request, response);
+}
+
+public void initController(){
+	if(wrapper==null)
+		wrapper = new NetworkWrapper(new Network(
+			new ArrayList<List<Neuron>>(Arrays.asList(
+					Network.createLayer(2),
+					Network.createLayer(4, Neuron.create(activationFunctions, null)),
+					Network.createLayer(3, Neuron.create(activationFunctions, null)),
+					Network.createLayer(1, Neuron.create(activationFunctions, null))
+					)),
+			new RandomPositiveWeightGenerator()
+		));
+	
+	
+	if(algorithm==null)
+		algorithm = new BPROP()
+				.setDeferredAgregateFunction(new SUMMATOR());
+		
+	
+	if(strategy==null)
+		strategy = new BatchGradientDescent()
+				.setTrainingAlgorithm(algorithm)
+				.setErrorFunction(new MSE());
+	
+	
+	if(worker==null)
+		worker = new Worker();
+	
+	if(dataReader==null)
+		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
+	
+
+	Network.addExtLogger(new ExtLogger());	
+}
+
+@Override
+public void reimposta() {
+	super.reimposta();
+	super.clear();	
+}
 
 public singleThreadEvent getEvent() {
 	return event;
@@ -551,11 +565,7 @@ public void setNetwork(NetworkWrapper wrapper) {
 	this.wrapper = wrapper;
 }
 
-@Override
-public void reimposta() {
-	super.reimposta();
-	super.clear();
-}
+
 
 public float getLearningRate() {
 	return learningRate;
@@ -591,6 +601,7 @@ public String getStrategy() {
 public String getAlgorithm() {
 	return (algorithm!=null)?algorithm.getId():"";
 }
+
 
 
 
