@@ -34,13 +34,6 @@
       
       div.canvas{
 
-		background-color_: white;
-		padding: 4px;
-		border-radius: 5px;
-		-moz-box-shadow: 1px 1px 6px silver;
-		-webkit-box-shadow: 1px 1px 6px silver;
-		box-shadow: 1px 1px 6px silver;
-
       }      
       
       div.neuron{
@@ -103,6 +96,14 @@
 		display: none;
       }
       
+      table.progressbar{
+      	width: 100%;
+      	border-radius: 5px;
+      	-moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
+		box-shadow: 1px 1px 6px gray;
+      }
+      
             
     </style>
     
@@ -116,7 +117,7 @@
 	<div class="container" style="padding-top: 45px">
 		<nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
       
-       	<div class="jumbotron" style="padding:5px;"> 
+       	<div class="jumbotron" style="padding:5px;background-color: white;"> 
  			<form id="network" method="post" ng-app="networksApp" ng-controller="networksCtrl">  		
  				<div> 		
 					<ul id="tab-header" class="nav nav-tabs" role="tablist">
@@ -125,7 +126,7 @@
 					</ul>
  		
 					<div id="networkTabContent" class="tab-content" >
-						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 90px; ">
+						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 100px; ">
 				 		<div class="form-group" style="padding-top: 10px">
 				 			<table>
 						 		<tr>
@@ -189,7 +190,7 @@
 						</div>
 					</div>
 			
-					<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 90px">
+					<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 100px">
 				 		<div class="form-group"  style="padding-top: 10px">
 			
 					 		<table>
@@ -217,7 +218,7 @@
 													</select>
 											  	</td>
 											  	<td class="label_datas">
-											  		<label for="settings.root">Approximation error (MSE):</label>
+											  		<label for="settings.root">Approximation error:</label>
 						  						</td>
 						  						<td>	
 						  							<input type="text" class="form-control" style="max-width: 120px; text-align: center;" data-ng-model="view.model.worker.approximation"/>
@@ -225,6 +226,10 @@
 						  						<td>
 						  							&nbsp;&nbsp;
 						  						</td>
+						  						<td valign="middle" style="padding: 10px; min-width: 150px">	
+											  			<label>MSE:</label>
+											  			<span>{{ view.model.worker.delta}}</span>
+												</td>
 											</tr>
 										</table>
 									</td>
@@ -245,15 +250,19 @@
 													</button>
 										
 												</td>	
-														
-												<td valign="middle" style="padding: 10px; min-width: 150px">
-											  			<label>Epoch:</label>
-											  			<span>{{ view.model.worker.step}}</span>
+												<td class="label_datas">	
+											  		<label >Epoch:</label>
+											  	</td>		
+												<td valign="middle" style="padding: 10px; min-width: 450px">
+												  		<table class="progressbar" cellspasing="0" cellpadding="0">
+													  			<tr>
+														  			<td align="center" style="padding:2px; color:white; background-color:#87C5F0; width: {{ view.model.worker.step * 100 / view.model.worker.maxSteps}}%">{{ view.model.worker.step}}</td>
+														  			<td style="width: {{100- view.model.worker.step * 100 / view.model.worker.maxSteps}}%">&nbsp;</td>
+													  			</tr>
+												  		</table>
 											  	</td>
-											  	<td valign="middle" style="padding: 10px; min-width: 150px">	
-											  			<label>MSE:</label>
-											  			<span>{{ view.model.worker.delta}}</span>
-												</td>
+
+
 											</tr>
 										</table>
 									</td>								
@@ -270,7 +279,7 @@
 			 				</tr>
 			 			</table>
 			 		</div>		 		
-			 		<div id="canvas" resize  class="canvas" style="display:none;">
+			 		<div id="canvas" resize class="canvas"  style="display:none;">
 	
 				 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
 				
@@ -310,8 +319,8 @@
 									
 			
 			
-				 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="X" class="btn btn-danger btn-border" autocomplete="off" 
-				 						ng-click="removeLayer($index)"
+				 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="x" class="btn btn-danger btn-border" autocomplete="off" 
+				 						ng-click="removeLayerPopup($index,$event)"
 				 						title="Remove layer"
 				 					>
 									  	x
@@ -327,10 +336,10 @@
 										<i>layer:</i>&nbsp;{{neuron.layer}}<br/>
 										<i>order:</i>&nbsp;{{neuron.order}}<br/>
 										<i>activation:</i>&nbsp;{{neuron.function.id}}<br/>
-										<i>contain:</i>&nbsp;{{neuron.output}}							
+										<i>contain:</i>&nbsp;{{neuron.output}}<br/>
 										"
 									></div>
-			
+							 			
 								</td>
 								
 									<td class="separator"></td>
@@ -344,7 +353,7 @@
 				 					>+</button>	
 									<span>{{layer.length}}</span>
 				 					<button type="button" data-toggle="button" data-loading-text="-" class="btn btn-danger btn-border" autocomplete="off"
-				 						ng-click="removeNeuron($index,-1)"
+				 						ng-click="removeNeuronPopup($index,-1,$event)"
 				 						title="Remove last neuron from current layer"
 				 						data-ng-if="layer.length > 1" 
 				 					>-</button>
@@ -432,6 +441,34 @@ app.controller('networksCtrl',
 					network:{
 						neurons : [],
 						synapses : [] 
+				    },
+					
+				    message : function(){
+		    			if(this.error && this.error!=''){
+		    				new clpopup({
+		    					type: 'danger',
+		    					message: this.error
+		    				}).open();					 
+		    			}
+		    			if(this.success && this.success!=''){
+		    				new clpopup({
+		    					type: 'success',
+		    					message: this.success
+		    				}).open();					 
+		    			}	
+		    			if(this.info && this.info!=''){
+		    				new clpopup({
+		    					type: 'info',
+		    					message: this.info
+		    				}).open();					 
+		    			}
+		    			if(this.warning && this.warning!=''){
+		    				new clpopup({
+		    					type: 'warning',
+		    					message: this.warning
+		    				}).open();					 
+		    			}
+		    			return this;
 				    }
 				})
 		);
@@ -467,10 +504,30 @@ app.controller('networksCtrl',
 				}
 		
 		}		
-		
+		$scope.removeLayerPopup = function(layer,$event) {
+			if($event.target){
+				if($event.target.popover){
+				}else{
+					var popover = new Popover($event.target,
+					{
+						trigger:"click",
+						template: '<div class="popover" role="tooltip">'
+							  + '<div class="arrow"></div>'
+							  + '<h3 class="popover-title">Remove layer '+layer+'</h3>'
+							  + '<div class="popover-content"><center>'
+							  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveLayer('+layer+')">Confirm</button>'
+							  + '</center></div>'
+							  + '</div>'
+					});
+					$event.target.popover = popover;
+					popover.open();
+						
+				}
+			}
+		}
 		$scope.removeLayer = function(layer) {
 			if($scope.view.model.worker.executionState!=1){
-				if(confirm('Are you sure to remove the layer #'+layer+'?')){
+//				if(confirm('Are you sure to remove the layer #'+layer+'?')){
 					$http
 					.post('network-removelayer',JSON.stringify({layer:layer}))
 					.success(function(data, status, headers, config) { 
@@ -483,7 +540,7 @@ app.controller('networksCtrl',
 				    	$scope.view.init(data);
 	
 					});	
-				}
+//				}
 			}
 	    };
 	    
@@ -504,10 +561,30 @@ app.controller('networksCtrl',
 	    	}
 	    	
 	    }
-	    
+		$scope.removeNeuronPopup = function(layer,order,$event) {
+			if($event.target){
+				if($event.target.popover){
+				}else{
+					var popover = new Popover($event.target,
+					{
+						trigger:"click",
+						template: '<div class="popover" role="tooltip">'
+							  + '<div class="arrow"></div>'
+							  + '<h3 class="popover-title">Remove last neuron from layer '+layer+'</h3>'
+							  + '<div class="popover-content"><center>'
+							  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveNeuron('+layer+','+order+')">Confirm</button>'
+							  + '</center></div>'
+							  + '</div>'
+					});
+					$event.target.popover = popover;
+					popover.open();
+						
+				}
+			}
+		}	    
 	    $scope.removeNeuron = function(layer,order) {
 	    	if($scope.view.model.worker.executionState!=1){
-	    		if(confirm('Are you sure to remove the last neuron from layer #'+layer+'?')){
+//	    		if(confirm('Are you sure to remove the last neuron from layer #'+layer+'?')){
 					$http
 					.post('network-removeneuron',JSON.stringify({layer:layer,order:order}))
 					.success(function(data, status, headers, config) { 
@@ -520,7 +597,7 @@ app.controller('networksCtrl',
 				    	$scope.view.init(data);
 		
 					});
-	    		}
+//	    		}
 	    	}
 	    	
 	    }	    
@@ -600,11 +677,11 @@ app.directive('resize', function ($window) {
 					e.addEventListener(
 							'mouseover',
 							function() {
-								var someTitleFromOtherCode = 'Sample title';
-								var someContentFromOuterSpace = '<p>Some sample message.</p>';
-
-								//initiate Popover with the template
-								var popover2 = new Popover(this);	
+								if(this.popover){									
+								}else{
+									var popover = new Popover(this);	
+									this.popover = popover;
+								}
 							},
 							false)
 				}
@@ -862,6 +939,20 @@ app.directive('resize', function ($window) {
 			});
 		}
 	
+	}	
+	
+	function scopeRemoveLayer(layer){
+		var appElement = document.querySelector('[ng-app=networksApp]');
+		var appScope = angular.element(appElement).scope();
+		appScope.removeLayer(layer);
+	}
+	
+	function scopeRemoveNeuron(layer,order, layerlength){
+		if(layerlength && layerlength==0)
+			return;
+		var appElement = document.querySelector('[ng-app=networksApp]');
+		var appScope = angular.element(appElement).scope();
+		appScope.removeNeuron(layer,order);
 	}	
 	
 	function queryWorker($scope,$http,$timeout){

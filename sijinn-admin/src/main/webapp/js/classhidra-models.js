@@ -25,30 +25,20 @@ GenericServerModel.extend(
 
 	
 	message : function(){
+		
 		if(this.error && this.error!=''){
-			new clpopup({
-				type: 'danger',
-				message: this.error
-			}).open();					 
+			alert("ERROR "+this.error);					 
 		}
 		if(this.success && this.success!=''){
-			new clpopup({
-				type: 'success',
-				message: this.success
-			}).open();					 
+			alert(this.success);	
 		}	
 		if(this.info && this.info!=''){
-			new clpopup({
-				type: 'info',
-				message: this.info
-			}).open();					 
+			alert("INFO: "+this.info);
 		}
 		if(this.warning && this.warning!=''){
-			new clpopup({
-				type: 'warning',
-				message: this.warning
-			}).open();					 
-		}	
+			alert("WARNING: "+this.warning);
+		}
+			
 		return this;
 	}					
 }

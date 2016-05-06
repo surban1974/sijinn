@@ -28,6 +28,7 @@
 		this.mpart = 			(prot)?prot.mpart:null;
 		this.target = 			(prot)?prot.target:null;
 		this.responseType = 	(prot)?prot.responseType:null;
+		this.asynchronous = 	(prot)?prot.asynchronous:true;
 		this.rel = 				(prot)?prot.rel:null;
 		this.media = 			(prot)?prot.media:null;
 		this.contentEncoding = 	(prot)?prot.contentEncoding:null;
@@ -80,6 +81,7 @@
 				this.mpart=null;
 				this.target=null;
 				this.responseType=null;
+				this.asynchronous = true;
 				this.rel=null;
 				this.media=null;
 				this.contentEncoding=null;
@@ -156,6 +158,11 @@
 			
 			setResponseType : function(_responseType){
 				this.responseType = _responseType;
+				return this;
+			},
+			
+			setAsynchronous : function(_asynchronous){
+				this.asynchronous = _asynchronous;
 				return this;
 			},
 			
@@ -256,6 +263,7 @@
 				.setResponseType(this.responseType)
 				.setContentEncoding(this.contentEncoding)
 				.setContentType(this.contentType)
+				.setAsynchronous(this.asynchronous)
 				.setMimeType(this.mimeType)
 				.setStart(this.start)
 				.setSuccess(this.success)
@@ -640,37 +648,7 @@
 				            	}		            	
 				            }
 
-/*				    		
-				            if (http_request.status == 200 ) {
-				            	if(instance.ready && instance.ready!=''){
-				            		if (typeof instance.ready === 'function') {
-				            			instance.ready(http_request);
-				            		}else{
-				            			eval(instance.ready + '(http_request)');
-				            		}
-				            	}else{
-				            		if(instance.target)
-				            			instance.target.innerHTML=http_request.responseText;
-				            	}
-				            	
-				            	if(instance.success && instance.success!=''){
-				            		if (typeof instance.success === 'function') {
-				            			instance.success(http_request);
-				            		}
-				            		else
-				            			eval(instance.success + '(http_request)');
-				            		
-				            	}
-				            }else{
-				            	if(instance.fail && instance.fail!=''){
-				            		if (typeof instance.fail === 'function') {
-				            			instance.fail(http_request);
-				            		}else{
-				            			eval(instance.fail + '(http_request)');
-				            		}
-				            	}		            	
-				            }
-*/				            
+			            
 				            try{
 				            	http_request.close();
 				            }catch(e){
@@ -700,9 +678,10 @@
 		
 		
 		        if(this.method && this.method!='')
-		        	http_request.open(this.method, urlOnly, true);
+		        	http_request.open(this.method, urlOnly, this.asynchronous);
 		        else
-		        	http_request.open('POST', urlOnly, true);
+		        	http_request.open('POST', urlOnly, this.asynchronous);
+		        
 			    if(this.responseType && this.responseType!='' && setResponseType==false){
 			    	try{
 			    		  http_request.responseType = this.responseType;
