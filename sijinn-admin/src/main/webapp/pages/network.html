@@ -47,6 +47,8 @@
 		height:25px;
 		width: 25px;
 		cursor: pointer;
+		z-index: 1000;
+		position: relative;
       }
       
      
@@ -63,7 +65,48 @@
 		height:40px;
 		width: 40px;
 		cursor: pointer;
-      }      
+		z-index: 1000;
+		position: relative;
+      }   
+      
+      div.synapse-line{
+      	border: 1px solid silver;
+    	opacity: 0.5; 
+    	filter: alpha(opacity=50); 
+    	z-index: 1px;
+    	position: absolute;
+    	cursor: pointer;
+      }   
+      
+       div.synapse-line:hover{
+      	border: 1px solid #87C5F0;
+    	opacity: 1; 
+    	filter: alpha(opacity=100); 
+    	-moz-box-shadow_: 1px 1px 2px gray; 
+    	-webkit-box-shadow_: 1px 1px 2px gray; 
+    	box-shadow_: 1px 1px 2px gray;       	
+      }  
+      
+      div.synapse{
+		position: absolute;
+		background-color: white;
+		padding: 4px;
+		-moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
+		box-shadow: 1px 1px 6px gray;
+		border-radius: 4px;	
+		height:25px;
+		max-width:100px;
+		text-align: center;
+		display: none;
+		min-width: 50px;
+      }  
+      
+      div.synapse-hover{
+		-moz-box-shadow: 1px 1px 6px #87C5F0;
+		-webkit-box-shadow: 1px 1px 6px #87C5F0;
+		box-shadow: 1px 1px 6px #87C5F0;      
+	  }     
       
 	  td.neuron_place{
 	  	height: 50px;
@@ -82,26 +125,23 @@
 		
       }
       
-      div.synapse{
-		position: absolute;
-		background-color: white;
-		padding: 4px;
-		-moz-box-shadow: 1px 1px 6px gray;
-		-webkit-box-shadow: 1px 1px 6px gray;
-		box-shadow: 1px 1px 6px gray;
-		border-radius: 7px;	
-		height:25px;
-		max-width:100px;
-		text-align: center;
-		display: none;
-      }
+
       
       table.progressbar{
       	width: 100%;
-      	border-radius: 5px;
-      	-moz-box-shadow: 1px 1px 6px gray;
-		-webkit-box-shadow: 1px 1px 6px gray;
-		box-shadow: 1px 1px 6px gray;
+      	border: 1px solid silver;
+      	border-radius: 4px;
+      	-moz-box-shadow_: 1px 1px 6px gray;
+		-webkit-box-shadow_: 1px 1px 6px gray;
+		box-shadow_: 1px 1px 6px gray;
+      }
+      
+      
+      table.progressbar  td.progress-left{
+      	box-shadow: 1px 1px 6px gray;
+      	padding:4px;
+      	color:white;
+      	background-color:#87C5F0; 
       }
       
             
@@ -126,7 +166,7 @@
 					</ul>
  		
 					<div id="networkTabContent" class="tab-content" >
-						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 100px; ">
+						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 105px; ">
 				 		<div class="form-group" style="padding-top: 10px">
 				 			<table>
 						 		<tr>
@@ -190,7 +230,7 @@
 						</div>
 					</div>
 			
-					<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 100px">
+					<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 105px">
 				 		<div class="form-group"  style="padding-top: 10px">
 			
 					 		<table>
@@ -242,26 +282,29 @@
 													<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" autocomplete="off">
 													  	Training Data
 													</button>							 		
-													<button type="button" id="loadButton" data-toggle="button" data-loading-text="Training..." class="btn btn-primary" autocomplete="off">
-													  	Start training
-													</button>
-													<button type="button" id="stopButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-danger" autocomplete="off"  ng-if="view.model.worker.executionState == 1">
-													  	Interrupt
-													</button>
+
 										
 												</td>	
-												<td class="label_datas">	
+												<td class="label_datas" align="right">	
 											  		<label >Epoch:</label>
 											  	</td>		
 												<td valign="middle" style="padding: 10px; min-width: 450px">
-												  		<table class="progressbar" cellspasing="0" cellpadding="0">
+												  		<table class="progressbar" cellspasing_="0" cellpadding_="0">
 													  			<tr>
-														  			<td align="center" style="padding:2px; color:white; background-color:#87C5F0; width: {{ view.model.worker.step * 100 / view.model.worker.maxSteps}}%">{{ view.model.worker.step}}</td>
+														  			<td class="progress-left" align="center" style="width: {{ view.model.worker.step * 100 / view.model.worker.maxSteps}}%">{{ view.model.worker.step}}</td>
 														  			<td style="width: {{100- view.model.worker.step * 100 / view.model.worker.maxSteps}}%">&nbsp;</td>
 													  			</tr>
 												  		</table>
 											  	</td>
-
+												<td>
+													<button type="button" id="stopButton" data-toggle="button" data-loading-text="Interrupt" class="btn btn-danger" autocomplete="off"  ng-if="view.model.worker.executionState == 1">
+													  	Interrupt
+													</button>												
+													<button type="button" id="loadButton" data-toggle="button" data-loading-text="Training..." class="btn btn-primary" autocomplete="off">
+													  	Start training
+													</button>
+												
+												</td>
 
 											</tr>
 										</table>
@@ -1124,7 +1167,7 @@ app.directive('validNumber', function() {
 					var centerToY = rectToY =rectTo.top + rectTo.height/2 + window.scrollY;
 					
 					var alfa = Math.atan((rectFromY - rectToY)/(rectFromX - rectToX));
-					var radius = 25;
+					var radius = 12.5;
 					
 					if(rectFromX <= rectToX){
 						rectFromX = rectFromX + Math.cos(alfa)*radius;
@@ -1155,11 +1198,44 @@ app.directive('validNumber', function() {
 								rectToY
 						)
 					);
+					
+					
+					line.addEventListener("mouseover", function(){
+						if(label)
+							addClass(label,'synapse-hover');
+						
+						if(this.popover)	
+							this.popover.removePopover();
+						
+						var popover = new Popover(this,
+							{
+							template: '<div class="popover" role="tooltip">'
+								  + '<div class="arrow"></div>'
+								  + '<h3 class="popover-title">Synapse</h3>'
+								  + '<div class="popover-content">'
+								  + '<i>from:</i>&nbsp;neuron ['+res[0]+']<br/>'
+								  + '<i>to:</i>&nbsp;neuron ['+res[1]+']<br/>'
+								  + '<i>weight:</i>&nbsp;'+synapse.weight+'<br/>'
+								  + '</div>'
+								  + '</div>'
+						});	
+						this.popover = popover;
+						
+						
+					});
+					line.addEventListener("mouseout", function(){
+						removeClass(label,'synapse-hover');
+						if(this.popover)	
+							this.popover.removePopover();
+
+					});					
+					
 					if(line && line.style && line.style.zIndex){
 						if(maxZIndex<line.style.zIndex)
 							maxZIndex = line.style.zIndex;
 					}
 
+					
 					if(label){
 						label.style.position = 'absolute';
 						label.style.display = 'block';
