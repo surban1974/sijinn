@@ -14,9 +14,12 @@ public class NetworkWrapper implements Serializable{
 
 	private Network instance;
 	
+	private int changed=0;
+	
 	public NetworkWrapper(Network _instance){
 		super();
 		this.instance = _instance;
+		changed++;
 	}
 
 	public Network obtainInstance() {
@@ -25,6 +28,7 @@ public class NetworkWrapper implements Serializable{
 
 	public void setInstance(Network instance) {
 		this.instance = instance;
+		changed++;
 	}
 	
 	@Serialized(children=true, depth=4)
@@ -41,6 +45,10 @@ public class NetworkWrapper implements Serializable{
 			return this.instance.getSynapses();
 		}else
 			return new Synapse[0];
+	}
+
+	public int getChanged() {
+		return changed;
 	}	
 	
 

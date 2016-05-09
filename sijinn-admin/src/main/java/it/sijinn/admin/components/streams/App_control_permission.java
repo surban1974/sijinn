@@ -1,6 +1,10 @@
 package it.sijinn.admin.components.streams; 
 
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import it.classhidra.annotation.elements.Apply_to_action;
 import it.classhidra.annotation.elements.Stream;
 import it.classhidra.core.controller.bsController;
@@ -16,10 +20,6 @@ import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_usersInSession;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Stream(	
 		name="def_control_permission",
@@ -130,7 +130,16 @@ public class App_control_permission extends stream implements i_stream{
 			}
 		}
 		util_usersInSession.addInSession(auth, request, null);
-		
+/*		
+		if(action_instance!=null && action_instance.get_bean()!=null){
+			Iterator it = action_instance.get_bean().getInitErrors().keySet().iterator();
+			System.out.println("--- Absent parameters ---");
+			while(it.hasNext()){
+				String key = it.next().toString();
+				System.out.println(key+ " - "+action_instance.get_bean().getInitErrors().get(key));
+			}
+		}		
+*/
 		return super.streamservice_exit(request, response);
 	}
 

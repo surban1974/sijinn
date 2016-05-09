@@ -137,13 +137,17 @@ function dirtyModelElements(newModel, oldModel, array, prefix, exclude){
 					exc = exclude(property);
 				
 				if(!exc){
-					if(newModel[property] && oldModel[property]){
+//					if(newModel[property] && oldModel[property]){
+					try{
 						if(newModel[property] != oldModel[property]){
 							var data = {};
 							data[((!prefix || prefix=='')?'':prefix+'.')+property] = newModel[property];
 							array.push(data);
 						}
+					}catch(e){
+						
 					}
+//					}
 				}
 			}
 	}

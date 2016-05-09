@@ -333,6 +333,8 @@ public String removeneuron(@Parameter(name="layer") int layer, @Parameter(name="
 		Expose=@Expose(method = Expose.POST))
 public String diffAsJson(){
 	return "";
+//	return JsonWriter.object2json(this.get_bean(), "model");
+
 }	
 
 

@@ -293,7 +293,17 @@
 								
 				 				<td data-ng-repeat="neuron in layer" style="height: 30px;" class="neuron_place" align="center" style="">
 				 					<div data-ng-if="neuron.layer == 0">
-				 						<input id="i{{neuron.position}}" type="text" class="form-control" style="max-width: 120px; text-align: center;display: none;" data-ng-model="neuron.output">
+				 						<input id="i{{neuron.position}}" 
+				 							type="number"
+				 							min="-999999"
+				 							max="999999"
+					 						class="form-control" 
+					 						style="max-width: 120px; text-align: center;display: none;" 
+					 						data-ng-model="neuron.output" 
+					 						data-ng-model-options="{ updateOn: 'blur' }"
+					 						valid-number
+					 						required
+				 						>
 				 					</div>
 				 				</td>
 				 				
@@ -428,7 +438,18 @@ app.controller('networksCtrl',
 			},
 			postDirty : function($http,newValue){
 				if(!self.initialisation)
-					$http.post('network-diff', JSON.stringify(newValue));
+					$http.post('network-diff', JSON.stringify(newValue))
+					.success(function(data, status, headers, config) {
+/*
+							setPostRendered(false);
+					    	cleanSynapses($scope);
+					    	$scope.view.model.network = {
+								neurons : [],
+								synapses : [] 
+						    };
+					    	$scope.view.init(data);
+*/					    	
+					});
 			}
 		})
 		.set(
@@ -440,8 +461,10 @@ app.controller('networksCtrl',
 					worker:{},
 					network:{
 						neurons : [],
-						synapses : [] 
+						synapses : [],
+						changed:0
 				    },
+				    
 					
 				    message : function(){
 		    			if(this.error && this.error!=''){
@@ -617,20 +640,36 @@ app.controller('networksCtrl',
 		    	
 		    	$scope.$watch('view', function(newValue, oldValue) {
 		    		if(isPostRendered==false){
-							$timeout(function () {
-					    		postRendering($scope,$http,$timeout);
-					    		addEventToElements($scope,$http,$timeout);
-					    	});
+						$timeout(function () {
+					    	postRendering($scope,$http,$timeout);
+					    	addEventToElements($scope,$http,$timeout);
+					    });
 		    		}else if($scope.view.model.worker && $scope.view.model.worker.executionState && $scope.view.model.worker.executionState==1){
 		    			
 		    		}else{
-			    		var diff = newValue.getDirty(oldValue,function(property){
-			    			if(property && property.indexOf('$$')>-1)
-			    				return true;
-			    			return false;
-			    		});
-						if(diff.length>0)
-							$scope.view.postDirty($http,diff);	
+		    			$timeout(function () {
+				    		var diff = newValue.getDirty(oldValue,function(property){
+				    			if(property && 
+				    				(
+				    					property.indexOf('$$')==0 || property=='error' || property=='info' || property=='warning'|| property=='success'
+				    				)
+				    			)
+				    				return true;
+				    			return false;
+				    		});
+//				    		console.log(diff.length);
+							if(diff.length>0)
+								$scope.view.postDirty($http,diff);	
+/*							
+							else{
+								newValue.getDirty(oldValue,function(property){
+					    			if(property && property.indexOf('$$')>-1)
+					    				return true;
+					    			return false;
+					    		})
+							}
+*/							
+		    			});
 		    		}
 					
 		  		},true);
@@ -648,6 +687,31 @@ app.directive('resize', function ($window) {
         
     }
 }); 
+app.directive('validNumber', function() {
+    return function(scope, element, attrs) {
+		var keyCode = [8,9,37,39,48,49,50,51,52,53,54,55,56,57,96,97,98,99,100,101,102,103,104,105,110,190,188];
+	    element.bind("keydown", function(event) {
+			if(keyCode.indexOf(event.which) == -1 || (event.target.value.indexOf('.')>-1 && event.which==190) || (event.target.value.indexOf('.')>-1 && event.which==190)){
+	        	scope.$apply(function(){
+	            	scope.$eval(attrs.onlyNum);
+	                event.preventDefault();
+	            });
+	            event.preventDefault();
+	        }
+	    });
+	    
+	    element.bind("blur", function(event) {
+			if(event.target.value==''){
+//				event.target.value=event.target.value/1;
+	            event.preventDefault();
+	        }else{
+	        	event.target.value=event.target.value/1;
+	        	event.preventDefault();
+	        }
+	    });
+	    
+	};
+ });
 
 	
 	
@@ -677,11 +741,12 @@ app.directive('resize', function ($window) {
 					e.addEventListener(
 							'mouseover',
 							function() {
-								if(this.popover){									
-								}else{
-									var popover = new Popover(this);	
-									this.popover = popover;
-								}
+								if(this.popover)	
+									this.popover.removePopover();
+								
+								var popover = new Popover(this);	
+								this.popover = popover;
+								
 							},
 							false)
 				}
@@ -839,6 +904,7 @@ app.directive('resize', function ($window) {
 								    	$scope.view.init(data);
 								    	$scope.view.message();
 									}else{
+										
 								    	setPostRendered(false);
 								    	cleanSynapses($scope);
 								    	$scope.view.model.network = {
@@ -846,7 +912,10 @@ app.directive('resize', function ($window) {
 											synapses : [] 
 									    };
 								    	$scope.view.init(data);
-								    	setPostRendered(true);
+								    	
+
+								    	
+//								    	setPostRendered(true);
 									}
 								});
 							});
