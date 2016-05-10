@@ -90,6 +90,7 @@
       div.synapse{
 		position: absolute;
 		background-color: white;
+		color: black;
 		padding: 4px;
 		-moz-box-shadow: 1px 1px 6px gray;
 		-webkit-box-shadow: 1px 1px 6px gray;
@@ -100,12 +101,23 @@
 		text-align: center;
 		display: none;
 		min-width: 50px;
+		cursor: pointer;
       }  
       
+      div.synapse:hover{
+      	background-color: #87C5F0;
+      	color: white;
+		-moz-box-shadow: 1px 1px 6px silver;
+		-webkit-box-shadow: 1px 1px 6px silver;
+		box-shadow: 1px 1px 6px silver;      
+	  } 
+      
       div.synapse-hover{
-		-moz-box-shadow: 1px 1px 6px #87C5F0;
-		-webkit-box-shadow: 1px 1px 6px #87C5F0;
-		box-shadow: 1px 1px 6px #87C5F0;      
+      	background-color: #87C5F0;
+      	color: white;
+		-moz-box-shadow: 1px 1px 6px silver;
+		-webkit-box-shadow: 1px 1px 6px silver;
+		box-shadow: 1px 1px 6px silver;      
 	  }     
       
 	  td.neuron_place{
@@ -163,6 +175,18 @@
 					<ul id="tab-header" class="nav nav-tabs" role="tablist">
 						<li role="presentation" class="active"><a href="#net" id="net-tab" role="tab" data-toggle="tab" aria-controls="net" aria-expanded="true">Network</a></li>
 						<li role="presentation"><a href="#training" role="tab" id="training-tab" data-toggle="tab" aria-controls="training">Training</a></li>
+						<li class="dropdown">
+		                	<div  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Actions <span class="caret"></span></div>
+		                	<ul class="dropdown-menu" role="menu">
+		                  		<li><a href="javascript:void(document.getElementById('resetButton').click())">Default network</a></li>
+		                		<li><a href="javascript:void(document.getElementById('previewButton').click())">Network source</a></li>
+		                		<li><a href="javascript:void(document.getElementById('dataButton').click())">Training data</a></li>
+		                		<li role="separator" class="divider"></li>
+		                  		<li><a href="javascript:void(document.getElementById('loadButton').click())" ng-if="view.model.worker.executionState != 1">Start training</a></li>
+		                  		<li><a href="javascript:void(document.getElementById('stopButton').click())" ng-if="view.model.worker.executionState == 1">Interrupt training...</a></li>
+		                 		<li><a href="javascript:void(scopeRemoveSynapses())">Remove synapses</a></li>
+		                 	</ul>
+		              	</li>
 					</ul>
  		
 					<div id="networkTabContent" class="tab-content" >
@@ -219,6 +243,12 @@
 								 					<button type="button" id="previewButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-info" autocomplete="off">
 													  	Network source
 													</button>
+								 				</td>
+						  						<td>
+						  							&nbsp;&nbsp;
+						  						</td>	
+								 				<td ng-if="getAddSynapseLabel() != ''">
+								 					<button class="btn btn-primary" ng-bind="getAddSynapseLabel()" ng-click="addSynapse()"></button>
 								 				</td>
 								 											  									  		
 											</tr>
@@ -441,7 +471,7 @@
 					</div>
 			
 					<cycle data-ng-repeat="synapse in view.model.network.synapses"  >			
-						<div id="sl{{synapse.direction}}" class="synapse">{{synapse.weight}}</div>			
+						<div id="sl{{synapse.direction}}" class="synapse" ng-click="removeSynapsePopup(synapse,$event)">{{synapse.weight}}</div>			
 					</cycle>	
 	 		
 				</div> 		
@@ -468,13 +498,16 @@
 	
 	<script>
 	
-var isPostRendered = false;
-var isAddEvents = false;
+
+
 	
 var app = angular.module('networksApp', []);
 app.controller('networksCtrl', 	
 	function($scope, $http, $timeout) {
 
+		$scope.isPostRendered = false;
+		$scope.isAddEvents = false;
+		$scope.avoidUpdateDirty = 0;
 		$scope.view = Object.create(GenericViewModel)
 		.extend({
 			post : function($http,newValue){
@@ -483,15 +516,6 @@ app.controller('networksCtrl',
 				if(!self.initialisation)
 					$http.post('network-diff', JSON.stringify(newValue))
 					.success(function(data, status, headers, config) {
-/*
-							setPostRendered(false);
-					    	cleanSynapses($scope);
-					    	$scope.view.model.network = {
-								neurons : [],
-								synapses : [] 
-						    };
-					    	$scope.view.init(data);
-*/					    	
 					});
 			}
 		})
@@ -507,6 +531,7 @@ app.controller('networksCtrl',
 						synapses : [],
 						changed:0
 				    },
+				    selectedn:[],
 				    
 					
 				    message : function(){
@@ -539,26 +564,6 @@ app.controller('networksCtrl',
 				})
 		);
 		
-		$scope.addLayer = function() {
-
-				if($scope.view.model.worker.executionState!=1){
-				  	$http
-				  	.post('network-addlayer')
-				  	.success(function(data, status, headers, config) { 
-				  		setPostRendered(false);
-				    	cleanSynapses($scope);
-				    	$scope.view.model.network = {
-							neurons : [],
-							synapses : [] 
-					    };
-				    	$scope.view.init(data);
-
-					});
-				}
-
-			
-		}
-		
 		$scope.calculation = function() {
 
 				if($scope.view.model.worker.executionState!=1){
@@ -569,7 +574,9 @@ app.controller('networksCtrl',
 					});
 				}
 		
-		}		
+		}	
+
+//Layers		
 		$scope.removeLayerPopup = function(layer,$event) {
 			if($event.target){
 				if($event.target.popover){
@@ -593,11 +600,11 @@ app.controller('networksCtrl',
 		}
 		$scope.removeLayer = function(layer) {
 			if($scope.view.model.worker.executionState!=1){
-//				if(confirm('Are you sure to remove the layer #'+layer+'?')){
-					$http
+
+				$http
 					.post('network-removelayer',JSON.stringify({layer:layer}))
 					.success(function(data, status, headers, config) { 
-						setPostRendered(false);
+						setPostRendered($scope,false);
 				    	cleanSynapses($scope);
 				    	$scope.view.model.network = {
 							neurons : [],
@@ -606,27 +613,26 @@ app.controller('networksCtrl',
 				    	$scope.view.init(data);
 	
 					});	
-//				}
 			}
 	    };
-	    
-	    $scope.addNeuron = function(layer) {
-	    	if($scope.view.model.worker.executionState!=1){
-				$http
-				.post('network-addneuron',JSON.stringify({layer:layer}))
-				.success(function(data, status, headers, config) { 
-					setPostRendered(false);
+		$scope.addLayer = function() {
+			if($scope.view.model.worker.executionState!=1){
+			  	$http
+			  	.post('network-addlayer')
+			  	.success(function(data, status, headers, config) { 
+			  		setPostRendered($scope,false);
 			    	cleanSynapses($scope);
 			    	$scope.view.model.network = {
 						neurons : [],
 						synapses : [] 
 				    };
 			    	$scope.view.init(data);
-	
+
 				});
-	    	}
-	    	
-	    }
+			}
+		}
+	    
+//Neuron
 		$scope.removeNeuronPopup = function(layer,order,$event) {
 			if($event.target){
 				if($event.target.popover){
@@ -650,11 +656,10 @@ app.controller('networksCtrl',
 		}	    
 	    $scope.removeNeuron = function(layer,order) {
 	    	if($scope.view.model.worker.executionState!=1){
-//	    		if(confirm('Are you sure to remove the last neuron from layer #'+layer+'?')){
 					$http
 					.post('network-removeneuron',JSON.stringify({layer:layer,order:order}))
 					.success(function(data, status, headers, config) { 
-						setPostRendered(false);
+						setPostRendered($scope,false);
 				    	cleanSynapses($scope);
 				    	$scope.view.model.network = {
 							neurons : [],
@@ -663,10 +668,179 @@ app.controller('networksCtrl',
 				    	$scope.view.init(data);
 		
 					});
-//	    		}
+	    	}	    	
+	    }	 
+	    $scope.addNeuron = function(layer) {
+	    	if($scope.view.model.worker.executionState!=1){
+				$http
+				.post('network-addneuron',JSON.stringify({layer:layer}))
+				.success(function(data, status, headers, config) { 
+					setPostRendered($scope,false);
+			    	cleanSynapses($scope);
+			    	$scope.view.model.network = {
+						neurons : [],
+						synapses : [] 
+				    };
+			    	$scope.view.init(data);
+	
+				});
 	    	}
 	    	
-	    }	    
+	    }
+	    
+//Synapse	    
+		$scope.removeSynapsePopup = function(synapse,$event) {
+			if($event.target){
+				if($event.target.popover){
+				}else{
+					var popover = new Popover($event.target,
+					{
+						trigger:"click",
+						template: '<div class="popover" role="tooltip">'
+							  + '<div class="arrow"></div>'
+							  + '<h3 class="popover-title">Remove synapse from ['+synapse.direction.split('|')[0]+'] to ['+synapse.direction.split('|')[1]+']</h3>'
+							  + '<div class="popover-content"><center>'
+							  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveSynapse(\''+synapse.direction+'\')">Confirm</button>'
+							  + '</center></div>'
+							  + '</div>'
+					});
+					$event.target.popover = popover;
+					popover.open();
+						
+				}
+			}
+			
+		}
+
+	    $scope.removeSynapses = function(layer,order) {
+	    	if($scope.view.model.worker.executionState!=1){
+
+	    		
+					$http
+					.post('network-removesynapses')
+					.success(function(data, status, headers, config) { 
+						setPostRendered($scope,false);
+				    	cleanSynapses($scope);
+				    	$scope.view.model.network = {
+							neurons : [],
+							synapses : [] 
+					    };
+				    	$scope.view.init(data);
+		
+					});
+	    	}
+	    	
+	    }	   
+
+		$scope.removeSynapse = function(fromlayer,fromorder,tolayer,toorder, direction){
+
+	    	if($scope.view.model.worker.executionState!=1){
+	    		
+    			var target = document.getElementById('sl'+direction);
+    			if(target && target.popover)
+    				target.popover.close();
+	    		
+				var json = JSON.stringify(
+						{
+							from:{
+								layer:fromlayer,
+								order:fromorder
+							},
+							to:{
+								layer:tolayer,
+								order:toorder
+							}
+						}
+						);
+	    		
+				$http
+				.post('network-removesynapse',json)
+				.success(function(data, status, headers, config) { 
+					setPostRendered($scope,false);
+			    	cleanSynapses($scope);
+			    	$scope.view.model.network = {
+						neurons : [],
+						synapses : [] 
+				    };
+			    	$scope.view.init(data);
+	
+				});
+	    	}			
+		}	
+		
+		$scope.addSynapse = function(){
+			if($scope.view.model.selectedn.length==2){
+				var n0 = $scope.view.model.selectedn[0].replace('n','');
+				var n1 = $scope.view.model.selectedn[1].replace('n','');
+				var n0split = n0.split(',');
+				var n1split = n1.split(',');
+				
+				var json = null;
+				
+				
+				if(n0split[0]/1>n1split[0])
+					json = JSON.stringify(
+							{
+								from:{
+									layer:n1split[0],
+									order:n1split[1]
+								},
+								to:{
+									layer:n0split[0],
+									order:n0split[1]
+								}
+							}
+						);
+				else
+					json = JSON.stringify(
+							{
+								from:{
+									layer:n0split[0],
+									order:n0split[1]
+								},
+								to:{
+									layer:n1split[0],
+									order:n1split[1]
+								}
+							}
+						);
+				$http
+				.post('network-addsynapse',json)
+				.success(function(data, status, headers, config) { 
+					setPostRendered($scope,false);
+			    	cleanSynapses($scope);
+			    	$scope.view.model.network = {
+						neurons : [],
+						synapses : [] 
+				    };
+			    	$scope.view.init(data);
+	
+				});				
+				
+			}
+			return '';
+		};
+		
+		$scope.getAddSynapseLabel = function(){
+			if($scope.view.model.selectedn.length==2){
+				var n0 = $scope.view.model.selectedn[0].replace('n','');
+				var n1 = $scope.view.model.selectedn[1].replace('n','');
+				var n0split = n0.split(',');
+				var n1split = n1.split(',');
+				
+				for(var i in $scope.view.model.network.synapses){
+					if($scope.view.model.network.synapses[i].direction==(n1+'|'+n0) || $scope.view.model.network.synapses[i].direction==(n0+'|'+n1))
+						return '';
+				}
+				
+				if(n0split[0]/1>n1split[0])
+					return 'Add synapse from ['+n1+'] to ['+n0+']'
+				else
+					return 'Add synapse from ['+n0+'] to ['+n1+']'
+			}
+			return '';
+		};
+	    
 		
 		$http({
             method : 'GET',
@@ -682,10 +856,11 @@ app.controller('networksCtrl',
 		    	$scope.view.init(data);
 		    	
 		    	$scope.$watch('view', function(newValue, oldValue) {
-		    		if(isPostRendered==false){
+		    		if($scope.isPostRendered==false){
 						$timeout(function () {
 					    	postRendering($scope,$http,$timeout);
 					    	addEventToElements($scope,$http,$timeout);
+					    	drawSynapseOnInit($scope);
 					    });
 		    		}else if($scope.view.model.worker && $scope.view.model.worker.executionState && $scope.view.model.worker.executionState==1){
 		    			
@@ -694,24 +869,18 @@ app.controller('networksCtrl',
 				    		var diff = newValue.getDirty(oldValue,function(property){
 				    			if(property && 
 				    				(
-				    					property.indexOf('$$')==0 || property=='error' || property=='info' || property=='warning'|| property=='success'
+				    					property.indexOf('$$')==0 || property=='error' || property=='info' || property=='warning'|| property=='success' || property=='drawcounter'
 				    				)
 				    			)
 				    				return true;
 				    			return false;
 				    		});
-//				    		console.log(diff.length);
-							if(diff.length>0)
-								$scope.view.postDirty($http,diff);	
-/*							
-							else{
-								newValue.getDirty(oldValue,function(property){
-					    			if(property && property.indexOf('$$')>-1)
-					    				return true;
-					    			return false;
-					    		})
+							if(diff.length>0){
+								if($scope.avoidUpdateDirty>0)
+									$scope.avoidUpdateDirty = $scope.avoidUpdateDirty-1;
+								else
+									$scope.view.postDirty($http,diff);	
 							}
-*/							
 		    			});
 		    		}
 					
@@ -773,9 +942,27 @@ app.directive('validNumber', function() {
 						  		if(this.className=='neuron'){
 						  			this.className='neuron-expand';	
 						  			drawSynapses(this,$scope,true);
+									$http.post(
+											'network-selectneuron',
+											JSON.stringify({neuron:{layer:this.id.replace('n','').split(',')[0]/1,order:this.id.replace('n','').split(',')[1]/1},sel:true})
+									)
+									.success(function(data, status, headers, config) { 
+										$scope.view.model.selectedn = data.selectedn;
+										$scope.avoidUpdateDirty=$scope.avoidUpdateDirty+1;
+									}
+									);
 						  		}else if(this.className=='neuron-expand'){
 						  			this.className='neuron';
 						  			drawSynapses(this,$scope,false);
+									$http.post(
+											'network-selectneuron',
+											JSON.stringify({neuron:{layer:this.id.replace('n','').split(',')[0]/1,order:this.id.replace('n','').split(',')[1]/1},sel:false})
+									)
+									.success(function(data, status, headers, config) { 
+										$scope.view.model.selectedn = data.selectedn;
+										$scope.avoidUpdateDirty=$scope.avoidUpdateDirty+1;
+									}
+									);									
 						  		}
 
 						  	}
@@ -797,13 +984,13 @@ app.directive('validNumber', function() {
 
 		
 
-		setPostRendered(true);
+		setPostRendered($scope,true);
 
 		
 	}
 	
-	function setPostRendered(val){
-		isPostRendered = val;
+	function setPostRendered($scope,val){
+		$scope.isPostRendered = val;
 		if(val==true){
 			window.setTimeout(function(){
 				document.getElementById("waiter").style.visibility='hidden';
@@ -817,7 +1004,7 @@ app.directive('validNumber', function() {
 	
 	function addEventToElements($scope,$http,$timeout){
 		
-		if(isAddEvents==false){
+		if($scope.isAddEvents==false){
 		
 			var btnLoad = document.getElementById('loadButton');
 			btnLoad.addEventListener('click', function() {
@@ -851,7 +1038,7 @@ app.directive('validNumber', function() {
 						url:'network-reset',
 						method : 'GET'
 				    }).success(function(data, status, headers, config) { 
-				    	setPostRendered(false);
+				    	setPostRendered($scope,false);
 				    	cleanSynapses($scope);
 				    	$scope.view.model.network = {
 							neurons : [],
@@ -948,7 +1135,7 @@ app.directive('validNumber', function() {
 								    	$scope.view.message();
 									}else{
 										
-								    	setPostRendered(false);
+								    	setPostRendered($scope,false);
 								    	cleanSynapses($scope);
 								    	$scope.view.model.network = {
 											neurons : [],
@@ -1031,7 +1218,7 @@ app.directive('validNumber', function() {
 			}else
 				addEventToHideElements($scope,$http,$timeout);
 			
-			isAddEvents=true;
+			$scope.isAddEvents=true;
 		}
 		
 	}
@@ -1053,6 +1240,20 @@ app.directive('validNumber', function() {
 	
 	}	
 	
+	function scopeRemoveSynapse(direction){
+		direction.split('|')[0].split(',')[0]/1
+		var appElement = document.querySelector('[ng-app=networksApp]');
+		var appScope = angular.element(appElement).scope();
+		appScope.removeSynapse(
+				direction.split('|')[0].split(',')[0]/1,
+				direction.split('|')[0].split(',')[1]/1,
+				direction.split('|')[1].split(',')[0]/1,
+				direction.split('|')[1].split(',')[1]/1,
+				direction
+				);
+
+	}
+	
 	function scopeRemoveLayer(layer){
 		var appElement = document.querySelector('[ng-app=networksApp]');
 		var appScope = angular.element(appElement).scope();
@@ -1066,6 +1267,12 @@ app.directive('validNumber', function() {
 		var appScope = angular.element(appElement).scope();
 		appScope.removeNeuron(layer,order);
 	}	
+	
+	function scopeRemoveSynapses(){
+		var appElement = document.querySelector('[ng-app=networksApp]');
+		var appScope = angular.element(appElement).scope();
+		appScope.removeSynapses();
+	}		
 	
 	function queryWorker($scope,$http,$timeout){
 		var btnLoad = document.getElementById('loadButton');
@@ -1090,9 +1297,17 @@ app.directive('validNumber', function() {
 	}
 	
 	
+	function drawSynapseOnInit($scope){
+		for(var i in $scope.view.model.selectedn){
+			document.getElementById($scope.view.model.selectedn[i]).click();
+		}
+	}
+	
 	function drawSynapses(neuron,$scope,show){
 		if(neuron && neuron.id){
 			var id = neuron.id.replace('n','');
+
+			
 			var selected = [];
 			for(var i in $scope.view.model.network.synapses){
 				var synapse = $scope.view.model.network.synapses[i];
@@ -1112,6 +1327,7 @@ app.directive('validNumber', function() {
 			}
 		}		
 	}
+	
 	
 	function reDrawSynapses($scope){
 		var selected = [];

@@ -8,6 +8,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import it.sijinn.admin.beans.NetworkWrapper;
 import it.sijinn.admin.workers.Worker;
 import it.sijinn.common.Network;
 import it.sijinn.common.Neuron;
+import it.sijinn.common.Synapse;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
@@ -86,6 +88,7 @@ public class ControllerNetwork extends AbstractBase implements i_action, i_bean,
 	private float learningRate = 0.5f;
 	private float learningMomentum = 0.01f;
 	private String activationFunctions = "SimpleSigmoidFermi";
+	private Map<String, Neuron> selectedn = new HashMap<String, Neuron>();
 
 	
 public ControllerNetwork(){
@@ -118,21 +121,24 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 	if(type==null){
 	}else if(type.equals("activationFunctions")){
 		if(wrapper!=null && wrapper.obtainInstance()!=null){
-			
-			try{
-				IFunctionApplied function = Neuron.create(value, null);
-				if(function==null)
-					setError("Activation Function "+value+" is not exsist.");
-				wrapper.obtainInstance().updateActivationFunctions(function);
-				setSuccess("Activation Function "+value+" updated successfully.");
-				this.activationFunctions = value;
-			}catch(Exception e){
-				setError("Error instance Activation Function: "+e.toString());
+			if(!this.activationFunctions.equals(value)){
+				try{
+					IFunctionApplied function = Neuron.create(value, null);
+					if(function==null)
+						setError("Activation Function "+value+" is not exsist.");
+					wrapper.obtainInstance().updateActivationFunctions(function);
+					setSuccess("Activation Function "+value+" updated successfully.");
+					this.activationFunctions = value;
+				}catch(Exception e){
+					setError("Error instance Activation Function: "+e.toString());
+				}
+				
+				String json = JsonWriter.object2json(this.get_bean(), "model");
+				clear();
+				selectedn.clear();
+				return json;
 			}
-			
-			String json = JsonWriter.object2json(this.get_bean(), "model");
-			clear();
-			return json;
+			return JsonWriter.object2json(this.get_bean(), "model");
 		}
 	}else if(type.equals("trainingStrategy")){
 		try{
@@ -242,6 +248,45 @@ public String exec(){
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
 
+@ActionCall(
+		name="removesynapses",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String removesynapses(){
+	if(wrapper!=null){
+		wrapper.obtainInstance().removeSynapses();
+	}
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+@ActionCall(
+		name="removesynapse",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String removesynapse(@Parameter(name="from") Neuron from, @Parameter(name="to") Neuron to){
+	if(wrapper!=null){
+		wrapper.obtainInstance().removeSynapse(from, to);
+	}
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+@ActionCall(
+		name="addsynapse",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
+public String addsynapse(@Parameter(name="from") Neuron from, @Parameter(name="to") Neuron to){
+	if(wrapper!=null){
+		wrapper.obtainInstance().addSynapse(new Synapse(from, to, 0), false);
+	}
+
+	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
 
 @ActionCall(
 		name="addlayer",
@@ -252,11 +297,9 @@ public String addlayer(){
 	
 	if(wrapper!=null)
 		wrapper.obtainInstance()
-//		.removeSynapses()
 		.insertLayer(wrapper.obtainInstance().getLayers().size()-2, 1, Neuron.create(activationFunctions, null), false,true)
-//		.createSynapses(0)
 		;
-	
+//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -268,13 +311,26 @@ public String addlayer(){
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String removelayer(@Parameter(name="layer") int layer){
 	
-	if(wrapper!=null)
+	if(wrapper!=null){
+		try{
+			for(Neuron neuron: wrapper.obtainInstance().getLayers().get(layer))
+				selectedn.remove("n"+neuron.getLayer()+","+neuron.getOrder());
+			for (Map.Entry<String, Neuron> entry : selectedn.entrySet()) {
+				List<String> forRemove = new ArrayList<String>();
+				if(entry.getValue().getLayer()>layer)
+					forRemove.add(entry.getKey());
+				for(String key:forRemove)
+					selectedn.remove(key);
+			}
+
+				
+		}catch(Exception e){			
+		}
 		wrapper.obtainInstance()
-//		.removeSynapses()
 		.removeLayer(layer,true)
-//		.createSynapses(0)
 		;
-	
+	}
+//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -291,13 +347,11 @@ public String addneuron(@Parameter(name="layer") int layer){
 			List<Neuron> neurons = wrapper.obtainInstance().getLayers().get(layer);
 			Neuron neuron = new Neuron(wrapper.obtainInstance(),  Neuron.create(activationFunctions, null), layer, neurons.size(), false) ;
 			wrapper.obtainInstance()
-//			.removeSynapses()
 			.addNeuron(neuron, true, true)
-//			.createSynapses(0)
 			;
 		}
 	}
-	
+//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -314,13 +368,12 @@ public String removeneuron(@Parameter(name="layer") int layer, @Parameter(name="
 			List<Neuron> neurons = wrapper.obtainInstance().getLayers().get(layer);
 			Neuron neuron = new Neuron(wrapper.obtainInstance(),  Neuron.create(activationFunctions, null), layer, neurons.size()-1, false) ;
 			wrapper.obtainInstance()
-//			.removeSynapses()
 			.removeNeuron(neuron, true)
-//			.createSynapses(0)
 			;
+			selectedn.remove("n"+neuron.getLayer()+","+neuron.getOrder());
 		}
 	}
-	
+//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -426,7 +479,7 @@ public String reset(){
 		worker = new Worker();
 	
 		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
-
+		selectedn.clear();
 	
 
 	return JsonWriter.object2json(this.get_bean(), "model");
@@ -475,6 +528,7 @@ public String updatenetwork(@Parameter(name="networksource") String networksourc
 		}else{
 			if(networksource!=null && wrapper!=null && wrapper.obtainInstance()!=null)
 				wrapper.setInstance(newnetwork);			
+			selectedn.clear();
 		}
 	}
 	
@@ -492,6 +546,21 @@ public String updatedata(@Parameter(name="data") String updatedata){
 		dataReader = new SimpleStringReader(updatedata,null);
 	
 	return JsonWriter.object2json(this.get_bean(), "model");
+}
+
+@ActionCall(
+		name="selectneuron",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(method = Expose.POST))
+public String selectneuron(@Parameter(name="neuron") Neuron neuron, @Parameter(name="sel") boolean sel){
+	if(neuron!=null && neuron.getLayer()>-1 && neuron.getOrder()>-1){
+		if(sel)
+			selectedn.put("n"+neuron.getLayer()+","+neuron.getOrder(), neuron);
+		else
+			selectedn.remove("n"+neuron.getLayer()+","+neuron.getOrder());
+	}
+	return JsonWriter.object2json(this.getSelectedn(), "selectedn",null,true,1);
 }
 
 
@@ -533,6 +602,7 @@ public void initController(){
 	
 
 	Network.addExtLogger(new ExtLogger());	
+
 }
 
 @Override
@@ -603,6 +673,13 @@ public String getStrategy() {
 public String getAlgorithm() {
 	return (algorithm!=null)?algorithm.getId():"";
 }
+
+@Serialized(children=true)
+public List<String> getSelectedn() {
+	return new ArrayList<String>(selectedn.keySet());
+}
+
+
 
 
 
