@@ -214,7 +214,7 @@
 											  		<label >Layers:</label>
 											  	</td>
 										  		<td class="label_datas">	
-											  		<span >{{view.model.network.neurons.length}}</span>
+											  		<span ng-bind="view.model.network.neurons.length"></span>
 											  	</td>
 						  						<td>
 						  							&nbsp;&nbsp;
@@ -244,7 +244,7 @@
 										<table>
 											<tr>							
 										  		<td class="label_datas">	
-											  		<label >{{getAddSynapseLabel()}}</label>
+											  		<label ng-bind="getAddSynapseLabel()"></label>
 											  	</td>
 											 	<td ng-if="getAddSynapseLabel() != ''">
 											 		<button  ng-click="addSynapse()" class="btn btn-primary btn-border" autocomplete="off">+</button>
@@ -849,7 +849,7 @@ app.controller('networksCtrl',
 	    	document.getElementById("top_menu_networks").className += " active";
 	    	
 			$http({
-	            method : 'GET',
+	            method : 'POST',
 	            url : 'network-json'
 		    }).success(function(data, status, headers, config) {
 		    	$scope.view.init(data);
@@ -1011,7 +1011,7 @@ app.directive('validNumber', function() {
 			  	new Button(btnLoad,'loading'); 
 			  	$http({
 					url:'network-restart',
-					method : 'GET'
+					method : 'POST'
 			    }).success(function(data, status, headers, config) { 
 			    	$scope.view.init(data);
 			    	if($scope.view.model.worker && $scope.view.model.worker.executionState){
@@ -1035,7 +1035,7 @@ app.directive('validNumber', function() {
 				  	new Button(btnReset,'loading'); 
 				  	$http({
 						url:'network-reset',
-						method : 'GET'
+						method : 'POST'
 				    }).success(function(data, status, headers, config) { 
 				    	setPostRendered($scope,false);
 				    	cleanSynapses($scope);
@@ -1057,7 +1057,7 @@ app.directive('validNumber', function() {
 	
 				$http({
 					url:'network-viewdata',
-					method : 'GET'
+					method : 'POST'
 			    }).success(function(data, status, headers, config) { 
 			    	var btnid = '_'+new Date().getTime();
 			    	var txt = '<textarea id="txtUpdateData'+btnid+'" style="width:100%;height:400px;white-space: pre; word-wrap: normal;">';
@@ -1102,7 +1102,7 @@ app.directive('validNumber', function() {
 	
 				$http({
 					url:'network-viewnetwork',
-					method : 'GET'
+					method : 'POST'
 			    }).success(function(data, status, headers, config) { 
 			    	
 			    	var btnid = '_'+new Date().getTime();
@@ -1264,7 +1264,7 @@ app.directive('validNumber', function() {
 			  	new Button(btnStop,'loading'); 
 			  	$http({
 					url:'network-stop',
-					method : 'GET'
+					method : 'POST'
 			    }).success(function(data, status, headers, config) { 
 			    	$scope.view.init(data);
 					new Button(btnStop,"reset");
@@ -1313,7 +1313,7 @@ app.directive('validNumber', function() {
 		$timeout(function () {
 		  	$http({
 				url:'network-check',
-				method : 'GET'
+				method : 'POST'
 		    }).success(function(data, status, headers, config) { 
 		    	$scope.view.init(data);
 		    	if($scope.view.model.worker && $scope.view.model.worker.executionState){

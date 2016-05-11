@@ -406,7 +406,7 @@ public String diffAsJson(){
 		name="viewdata",
 		navigated="false",
 		Redirect=@Redirect(contentType="application/json"),
-		Expose=@Expose(method = Expose.GET))
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String viewdata(){
 	
 	List<float[]> aggr = new ArrayList<float[]>(); 
@@ -441,7 +441,7 @@ public String viewdata(){
 		name="setdata",
 		navigated="false",
 		Redirect=@Redirect(contentType="application/json"),
-		Expose=@Expose(method = Expose.GET))
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public void setdata(@Parameter(name="data") String data){
 	
 	if(data!=null){
@@ -500,7 +500,7 @@ public String reset(){
 		name="viewnetwork",
 		navigated="false",
 		Redirect=@Redirect(contentType="application/json"),
-		Expose=@Expose(method = Expose.GET))
+		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String viewnetwork(){
 	
 	String result = ""; 
