@@ -89,14 +89,14 @@
       
       div.synapse{
 		position: absolute;
-		background-color: white;
+		background-color_: white;
 		color: black;
-		padding: 4px;
-		-moz-box-shadow: 1px 1px 6px gray;
-		-webkit-box-shadow: 1px 1px 6px gray;
-		box-shadow: 1px 1px 6px gray;
-		border-radius: 4px;	
-		height:25px;
+		padding_: 4px;
+		-moz-box-shadow_: 1px 1px 6px gray;
+		-webkit-box-shadow_: 1px 1px 6px gray;
+		box-shadow_: 1px 1px 6px gray;
+		border-radius_: 4px;	
+		height_:25px;
 		max-width:100px;
 		text-align: center;
 		display: none;
@@ -107,17 +107,11 @@
       div.synapse:hover{
       	background-color: #87C5F0;
       	color: white;
-		-moz-box-shadow: 1px 1px 6px silver;
-		-webkit-box-shadow: 1px 1px 6px silver;
-		box-shadow: 1px 1px 6px silver;      
 	  } 
       
       div.synapse-hover{
       	background-color: #87C5F0;
       	color: white;
-		-moz-box-shadow: 1px 1px 6px silver;
-		-webkit-box-shadow: 1px 1px 6px silver;
-		box-shadow: 1px 1px 6px silver;      
 	  }     
       
 	  td.neuron_place{
@@ -186,6 +180,14 @@
 		                  		<li><a href="javascript:void(document.getElementById('stopButton').click())" ng-if="view.model.worker.executionState == 1">Interrupt training...</a></li>
 		                 		<li><a href="javascript:void(scopeRemoveSynapses())">Remove synapses</a></li>
 		                 	</ul>
+		              	</li>
+		              	<li style="width:60%">
+
+			 					<table style="width:100%" >
+			 						<tr>
+			 							<td style="width:100%;height: 25px;" align="center"><img id="waiter" src="images/wait.gif" border="0"/></td>
+			 						</tr>
+			 					</table>
 		              	</li>
 					</ul>
  		
@@ -275,21 +277,31 @@
 											  		<select id="trainingStrategy" class="bs-select form-control" >
 												    	<option value="BatchGradientDescent">Batch Gradient Descent</option>
 												    	<option value="StochasticGradientDescent">Stochastic Gradient Descent</option>
+												    	<option value="GeneticBreeding">Genetic Breeding</option>
 													</select>
 											  	</td>	
 										  		<td class="label_datas">	
 											  		<label >Algorithm:</label>
 											  	</td>
+						  						<td>
+						  							<button type="button" id="infoAButton" data-toggle="button" data-loading-text="+" class="btn btn-default" autocomplete="off">?</button>
+						  						</td>											  	
 											  	<td >
 											  		<select id="trainingAlgorithm" class="bs-select form-control" >
-												    	<option value="BPROP">Back Propagation</option>
-												    	<option value="QPROP">Quick Propagation</option>
-												    	<option value="RPROP">Resilient Propagation</option>
+												    	<option value="BPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Back Propagation</option>
+												    	<option value="QPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Quick Propagation</option>
+												    	<option value="RPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Resilient Propagation</option>
+												    	<option value="GENE" ng-if="view.model.strategy == 'GeneticBreeding'">Genetic Neural</option>
 													</select>
 											  	</td>
-											  	<td class="label_datas">
+
+						  						<td>
+						  							&nbsp;&nbsp;
+						  						</td>	
+						  						<td class="label_datas">
 											  		<label for="settings.root">Approximation error:</label>
 						  						</td>
+				  						
 						  						<td>	
 						  							<input type="text" class="form-control" style="max-width: 120px; text-align: center;" data-ng-model="view.model.worker.approximation"/>
 						  						</td>
@@ -345,13 +357,7 @@
 					</div>
 				</div>	
 	 		
-			 		<div style="width:100%;">
-			 			<table style="width:100%" >
-			 				<tr>
-			 					<td style="width:100%;height: 25px;" align="center"><img id="waiter" src="images/wait.gif" border="0"/></td>
-			 				</tr>
-			 			</table>
-			 		</div>		 		
+		 		
 			 		<div id="canvas" resize class="canvas"  style="display:none;">
 	
 				 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
@@ -394,9 +400,7 @@
 				 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off" 
 				 					ng-click="addLayer()"
 				 					title="Add New layer"
-				 					>
-								  	+
-									</button>
+				 					>+</button>
 									<span >{{view.model.network.neurons.length}}</span>
 									</nobr>						
 									
@@ -405,9 +409,7 @@
 				 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="x" class="btn btn-danger btn-border" autocomplete="off" 
 				 						ng-click="removeLayerPopup($index,$event)"
 				 						title="Remove layer"
-				 					>
-									  	x
-									</button>						
+				 					>x</button>						
 								</td>
 								
 									<td class="separator"></td>
@@ -427,7 +429,7 @@
 								
 									<td class="separator"></td>
 									
-								<td style="width:50px; " align="right">
+								<td style="width:87px; " align="right">
 									<nobr>
 				 					<button  type="button" data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off"
 				 						ng-click="addNeuron($index)"
@@ -435,14 +437,14 @@
 				 						data-ng-if="layer.length < 10"
 				 					>+</button>	
 									<span>{{layer.length}}</span>
-				 					<button type="button" data-toggle="button" data-loading-text="-" class="btn btn-danger btn-border" autocomplete="off"
+				 					<button type="button" data-toggle="button" data-loading-text="x" class="btn btn-danger btn-border" autocomplete="off"
 				 						ng-click="removeNeuronPopup($index,-1,$event)"
 				 						title="Remove last neuron from current layer"
 				 						data-ng-if="layer.length > 1" 
-				 					>-</button>
+				 					>x</button>
 									</nobr>											
 								</td>					
-							</tr>
+							</tr> 
 				 			<tr data-ng-if="$index == view.model.network.neurons.length-1">
 				 				<td style="width:50px; " >	 				
 				 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary btn-border" autocomplete="off"
@@ -456,7 +458,7 @@
 				 					<td class="separator"></td>
 				 				
 				 				<td data-ng-repeat="neuron in layer" style="height: 30px;" align="center">
-				 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse" style="position: relative;display: block;" >
+				 				 	<div data-ng-if="neuron.layer == view.model.network.neurons.length-1"class="synapse btn btn-default" style="position: relative;display: block;" >
 				 						{{neuron.output}}
 				 					</div>
 				 				
@@ -471,7 +473,7 @@
 					</div>
 			
 					<cycle data-ng-repeat="synapse in view.model.network.synapses"  >			
-						<div id="sl{{synapse.direction}}" class="synapse" ng-click="removeSynapsePopup(synapse,$event)">{{synapse.weight}}</div>			
+						<div id="sl{{synapse.direction}}" class="synapse btn btn-default" ng-click="removeSynapsePopup(synapse,$event)">{{synapse.weight}}</div>			
 					</cycle>	
 	 		
 				</div> 		
@@ -1156,7 +1158,42 @@ app.directive('validNumber', function() {
 				});
 			});
 			
-			
+			var btnAInfo = document.getElementById('infoAButton');
+			btnAInfo.addEventListener('click', function() {
+			  	$http({
+					url:'network-ainfo',
+					method : 'POST'
+			    }).success(function(data, status, headers, config) { 
+
+					var tmplt = '<div class="popover" role="tooltip">'
+							  + '<div class="arrow"></div>'
+							  + '<h3 class="popover-title">Algorithm '+data.algorithm.id+'</h3>'
+							  + '<div class="popover-content">';
+							  
+				  	for(var property in data.algorithm){
+						if (property!='id' &&
+							property!='definition' &&	
+							typeof data.algorithm[property] != 'function' &&
+							typeof data.algorithm[property] != 'object')
+								tmplt+='<i>'+property+'</i>:'+data.algorithm[property]+'<br/>';
+					}
+							  
+					tmplt+='</div></div>';  
+					
+					if(btnAInfo.popover){
+//						btnAInfo.popover.close();
+						btnAInfo.popover.options.template = tmplt;
+					}else{					
+						var popover = new Popover(btnAInfo,
+						{
+							trigger:"click",
+							template: tmplt
+						});
+						btnAInfo.popover = popover;
+						popover.open();
+					}
+				});
+			});				
 			
 			var selectActivationFunctions = document.getElementById('activationFunctions');
 			if(selectActivationFunctions){

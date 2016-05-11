@@ -41,12 +41,15 @@ import it.sijinn.common.Network;
 import it.sijinn.common.Neuron;
 import it.sijinn.common.Synapse;
 import it.sijinn.perceptron.algorithms.BPROP;
+import it.sijinn.perceptron.algorithms.GENE;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
+import it.sijinn.perceptron.genetic.NeuralBreeding;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
+import it.sijinn.perceptron.strategies.GeneticBreeding;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.IExtLogger;
 import it.sijinn.perceptron.utils.io.IDataReader;
@@ -147,7 +150,15 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 				cur_strategy.setErrorFunction(new MSE());
 				this.strategy = cur_strategy;
 			}
-			if(algorithm!=null)
+			if(this.strategy instanceof GeneticBreeding){
+				this.algorithm = new GENE(
+										new NeuralBreeding().setElitism(false)
+									).setPopulationSize(25);
+			}else{
+				if(this.algorithm instanceof GENE)
+					this.algorithm = new BPROP().setDeferredAgregateFunction(new SUMMATOR());
+			}
+			if(this.algorithm!=null)
 				this.strategy.setTrainingAlgorithm(algorithm);
 			setSuccess("Training Strategy "+value+" updated successfully.");
 		}catch(Exception e){
@@ -561,6 +572,16 @@ public String selectneuron(@Parameter(name="neuron") Neuron neuron, @Parameter(n
 			selectedn.remove("n"+neuron.getLayer()+","+neuron.getOrder());
 	}
 	return JsonWriter.object2json(this.getSelectedn(), "selectedn",null,true,1);
+}
+
+@ActionCall(
+		name="ainfo",
+		navigated="false",
+		Redirect=@Redirect(contentType="application/json"),
+		Expose=@Expose(method = Expose.POST))
+public String ainfo(){
+	
+	return JsonWriter.object2json(algorithm, "algorithm",null,true,1);
 }
 
 
