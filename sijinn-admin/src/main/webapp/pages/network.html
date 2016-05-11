@@ -192,35 +192,13 @@
 					</ul>
  		
 					<div id="networkTabContent" class="tab-content" >
-						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 105px; ">
-				 		<div class="form-group" style="padding-top: 10px">
+						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 105px;padding-top: 5px; ">
+
 				 			<table>
 						 		<tr>
 						 			<td>
 						 				<table>
-											<tr>	
-										 		<td class="label_datas"  >
-										  			<label>Type:</label>	
-										  		</td>
-										  		<td>			  			
-										  			<span>Perseptron</span>
-										  		</td>
-										  	</tr>
-										  </table>
-									</td>	  		
-							  	</tr>
-							  	<tr>
-						 			<td>
-						 				<table>
-											<tr>	
-								 				<td >
-								 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Reset default" class="btn btn-danger" autocomplete="off">
-													  	Reset default
-													</button>
-								 				</td>								
-								 				<td>
-						  							&nbsp;&nbsp;
-						  						</td>								
+											<tr>							
 										  		<td class="label_datas">	
 											  		<label >Activation functions:</label>
 											  	</td>
@@ -249,21 +227,40 @@
 						  						<td>
 						  							&nbsp;&nbsp;
 						  						</td>	
-								 				<td ng-if="getAddSynapseLabel() != ''">
-								 					<button class="btn btn-primary" ng-bind="getAddSynapseLabel()" ng-click="addSynapse()"></button>
-								 				</td>
-								 											  									  		
+								 				<td >
+								 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Reset default" class="btn btn-danger" autocomplete="off">
+													  	Reset default
+													</button>
+								 				</td>	
 											</tr>
 										</table>
-									</td>										  	
+									</td>	
+								</tr>
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+								<tr>	
+									<td ng-if="getAddSynapseLabel() != ''" align="right">
+										<table>
+											<tr>							
+										  		<td class="label_datas">	
+											  		<label >{{getAddSynapseLabel()}}</label>
+											  	</td>
+											 	<td ng-if="getAddSynapseLabel() != ''">
+											 		<button  ng-click="addSynapse()" class="btn btn-primary btn-border" autocomplete="off">+</button>
+											 	</td>
+											 </tr>
+										</table>
+									</td>		 	
+																		  	
 						  		</tr>
 						  	</table>	
 				
-						</div>
+
 					</div>
 			
 					<div role="training" class="tab-pane fade" id="training" aria-labelledby="training-tab" style="min-height: 105px">
-				 		<div class="form-group"  style="padding-top: 10px">
+
 			
 					 		<table>
 						 		<tr>	
@@ -354,7 +351,7 @@
 								</tr>
 							</table>
 						</div>					
-					</div>
+
 				</div>	
 	 		
 		 		
@@ -363,7 +360,7 @@
 				 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
 				
 				 			<tr>
-				 				<td style="width:50px; padding: 2px" data-ng-if="$index == 0" class="btn btn-default">
+				 				<td  data-ng-if="$index == 0" class="btn btn-default">
 									Layers
 								</td>
 								<td style="width:50px; " align="center" data-ng-if="$index > 0"></td>
@@ -388,7 +385,7 @@
 				 				
 				 					<td class="separator"></td>
 				 				
-				 				<td style="width:87px;  padding: 2px" align="center" data-ng-if="$index == 0" class="btn btn-default">
+				 				<td  align="center" data-ng-if="$index == 0" class="btn btn-default">
 									Neurons
 								</td>
 				 				<td style="width:87px; " align="center" data-ng-if="$index > 0"></td>
