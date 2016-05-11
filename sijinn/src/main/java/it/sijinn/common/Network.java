@@ -1110,6 +1110,26 @@ public class Network extends Neuron implements Serializable{
 		return result;
 	}
 	
+	public Network setWeight(float[] weights){
+		if(this.layers==null || this.layers.size()<2)
+			return this;	
+		int current=0;
+		
+		for(List<Neuron> currentLayer: this.layers){
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null && neuron.obtainChildren()!=null){
+					for(Synapse synapse:neuron.obtainChildren()){
+						if(current<weights.length){
+							synapse.setWeight(weights[current]);
+							current++;
+						}
+					}
+				}
+			}
+		}
+		return this;
+	}	
+	
 	public Synapse[] getSynapses(){
 		if(this.layers==null || this.layers.size()<2)
 			return new Synapse[0];	

@@ -16,8 +16,11 @@ public class ResourceStreamWrapper implements IStreamWrapper {
 
 	@Override
 	public InputStream openStream() throws Exception {
-		if(path!=null)
+		if(path!=null){
 			stream = this.getClass().getClassLoader().getResourceAsStream(path);
+			if(stream==null)
+				stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+		}
 		return stream;
 	}
 	

@@ -452,6 +452,18 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		this.initialDeltaGenarator = initialDeltaGenarator;
 		return this;
 	}
+	public float getEtaPositive() {
+		return etaPositive;
+	}
+	public float getEtaNegative() {
+		return etaNegative;
+	}
+	public float getMaxDelta() {
+		return maxDelta;
+	}
+	public float getMinDelta() {
+		return minDelta;
+	}
 
 
 

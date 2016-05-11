@@ -8,7 +8,6 @@ public interface ITrainingAlgorithm {
 	ITrainingAlgorithm updateWeights(Network network) throws Exception;
 	ITrainingAlgorithm calculate(Network network) throws Exception;
 	ITrainingAlgorithm calculateAndUpdateWeights(Network network) throws Exception;
-//	ITrainingAlgorithm clear(Network network);
 	ITrainingAlgorithm sync(Network network1, Network network2, int type) throws Exception;
 	IDAFloatFunction getDeferredAgregateFunction();
 	ITrainingAlgorithm setDeferredAgregateFunction(IDAFloatFunction deferredAgregateFunction);
