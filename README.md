@@ -17,5 +17,5 @@ Features:
  - create new network
  - edit existent
  - set training data/strategy/algorithm
- - and run training
+ - run training
  - exec test
