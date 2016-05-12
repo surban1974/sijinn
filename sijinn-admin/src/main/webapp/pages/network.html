@@ -65,7 +65,7 @@
 		height:40px;
 		width: 40px;
 		cursor: pointer;
-		z-index: 1000;
+		z-index: 10;
 		position: relative;
       }   
       
@@ -169,7 +169,7 @@
 					<ul id="tab-header" class="nav nav-tabs" role="tablist">
 						<li role="presentation" class="active"><a href="#net" id="net-tab" role="tab" data-toggle="tab" aria-controls="net" aria-expanded="true">Network</a></li>
 						<li role="presentation"><a href="#training" role="tab" id="training-tab" data-toggle="tab" aria-controls="training">Training</a></li>
-						<li class="dropdown">
+						<li class="dropdown" style="z-index: 11;">
 		                	<div  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Actions <span class="caret"></span></div>
 		                	<ul class="dropdown-menu" role="menu">
 		                  		<li><a href="javascript:void(document.getElementById('resetButton').click())">Default network</a></li>
@@ -481,7 +481,7 @@
 
 
     <!-- Bootstrap Native -->
-    <script src="js/bootstrap-native.js"></script>
+    <script src="js/bootstrap-native.patched.js"></script>
     
 	<!--  Angular 1.5 JavaScript -->
 	<script src='js/angular.min.js'></script>
@@ -580,19 +580,23 @@ app.controller('networksCtrl',
 			if($event.target){
 				if($event.target.popover){
 				}else{
-					var popover = new Popover($event.target,
-					{
-						trigger:"click",
-						template: '<div class="popover" role="tooltip">'
-							  + '<div class="arrow"></div>'
-							  + '<h3 class="popover-title">Remove layer '+layer+'</h3>'
-							  + '<div class="popover-content"><center>'
-							  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveLayer('+layer+')">Confirm</button>'
-							  + '</center></div>'
-							  + '</div>'
-					});
-					$event.target.popover = popover;
-					popover.open();
+					try{
+						var popover = new Popover($event.target,
+						{
+							trigger:"click",
+							template: '<div class="popover" role="tooltip">'
+								  + '<div class="arrow"></div>'
+								  + '<h3 class="popover-title">Remove layer '+layer+'</h3>'
+								  + '<div class="popover-content"><center>'
+								  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveLayer('+layer+')">Confirm</button>'
+								  + '</center></div>'
+								  + '</div>'
+						});
+						$event.target.popover = popover;
+						popover.open();
+					}catch(e){
+						
+					}
 						
 				}
 			}
@@ -636,19 +640,23 @@ app.controller('networksCtrl',
 			if($event.target){
 				if($event.target.popover){
 				}else{
-					var popover = new Popover($event.target,
-					{
-						trigger:"click",
-						template: '<div class="popover" role="tooltip">'
-							  + '<div class="arrow"></div>'
-							  + '<h3 class="popover-title">Remove last neuron from layer '+layer+'</h3>'
-							  + '<div class="popover-content"><center>'
-							  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveNeuron('+layer+','+order+')">Confirm</button>'
-							  + '</center></div>'
-							  + '</div>'
-					});
-					$event.target.popover = popover;
-					popover.open();
+					try{
+						var popover = new Popover($event.target,
+						{
+							trigger:"click",
+							template: '<div class="popover" role="tooltip">'
+								  + '<div class="arrow"></div>'
+								  + '<h3 class="popover-title">Remove last neuron from layer '+layer+'</h3>'
+								  + '<div class="popover-content"><center>'
+								  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveNeuron('+layer+','+order+')">Confirm</button>'
+								  + '</center></div>'
+								  + '</div>'
+						});
+						$event.target.popover = popover;
+						popover.open();
+					}catch(e){
+						
+					}
 						
 				}
 			}
@@ -692,20 +700,23 @@ app.controller('networksCtrl',
 			if($event.target){
 				if($event.target.popover){
 				}else{
-					var popover = new Popover($event.target,
-					{
-						trigger:"click",
-						template: '<div class="popover" role="tooltip">'
-							  + '<div class="arrow"></div>'
-							  + '<h3 class="popover-title">Remove synapse from ['+synapse.direction.split('|')[0]+'] to ['+synapse.direction.split('|')[1]+']</h3>'
-							  + '<div class="popover-content"><center>'
-							  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveSynapse(\''+synapse.direction+'\')">Confirm</button>'
-							  + '</center></div>'
-							  + '</div>'
-					});
-					$event.target.popover = popover;
-					popover.open();
+					try{
+						var popover = new Popover($event.target,
+						{
+							trigger:"click",
+							template: '<div class="popover" role="tooltip">'
+								  + '<div class="arrow"></div>'
+								  + '<h3 class="popover-title">Remove synapse from ['+synapse.direction.split('|')[0]+'] to ['+synapse.direction.split('|')[1]+']</h3>'
+								  + '<div class="popover-content"><center>'
+								  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveSynapse(\''+synapse.direction+'\')">Confirm</button>'
+								  + '</center></div>'
+								  + '</div>'
+						});
+						$event.target.popover = popover;
+						popover.open();
+					}catch(e){
 						
+					}
 				}
 			}
 			
@@ -970,12 +981,15 @@ app.directive('validNumber', function() {
 					e.addEventListener(
 							'mouseover',
 							function() {
-								if(this.popover)	
-									this.popover.removePopover();
-								
-								var popover = new Popover(this);	
-								this.popover = popover;
-								
+								try{
+									if(this.popover)	
+										this.popover.removePopover();
+									
+									var popover = new Popover(this);	
+									this.popover = popover;
+								}catch(e){
+									
+								}
 							},
 							false)
 				}
@@ -1180,14 +1194,18 @@ app.directive('validNumber', function() {
 					if(btnAInfo.popover){
 //						btnAInfo.popover.close();
 						btnAInfo.popover.options.template = tmplt;
-					}else{					
-						var popover = new Popover(btnAInfo,
-						{
-							trigger:"click",
-							template: tmplt
-						});
-						btnAInfo.popover = popover;
-						popover.open();
+					}else{	
+						try{
+							var popover = new Popover(btnAInfo,
+							{
+								trigger:"click",
+								template: tmplt
+							});
+							btnAInfo.popover = popover;
+							popover.open();
+						}catch(e){
+							
+						}
 					}
 				});
 			});				
@@ -1411,10 +1429,10 @@ app.directive('validNumber', function() {
 					var rectFrom = from.getBoundingClientRect();
 					var rectTo = to.getBoundingClientRect();
 					
-					var centerFromX = rectFromX = rectFrom.left+rectFrom.width/2 + window.scrollX;
-					var centerFromY = rectFromY = rectFrom.top + rectFrom.height/2 + window.scrollY;
-					var centerToX = rectToX = rectTo.left+rectTo.width/2 + window.scrollX;
-					var centerToY = rectToY =rectTo.top + rectTo.height/2 + window.scrollY;
+					var centerFromX = rectFromX = rectFrom.left+rectFrom.width/2 + ((window.scrollX)?window.scrollX:document.documentElement.scrollLeft);
+					var centerFromY = rectFromY = rectFrom.top + rectFrom.height/2 + ((window.scrollY)?window.scrollY:document.documentElement.scrollTop);
+					var centerToX = rectToX = rectTo.left+rectTo.width/2 + ((window.scrollX)?window.scrollX:document.documentElement.scrollLeft);
+					var centerToY = rectToY =rectTo.top + rectTo.height/2 + ((window.scrollY)?window.scrollY:document.documentElement.scrollTop);
 					
 					var alfa = Math.atan((rectFromY - rectToY)/(rectFromX - rectToX));
 					var radius = 12.5;
@@ -1453,30 +1471,37 @@ app.directive('validNumber', function() {
 					line.addEventListener("mouseover", function(){
 						if(label)
 							addClass(label,'synapse-hover');
-						
-						if(this.popover)	
-							this.popover.removePopover();
-						
-						var popover = new Popover(this,
-							{
-							template: '<div class="popover" role="tooltip">'
-								  + '<div class="arrow"></div>'
-								  + '<h3 class="popover-title">Synapse</h3>'
-								  + '<div class="popover-content">'
-								  + '<i>from:</i>&nbsp;neuron ['+res[0]+']<br/>'
-								  + '<i>to:</i>&nbsp;neuron ['+res[1]+']<br/>'
-								  + '<i>weight:</i>&nbsp;'+synapse.weight+'<br/>'
-								  + '</div>'
-								  + '</div>'
-						});	
-						this.popover = popover;
+						try{
+							if(this.popover)	
+								this.popover.removePopover();
+							
+							var popover = new Popover(this,
+								{
+								template: '<div class="popover" role="tooltip">'
+									  + '<div class="arrow"></div>'
+									  + '<h3 class="popover-title">Synapse</h3>'
+									  + '<div class="popover-content">'
+									  + '<i>from:</i>&nbsp;neuron ['+res[0]+']<br/>'
+									  + '<i>to:</i>&nbsp;neuron ['+res[1]+']<br/>'
+									  + '<i>weight:</i>&nbsp;'+synapse.weight+'<br/>'
+									  + '</div>'
+									  + '</div>'
+							});	
+							this.popover = popover;
+						}catch(e){
+							
+						}
 						
 						
 					});
 					line.addEventListener("mouseout", function(){
 						removeClass(label,'synapse-hover');
-						if(this.popover)	
-							this.popover.removePopover();
+						try{
+							if(this.popover)	
+								this.popover.removePopover();
+						}catch(e){
+							
+						}
 
 					});					
 					
