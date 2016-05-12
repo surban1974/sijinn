@@ -55,7 +55,7 @@
       
       div.neuron-expand{
       	color: white;
-		background-color: white;
+		background-color: #F5F5F5;
 		border-color: #87C5F0;
 		padding: 4px;
 		-moz-box-shadow: 1px 1px 6px gray;
@@ -135,20 +135,27 @@
       
       table.progressbar{
       	width: 100%;
-      	border: 1px solid silver;
-      	border-radius: 4px;
-      	-moz-box-shadow_: 1px 1px 6px gray;
-		-webkit-box-shadow_: 1px 1px 6px gray;
-		box-shadow_: 1px 1px 6px gray;
+      	border_: 1px solid silver;
+      	border-radius_: 4px;
       }
       
       
       table.progressbar  td.progress-left{
+        -moz-box-shadow: 1px 1px 6px gray;
+		-webkit-box-shadow: 1px 1px 6px gray;
       	box-shadow: 1px 1px 6px gray;
       	padding:4px;
       	color:white;
       	background-color:#87C5F0; 
+      	border: 1px solid #87C5F0;  
       }
+      
+      table.progressbar  td.progress-right{
+
+      	border: 1px solid #F5F5F5;    	
+      	padding:4px;
+      	background-color:white; 
+      }      
       
             
     </style>
@@ -172,13 +179,13 @@
 						<li class="dropdown" style="z-index: 11;">
 		                	<div  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Actions <span class="caret"></span></div>
 		                	<ul class="dropdown-menu" role="menu">
-		                  		<li><a href="javascript:void(document.getElementById('resetButton').click())">Default network</a></li>
-		                		<li><a href="javascript:void(document.getElementById('previewButton').click())">Network source</a></li>
-		                		<li><a href="javascript:void(document.getElementById('dataButton').click())">Training data</a></li>
+		                  		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(document.getElementById('resetButton').click())">Restore default</a></li>
+		                		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(document.getElementById('previewButton').click())">Network source</a></li>
+		                		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(document.getElementById('dataButton').click())">Training data</a></li>
 		                		<li role="separator" class="divider"></li>
 		                  		<li><a href="javascript:void(document.getElementById('loadButton').click())" ng-if="view.model.worker.executionState != 1">Start training</a></li>
 		                  		<li><a href="javascript:void(document.getElementById('stopButton').click())" ng-if="view.model.worker.executionState == 1">Interrupt training...</a></li>
-		                 		<li><a href="javascript:void(scopeRemoveSynapses())">Remove synapses</a></li>
+		                 		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(scopeRemoveSynapses())">Remove synapses</a></li>
 		                 	</ul>
 		              	</li>
 		              	<li style="width:60%">
@@ -203,7 +210,10 @@
 											  		<label >Activation functions:</label>
 											  	</td>
 											  	<td >
-											  		<select id="activationFunctions" class="bs-select form-control" >
+											  		<select id="activationFunctions" 
+											  			class="bs-select form-control"
+											  			ng-disabled="view.model.worker.executionState == 1"
+											  		 >
 								    					<option value="SimpleGaussian">Gaussian</option>
 												    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
 												    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
@@ -220,7 +230,9 @@
 						  							&nbsp;&nbsp;
 						  						</td>	
 								 				<td >
-								 					<button type="button" id="previewButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-info" autocomplete="off">
+								 					<button type="button" id="previewButton" data-toggle="button" data-loading-text="Wait..." class="btn btn-info" 
+								 						ng-disabled="view.model.worker.executionState == 1"
+								 						autocomplete="off">
 													  	Network source
 													</button>
 								 				</td>
@@ -228,7 +240,9 @@
 						  							&nbsp;&nbsp;
 						  						</td>	
 								 				<td >
-								 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Reset default" class="btn btn-danger" autocomplete="off">
+								 					<button type="button" id="resetButton" data-toggle="button" data-loading-text="Reset default" class="btn btn-danger" 
+								 						ng-disabled="view.model.worker.executionState == 1"
+								 						autocomplete="off">
 													  	Reset default
 													</button>
 								 				</td>	
@@ -247,7 +261,9 @@
 											  		<label ng-bind="getAddSynapseLabel()"></label>
 											  	</td>
 											 	<td ng-if="getAddSynapseLabel() != ''">
-											 		<button  ng-click="addSynapse()" class="btn btn-primary btn-border" autocomplete="off">+</button>
+											 		<button  ng-click="addSynapse()" class="btn btn-primary btn-border" 
+											 			autocomplete="off" 
+											 			ng-disabled="view.model.worker.executionState == 1">+</button>
 											 	</td>
 											 </tr>
 										</table>
@@ -271,7 +287,10 @@
 											  		<label >Strategy:</label>
 											  	</td>
 											  	<td >
-											  		<select id="trainingStrategy" class="bs-select form-control" >
+											  		<select id="trainingStrategy" 
+											  			class="bs-select form-control"
+											  			ng-disabled="view.model.worker.executionState == 1"
+											  			 >
 												    	<option value="BatchGradientDescent">Batch Gradient Descent</option>
 												    	<option value="StochasticGradientDescent">Stochastic Gradient Descent</option>
 												    	<option value="GeneticBreeding">Genetic Breeding</option>
@@ -284,7 +303,9 @@
 						  							<button type="button" id="infoAButton" data-toggle="button" data-loading-text="+" class="btn btn-default" autocomplete="off">?</button>
 						  						</td>											  	
 											  	<td >
-											  		<select id="trainingAlgorithm" class="bs-select form-control" >
+											  		<select id="trainingAlgorithm" 
+											  			class="bs-select form-control"
+											  			ng-disabled="view.model.worker.executionState == 1" >
 												    	<option value="BPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Back Propagation</option>
 												    	<option value="QPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Quick Propagation</option>
 												    	<option value="RPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Resilient Propagation</option>
@@ -300,14 +321,16 @@
 						  						</td>
 				  						
 						  						<td>	
-						  							<input type="text" class="form-control" style="max-width: 120px; text-align: center;" data-ng-model="view.model.worker.approximation"/>
+						  							<input type="text" class="form-control" style="max-width: 120px; text-align: center;" 
+						  								data-ng-model="view.model.worker.approximation"
+						  								ng-disabled="view.model.worker.executionState == 1"/>
 						  						</td>
 						  						<td>
 						  							&nbsp;&nbsp;
 						  						</td>
 						  						<td valign="middle" style="padding: 10px; min-width: 150px">	
 											  			<label>MSE:</label>
-											  			<span>{{ view.model.worker.delta}}</span>
+											  			<span ng-bind="view.model.worker.delta"></span>
 												</td>
 											</tr>
 										</table>
@@ -318,7 +341,9 @@
 										<table>
 											<tr>
 										 		<td >
-													<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" autocomplete="off">
+													<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" 
+														autocomplete="off"
+														ng-disabled="view.model.worker.executionState == 1">
 													  	Training Data
 													</button>							 		
 
@@ -330,8 +355,14 @@
 												<td valign="middle" style="padding: 10px; min-width: 450px">
 												  		<table class="progressbar" cellspasing_="0" cellpadding_="0">
 													  			<tr>
-														  			<td class="progress-left" align="center" style="width: {{ view.model.worker.step * 100 / view.model.worker.maxSteps}}%">{{ view.model.worker.step}}</td>
-														  			<td style="width: {{100- view.model.worker.step * 100 / view.model.worker.maxSteps}}%">&nbsp;</td>
+														  			<td class="progress-left" align="center" 
+														  				style_="width: {{ view.model.worker.step * 100 / view.model.worker.maxSteps}}%" 
+														  				ng-style="{'width': (view.model.worker.step * 100 / view.model.worker.maxSteps) + '%'}"
+														  				ng-bind="view.model.worker.step"></td>
+														  			<td class="progress-right"
+														  				style="width: {{100- view.model.worker.step * 100 / view.model.worker.maxSteps}}%"
+														  				ng-style="{'width': (100- view.model.worker.step * 100 / view.model.worker.maxSteps) + '%'}"
+														  			></td>
 													  			</tr>
 												  		</table>
 											  	</td>
@@ -377,6 +408,7 @@
 					 						style="max-width: 120px; text-align: center;display: none;" 
 					 						data-ng-model="neuron.output" 
 					 						data-ng-model-options="{ updateOn: 'blur' }"
+					 						ng-disabled="view.model.worker.executionState == 1"
 					 						valid-number
 					 						required
 				 						>
@@ -396,6 +428,7 @@
 									<nobr data-ng-if="$index == 0">
 				 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off" 
 				 					ng-click="addLayer()"
+				 					ng-disabled="view.model.worker.executionState == 1"
 				 					title="Add New layer"
 				 					>+</button>
 									<span >{{view.model.network.neurons.length}}</span>
@@ -405,6 +438,7 @@
 			
 				 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="x" class="btn btn-danger btn-border" autocomplete="off" 
 				 						ng-click="removeLayerPopup($index,$event)"
+				 						ng-disabled="view.model.worker.executionState == 1"
 				 						title="Remove layer"
 				 					>x</button>						
 								</td>
@@ -418,7 +452,7 @@
 										<i>layer:</i>&nbsp;{{neuron.layer}}<br/>
 										<i>order:</i>&nbsp;{{neuron.order}}<br/>
 										<i>activation:</i>&nbsp;{{neuron.function.id}}<br/>
-										<i>contain:</i>&nbsp;{{neuron.output}}<br/>
+										<i>value:</i>&nbsp;{{neuron.output}}<br/>
 										"
 									></div>
 							 			
@@ -430,12 +464,14 @@
 									<nobr>
 				 					<button  type="button" data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off"
 				 						ng-click="addNeuron($index)"
+				 						ng-disabled="view.model.worker.executionState == 1"
 				 						title="Add new neuron for current layer"
 				 						data-ng-if="layer.length < 10"
 				 					>+</button>	
 									<span>{{layer.length}}</span>
 				 					<button type="button" data-toggle="button" data-loading-text="x" class="btn btn-danger btn-border" autocomplete="off"
 				 						ng-click="removeNeuronPopup($index,-1,$event)"
+				 						ng-disabled="view.model.worker.executionState == 1"
 				 						title="Remove last neuron from current layer"
 				 						data-ng-if="layer.length > 1" 
 				 					>x</button>
@@ -446,6 +482,7 @@
 				 				<td style="width:50px; " >	 				
 				 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary btn-border" autocomplete="off"
 				 					ng-click="calculation()"
+				 					ng-disabled="view.model.worker.executionState == 1"
 				 					title="Calculate output layer"
 				 					>
 									  	>
@@ -700,22 +737,24 @@ app.controller('networksCtrl',
 			if($event.target){
 				if($event.target.popover){
 				}else{
-					try{
-						var popover = new Popover($event.target,
-						{
-							trigger:"click",
-							template: '<div class="popover" role="tooltip">'
-								  + '<div class="arrow"></div>'
-								  + '<h3 class="popover-title">Remove synapse from ['+synapse.direction.split('|')[0]+'] to ['+synapse.direction.split('|')[1]+']</h3>'
-								  + '<div class="popover-content"><center>'
-								  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveSynapse(\''+synapse.direction+'\')">Confirm</button>'
-								  + '</center></div>'
-								  + '</div>'
-						});
-						$event.target.popover = popover;
-						popover.open();
-					}catch(e){
-						
+					if($scope.view.model.worker.executionState!=1){
+						try{
+							var popover = new Popover($event.target,
+							{
+								trigger:"click",
+								template: '<div class="popover" role="tooltip">'
+									  + '<div class="arrow"></div>'
+									  + '<h3 class="popover-title">Remove synapse from ['+synapse.direction.split('|')[0]+'] to ['+synapse.direction.split('|')[1]+']</h3>'
+									  + '<div class="popover-content"><center>'
+									  + '<button  type="button"  data-toggle="button" data-loading-text="Confirm" class="btn btn-warning" onclick="scopeRemoveSynapse(\''+synapse.direction+'\')">Confirm</button>'
+									  + '</center></div>'
+									  + '</div>'
+							});
+							$event.target.popover = popover;
+							popover.open();
+						}catch(e){
+							
+						}
 					}
 				}
 			}

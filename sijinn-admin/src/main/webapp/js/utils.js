@@ -19,7 +19,8 @@ function createLineElement(id, x, y, length, angle) {
     		   + 'box-shadow: 1px 1px 2px gray; ';
 */
     line.setAttribute('style', styles); 
-    line.classList.add('synapse-line');
+    addClass(line,'synapse-line');
+//    line.classList.add('synapse-line');
 
     return line;
 }
