@@ -39,34 +39,37 @@
       div.neuron{
       	color: white;
 		background-color: #87C5F0;
+		border-color: #15699d;
 		padding: 4px;
-		-moz-box-shadow: 1px 1px 6px gray;
-		-webkit-box-shadow: 1px 1px 6px gray;
-		box-shadow: 1px 1px 6px gray;
-		border-radius: 100%;	
+		-moz-box-shadow: 1px 1px 2px silver;
+		-webkit-box-shadow: 1px 1px 2px silver;
+		box-shadow: 1px 1px 2px silver;
+		border-radius: 50%;	
 		height:25px;
 		width: 25px;
 		cursor: pointer;
 		z-index: 1000;
 		position: relative;
+		background: radial-gradient(circle at 7px 7px, #d2eaf9, #15699d);
       }
       
-     
+      
       
       div.neuron-expand{
       	color: white;
 		background-color: #F5F5F5;
-		border-color: #87C5F0;
+		border-color: #808080;
 		padding: 4px;
-		-moz-box-shadow: 1px 1px 6px gray;
-		-webkit-box-shadow: 1px 1px 6px gray;
-		box-shadow: 1px 1px 6px gray;
-		border-radius: 100%;	
+		-moz-box-shadow: 1px 1px 2px silver;
+		-webkit-box-shadow: 1px 1px 2px silver;
+		box-shadow: 1px 1px 2px silver;
+		border-radius: 50%;	
 		height:40px;
 		width: 40px;
 		cursor: pointer;
 		z-index: 10;
 		position: relative;
+		background: radial-gradient(circle at 12px 12px, #F5F5F5, #808080);
       }   
       
       div.synapse-line{
@@ -97,7 +100,7 @@
 		box-shadow_: 1px 1px 6px gray;
 		border-radius_: 4px;	
 		height_:25px;
-		max-width:100px;
+		max-width:120px;
 		text-align: center;
 		display: none;
 		min-width: 50px;
@@ -317,7 +320,7 @@
 						  							&nbsp;&nbsp;
 						  						</td>	
 						  						<td class="label_datas">
-											  		<label for="settings.root">Approximation error:</label>
+											  		<label for="settings.root">Approximation:</label>
 						  						</td>
 				  						
 						  						<td>	
@@ -353,14 +356,12 @@
 											  		<label >Epoch:</label>
 											  	</td>		
 												<td valign="middle" style="padding: 10px; min-width: 450px">
-												  		<table class="progressbar" cellspasing_="0" cellpadding_="0">
+												  		<table class="progressbar">
 													  			<tr>
 														  			<td class="progress-left" align="center" 
-														  				style_="width: {{ view.model.worker.step * 100 / view.model.worker.maxSteps}}%" 
 														  				ng-style="{'width': (view.model.worker.step * 100 / view.model.worker.maxSteps) + '%'}"
 														  				ng-bind="view.model.worker.step"></td>
 														  			<td class="progress-right"
-														  				style="width: {{100- view.model.worker.step * 100 / view.model.worker.maxSteps}}%"
 														  				ng-style="{'width': (100- view.model.worker.step * 100 / view.model.worker.maxSteps) + '%'}"
 														  			></td>
 													  			</tr>
@@ -431,7 +432,7 @@
 				 					ng-disabled="view.model.worker.executionState == 1"
 				 					title="Add New layer"
 				 					>+</button>
-									<span >{{view.model.network.neurons.length}}</span>
+									<span ng-bind="view.model.network.neurons.length"></span>
 									</nobr>						
 									
 			
@@ -454,6 +455,7 @@
 										<i>activation:</i>&nbsp;{{neuron.function.id}}<br/>
 										<i>value:</i>&nbsp;{{neuron.output}}<br/>
 										"
+
 									></div>
 							 			
 								</td>
