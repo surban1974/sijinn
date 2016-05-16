@@ -51,6 +51,7 @@ import it.sijinn.perceptron.genetic.NeuralBreeding;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.GeneticBreeding;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
+import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 import it.sijinn.perceptron.utils.IExtLogger;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
@@ -91,6 +92,8 @@ public class ControllerNetwork extends AbstractBase implements i_action, i_bean,
 	private float learningRate = 0.5f;
 	private float learningMomentum = 0.01f;
 	private String activationFunctions = "SimpleSigmoidFermi";
+	private String defaultNetwork = "Interpolation";
+	private boolean parallel = false;
 	private Map<String, Neuron> selectedn = new HashMap<String, Neuron>();
 
 	
@@ -122,6 +125,12 @@ public String check(){
 public String change(@Parameter(name="type") String type, @Parameter(name="value") String value ){
 	clear();
 	if(type==null){
+	}else if(type.equals("type")){
+		setDefaultNetwork(value);
+		
+		String json = JsonWriter.object2json(this.get_bean(), "model");
+		clear();
+		return json;
 	}else if(type.equals("activationFunctions")){
 		if(wrapper!=null && wrapper.obtainInstance()!=null){
 			if(!this.activationFunctions.equals(value)){
@@ -138,13 +147,28 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 				
 				String json = JsonWriter.object2json(this.get_bean(), "model");
 				clear();
-				selectedn.clear();
+//				selectedn.clear();
 				return json;
 			}
 			return JsonWriter.object2json(this.get_bean(), "model");
 		}
 	}else if(type.equals("trainingStrategy")){
 		try{
+			String second=null;
+			if(value!=null && value.indexOf("-")>-1){
+				try{					
+					second = value.split("-")[1];
+					value = value.split("-")[0];
+				}catch(Exception e){
+					
+				}
+			}
+			
+			if(second!=null)
+				setParallel(true);
+			else
+				setParallel(false);
+			
 			ITrainingStrategy cur_strategy = Network.createStrategyById(value, null);
 			if(cur_strategy!=null){
 				cur_strategy.setErrorFunction(new MSE());
@@ -157,9 +181,20 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 			}else{
 				if(this.algorithm instanceof GENE)
 					this.algorithm = new BPROP().setDeferredAgregateFunction(new SUMMATOR());
+				else if(this.strategy instanceof StochasticGradientDescent && !(this.algorithm instanceof BPROP))
+					this.algorithm = new BPROP().setDeferredAgregateFunction(new SUMMATOR());
 			}
 			if(this.algorithm!=null)
 				this.strategy.setTrainingAlgorithm(algorithm);
+			
+			if(this.strategy instanceof GeneticBreeding)
+				if(isParallel()) 
+					((GeneticBreeding)this.strategy).setParallelLimit(10);
+				else
+					((GeneticBreeding)this.strategy).setParallelLimit(0);
+			
+			
+
 			setSuccess("Training Strategy "+value+" updated successfully.");
 		}catch(Exception e){
 			setError("Error instance Training Strategy: "+e.toString());
@@ -467,17 +502,9 @@ public String reset(){
 		activationFunctions = "SimpleSigmoidFermi";
 	
 	
-		wrapper = new NetworkWrapper(new Network(
-			new ArrayList<List<Neuron>>(Arrays.asList(
-					Network.createLayer(2),
-					Network.createLayer(4, Neuron.create(activationFunctions, null)),
-					Network.createLayer(3, Neuron.create(activationFunctions, null)),
-					Network.createLayer(1, Neuron.create(activationFunctions, null))
-					)),
-			new RandomPositiveWeightGenerator()
-		));
+		wrapper = new NetworkWrapper(createDefaultNetwork());
 	
-	
+/*	
 		algorithm = new BPROP()
 				.setDeferredAgregateFunction(new SUMMATOR());
 		
@@ -486,10 +513,11 @@ public String reset(){
 				.setTrainingAlgorithm(algorithm)
 				.setErrorFunction(new MSE());
 	
-	
+*/	
 		worker = new Worker();
 	
-		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
+		if(dataReader==null)
+			dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
 		selectedn.clear();
 	
 
@@ -593,27 +621,16 @@ public String modelAsJson(HttpServletRequest request, HttpServletResponse respon
 
 public void initController(){
 	if(wrapper==null)
-		wrapper = new NetworkWrapper(new Network(
-			new ArrayList<List<Neuron>>(Arrays.asList(
-					Network.createLayer(2),
-					Network.createLayer(4, Neuron.create(activationFunctions, null)),
-					Network.createLayer(3, Neuron.create(activationFunctions, null)),
-					Network.createLayer(1, Neuron.create(activationFunctions, null))
-					)),
-			new RandomPositiveWeightGenerator()
-		));
-	
+		wrapper = new NetworkWrapper(createDefaultNetwork());	
 	
 	if(algorithm==null)
 		algorithm = new BPROP()
-				.setDeferredAgregateFunction(new SUMMATOR());
-		
+				.setDeferredAgregateFunction(new SUMMATOR());		
 	
 	if(strategy==null)
 		strategy = new BatchGradientDescent()
 				.setTrainingAlgorithm(algorithm)
-				.setErrorFunction(new MSE());
-	
+				.setErrorFunction(new MSE());	
 	
 	if(worker==null)
 		worker = new Worker();
@@ -621,9 +638,41 @@ public void initController(){
 	if(dataReader==null)
 		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
 	
-
+	selectedn.clear();
 	Network.addExtLogger(new ExtLogger());	
 
+}
+
+private Network createDefaultNetwork(){
+	try{
+		if(getDefaultNetwork().equals("Interpolation")){
+			activationFunctions = "SimpleSigmoidFermi";
+			dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
+			return 
+					new Network(
+							new ArrayList<List<Neuron>>(Arrays.asList(
+									Network.createLayer(2),
+									Network.createLayer(4, Neuron.create(activationFunctions, null)),
+									Network.createLayer(3, Neuron.create(activationFunctions, null)),
+									Network.createLayer(1, Neuron.create(activationFunctions, null))
+									)),
+							new RandomPositiveWeightGenerator()
+						);
+		}else if(getDefaultNetwork().equals("XOR")){
+			activationFunctions = "examples.functions.XORSigmoid";
+			dataReader = new SimpleStringReader(						
+				"1;1;0;\n"+
+		        "0;1;1\n"+
+		        "1;0;1\n"+
+		        "0;0;0\n",
+		        null
+			);		
+			return new Network().open(new ResourceStreamWrapper("examples/resources/XOR_init.net"));
+		}else
+			return null;
+	}catch(Exception e){
+		return null;
+	}
 }
 
 @Override
@@ -687,7 +736,7 @@ public void setActivationFunctions(String activationFunctions) {
 
 @Serialized
 public String getStrategy() {
-	return (strategy!=null)?strategy.getId():"";
+	return (strategy!=null)?strategy.getId()+((isParallel())?"-true":""):"";
 }
 
 @Serialized
@@ -698,6 +747,34 @@ public String getAlgorithm() {
 @Serialized(children=true)
 public List<String> getSelectedn() {
 	return new ArrayList<String>(selectedn.keySet());
+}
+
+@Serialized
+public String getDefaultNetwork() {
+	return defaultNetwork;
+}
+
+public void setDefaultNetwork(String defaultNetwork) {
+	if(defaultNetwork!=null && this.defaultNetwork!=null && !this.defaultNetwork.equals(defaultNetwork)){
+		this.defaultNetwork = defaultNetwork;
+		this.wrapper = null;
+		initController();
+	}
+}
+
+@Serialized
+public boolean isParallel() {
+	return parallel;
+}
+
+public void setParallel(boolean parallel) {
+	this.parallel = parallel;
+	if(this.strategy instanceof GeneticBreeding)
+		if(isParallel()) 
+			((GeneticBreeding)this.strategy).setParallelLimit(10);
+		else
+			((GeneticBreeding)this.strategy).setParallelLimit(0);
+
 }
 
 

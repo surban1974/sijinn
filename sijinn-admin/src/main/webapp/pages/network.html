@@ -48,7 +48,7 @@
 		height:25px;
 		width: 25px;
 		cursor: pointer;
-		z-index: 1000;
+		z-index: 10;
 		position: relative;
 		background: radial-gradient(circle at 7px 7px, #d2eaf9, #15699d);
       }
@@ -182,13 +182,15 @@
 						<li class="dropdown" style="z-index: 11;">
 		                	<div  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Actions <span class="caret"></span></div>
 		                	<ul class="dropdown-menu" role="menu">
-		                  		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(document.getElementById('resetButton').click())">Restore default</a></li>
-		                		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(document.getElementById('previewButton').click())">Network source</a></li>
-		                		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(document.getElementById('dataButton').click())">Training data</a></li>
-		                		<li role="separator" class="divider"></li>
+		                		<li ng-if="view.model.worker.executionState != 1" class="dropdown-header">Examples:</li>
+		                  		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(scopeSetDefault('Interpolation'))">&nbsp;&nbsp;- interpolation</a></li>
+		                  		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(scopeSetDefault('XOR'))">&nbsp;&nbsp;- xor</a></li>
+		                		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(document.getElementById('previewButton').click())">Network source</a></li>
+		                		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(document.getElementById('dataButton').click())">Training data</a></li>
+		                		<li ng-if="view.model.worker.executionState != 1" role="separator" class="divider"></li>
 		                  		<li><a href="javascript:void(document.getElementById('loadButton').click())" ng-if="view.model.worker.executionState != 1">Start training</a></li>
 		                  		<li><a href="javascript:void(document.getElementById('stopButton').click())" ng-if="view.model.worker.executionState == 1">Interrupt training...</a></li>
-		                 		<li ng-disabled="view.model.worker.executionState == 1"><a href="javascript:void(scopeRemoveSynapses())">Remove synapses</a></li>
+		                 		<li ng-if="view.model.worker.executionState != 1" ><a href="javascript:void(scopeRemoveSynapses())">Remove synapses</a></li>
 		                 	</ul>
 		              	</li>
 		              	<li style="width:60%">
@@ -205,23 +207,52 @@
 						<div role="net" class="tab-pane fade active in" id="net" aria-labelledby="net-tab" style="min-height: 105px;padding-top: 5px; ">
 
 				 			<table>
+				 				<tr>
+				 					<td>
+				 						<table>
+				 							<tr>
+				 								<td class="label_datas">	
+											  		<label >Example:</label>
+											  	</td>
+											  	<td class="label_datas">
+											  		<span ng-bind="view.model.defaultNetwork"></span>
+											  	</td>
+				 							</tr>
+				 						</table>
+				 					</td>
+				 				</tr>
 						 		<tr>
 						 			<td>
 						 				<table>
-											<tr>							
+											<tr>
+																		
 										  		<td class="label_datas">	
 											  		<label >Activation functions:</label>
 											  	</td>
 											  	<td >
 											  		<select id="activationFunctions" 
 											  			class="bs-select form-control"
+											  			ng-model="view.model.activationFunctions"
 											  			ng-disabled="view.model.worker.executionState == 1"
+											  			ng-if="view.model.defaultNetwork!='XOR'"
 											  		 >
 								    					<option value="SimpleGaussian">Gaussian</option>
 												    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
 												    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
 												    	<option value="SimpleSin">Sin</option>
 													</select>
+											  		<select id="activationFunctions" 
+											  			class="bs-select form-control"
+											  			ng-model="view.model.activationFunctions"
+											  			ng-disabled="view.model.worker.executionState == 1"
+											  			ng-if="view.model.defaultNetwork=='XOR'"
+											  		 >
+								    					<option value="SimpleGaussian">Gaussian</option>
+												    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
+												    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
+												    	<option value="examples.functions.XORSigmoid" >Sigmoid x XOR</option>
+												    	<option value="SimpleSin">Sin</option>
+													</select>													
 											  	</td>
 										  		<td class="label_datas">	
 											  		<label >Layers:</label>
@@ -252,18 +283,14 @@
 											</tr>
 										</table>
 									</td>	
-								</tr>
-								<tr>
 									<td>&nbsp;</td>
-								</tr>
-								<tr>	
 									<td ng-if="getAddSynapseLabel() != ''" align="right">
 										<table>
 											<tr>							
 										  		<td class="label_datas">	
 											  		<label ng-bind="getAddSynapseLabel()"></label>
 											  	</td>
-											 	<td ng-if="getAddSynapseLabel() != ''">
+											 	<td ng-if="getAddSynapseLabel() != ''" >
 											 		<button  ng-click="addSynapse()" class="btn btn-primary btn-border" 
 											 			autocomplete="off" 
 											 			ng-disabled="view.model.worker.executionState == 1">+</button>
@@ -292,11 +319,16 @@
 											  	<td >
 											  		<select id="trainingStrategy" 
 											  			class="bs-select form-control"
+											  			ng-model="view.model.strategy"
 											  			ng-disabled="view.model.worker.executionState == 1"
 											  			 >
 												    	<option value="BatchGradientDescent">Batch Gradient Descent</option>
+<!-- 												    	
+												    	<option value="BatchGradientDescent-true">&nbsp;&nbsp;- BGD Parallel (10 threads)</option>
+ -->												    	
 												    	<option value="StochasticGradientDescent">Stochastic Gradient Descent</option>
 												    	<option value="GeneticBreeding">Genetic Breeding</option>
+												    	<option value="GeneticBreeding-true">&nbsp;&nbsp;- Parallel (10 threads)</option>
 													</select>
 											  	</td>	
 										  		<td class="label_datas">	
@@ -308,11 +340,12 @@
 											  	<td >
 											  		<select id="trainingAlgorithm" 
 											  			class="bs-select form-control"
+											  			ng-model="view.model.algorithm"
 											  			ng-disabled="view.model.worker.executionState == 1" >
-												    	<option value="BPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Back Propagation</option>
-												    	<option value="QPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Quick Propagation</option>
-												    	<option value="RPROP" ng-if="view.model.strategy != 'GeneticBreeding'">Resilient Propagation</option>
-												    	<option value="GENE" ng-if="view.model.strategy == 'GeneticBreeding'">Genetic Neural</option>
+												    	<option value="BPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">Back Propagation</option>
+												    	<option value="QPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">Quick Propagation</option>
+												    	<option value="RPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">Resilient Propagation</option>
+												    	<option value="GENE" ng-if="view.model.strategy.indexOf('GeneticBreeding') == 0">Genetic Neural</option>
 													</select>
 											  	</td>
 
@@ -389,13 +422,13 @@
 		 		
 			 		<div id="canvas" resize class="canvas"  style="display:none;">
 	
-				 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0"> 
+				 		<table style="width:100%" data-ng-repeat="layer in view.model.network.neurons" cellpadding="0" cellspacing="0" > 
 				
 				 			<tr>
 				 				<td  data-ng-if="$index == 0" class="btn btn-default">
 									Layers
 								</td>
-								<td style="width:50px; " align="center" data-ng-if="$index > 0"></td>
+								<td style="width:70px; " align="center" data-ng-if="$index > 0"></td>
 								
 									<td class="separator"></td>
 								
@@ -405,12 +438,13 @@
 				 							type="number"
 				 							min="-999999"
 				 							max="999999"
+				 							step="0.01"
 					 						class="form-control" 
 					 						style="max-width: 120px; text-align: center;display: none;" 
-					 						data-ng-model="neuron.output" 
-					 						data-ng-model-options="{ updateOn: 'blur' }"
+					 						ng-model="neuron.output" 
+					 						ng-model-options="{ updateOn: 'blur' }"
 					 						ng-disabled="view.model.worker.executionState == 1"
-					 						valid-number
+					 						valid-number_
 					 						required
 				 						>
 				 					</div>
@@ -424,7 +458,7 @@
 				 				<td style="width:87px; " align="center" data-ng-if="$index > 0"></td>
 				 			</tr>	
 							<tr >
-								<td style="width:50px; " >
+								<td style="width:70px; " >
 			
 									<nobr data-ng-if="$index == 0">
 				 					<button type="button"  data-toggle="button" data-loading-text="+" class="btn btn-primary btn-border" autocomplete="off" 
@@ -481,7 +515,7 @@
 								</td>					
 							</tr> 
 				 			<tr data-ng-if="$index == view.model.network.neurons.length-1">
-				 				<td style="width:50px; " >	 				
+				 				<td style="width:70px; " >	 				
 				 					<button  type="button"  data-toggle="button" data-loading-text=">" class="btn btn-primary btn-border" autocomplete="off"
 				 					ng-click="calculation()"
 				 					ng-disabled="view.model.worker.executionState == 1"
@@ -561,6 +595,7 @@ app.controller('networksCtrl',
 				Object.create(GenericServerModel)
 				.extend({
 					activationFunctions:"",
+					defaultNetwork:"",
 					algorithm:"",
 					strategy:"",
 					worker:{},
@@ -605,14 +640,32 @@ app.controller('networksCtrl',
 		$scope.calculation = function() {
 
 				if($scope.view.model.worker.executionState!=1){
-				  	$http
-				  	.post('network-exec')
-				  	.success(function(data, status, headers, config) { 
-				    	$scope.view.init(data);
-					});
+					$timeout(function () {
+					  	$http
+					  	.post('network-exec')
+					  	.success(function(data, status, headers, config) { 
+					    	$scope.view.init(data);
+						});
+					},200);
 				}
 		
 		}	
+		
+		$scope.chengeType = function(type){
+			if($scope.view.model.worker.executionState!=1){
+				$http
+				.post('network-change',JSON.stringify({type:'type',value:type}))
+				.success(function(data, status, headers, config) { 
+					setPostRendered($scope,false);
+			    	cleanSynapses($scope);
+			    	$scope.view.model.network = {
+						neurons : [],
+						synapses : [] 
+				    };
+			    	$scope.view.init(data);
+				});
+			}
+		}
 
 //Layers		
 		$scope.removeLayerPopup = function(layer,$event) {
@@ -929,8 +982,10 @@ app.controller('networksCtrl',
 							if(diff.length>0){
 								if($scope.avoidUpdateDirty>0)
 									$scope.avoidUpdateDirty = $scope.avoidUpdateDirty-1;
-								else
+								else{
+//									console.log('dirty'+diff.length+' tmp='+new Date().getTime());
 									$scope.view.postDirty($http,diff);	
+								}
 							}
 		    			});
 		    		}
@@ -1365,7 +1420,13 @@ app.directive('validNumber', function() {
 		var appElement = document.querySelector('[ng-app=networksApp]');
 		var appScope = angular.element(appElement).scope();
 		appScope.removeSynapses();
-	}		
+	}
+	
+	function scopeSetDefault(type){
+		var appElement = document.querySelector('[ng-app=networksApp]');
+		var appScope = angular.element(appElement).scope();
+		appScope.chengeType(type);		
+	}
 	
 	function queryWorker($scope,$http,$timeout){
 		var btnLoad = document.getElementById('loadButton');
