@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -82,10 +81,31 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 								}
 							);
 
-						
+
+						for(PairIO pair:accumulator){
+							final Network cNetwork = new Network(network);
+							final PairIO cPair = new PairIO(pair.getInput(), pair.getOutput(), pair.getLinenumber());
+							algorithm.sync(
+									network, 
+									executorService.submit(new Callable<Network>() {
+										@Override
+										public Network call() throws Exception {
+											cNetwork.compute(cPair.getInput(), cPair.getOutput());
+												if(listener!=null) listener.onAfterDataComputed(cNetwork,cPair.getLinenumber(),cPair);
+											algorithm.calculate(cNetwork);
+												if(listener!=null) listener.onAfterAlgorithmCalculated(cNetwork,algorithm,cPair.getLinenumber(),cPair);
+											return cNetwork;	
+		
+										}
+									}).get(),
+									ITrainingAlgorithm.SYNC_WEIGHT_DELTA
+							);
+						}
+/*						
 						final List<Future<ApplyExecutor>> list = new ArrayList<Future<ApplyExecutor>>();
 						for(PairIO pair:accumulator)
 							list.add(executorService.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput(), pair.getLinenumber())));
+*/							
 						executorService.shutdown();
 						try {
 							final boolean done = executorService.awaitTermination(parallelTimeout, TimeUnit.MILLISECONDS);
@@ -93,13 +113,14 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 								executorService.shutdownNow();
 							
 						} catch (InterruptedException e) {	
-							e.toString();
+							network.obtainLogger().error(e);
 						}
+/*						
 						for(Future<ApplyExecutor> future:list){
 							algorithm.sync(network, future.get().getNetwork(), ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
 							future.get().getNetwork().release();
 						}
-						
+*/						
 						accumulator.clear();
 						
 					}
@@ -169,39 +190,6 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 				((errorFunction==null)?"":"\n"+errorFunction.getDefinition()+"");
 	}
 	
-	
-	
-	class ApplyExecutor implements Callable<ApplyExecutor>{
-		private Network network;
-		private float[] input;
-		private float[] output;
-		private int linenumber;
-		
-		ApplyExecutor(Network _network, float[] _input, float[] _output, int _linenumber){
-			super();
-			this.network = _network;
-			this.input = _input;
-			this.output = _output;
-			this.linenumber = _linenumber;
-		}
-
-		@Override
-		public ApplyExecutor call() throws Exception {
-			
-			network.compute(input, output);
-				if(listener!=null) listener.onAfterDataComputed(network,linenumber,new PairIO(input, output));
-			algorithm.calculate(network);
-				if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,new PairIO(input, output));
-			return this;
-		}
-
-		public Network getNetwork() {
-			return network;
-		}
-		
-	}
-
-
 
 	public BatchGradientDescent setParallelLimit(int parallelLimit) {
 		this.parallelLimit = parallelLimit;
@@ -230,4 +218,36 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 			this.listener.setTrainingStrategy(this);
 		return this;
 	}	
+	
+/*	
+	class ApplyExecutor implements Callable<ApplyExecutor>{
+		private Network network;
+		private float[] input;
+		private float[] output;
+		private int linenumber;
+		
+		ApplyExecutor(Network _network, float[] _input, float[] _output, int _linenumber){
+			super();
+			this.network = _network;
+			this.input = _input;
+			this.output = _output;
+			this.linenumber = _linenumber;
+		}
+
+		@Override
+		public ApplyExecutor call() throws Exception {
+			
+			network.compute(input, output);
+				if(listener!=null) listener.onAfterDataComputed(network,linenumber,new PairIO(input, output));
+			algorithm.calculate(network);
+				if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,new PairIO(input, output));
+			return this;
+		}
+
+		public Network getNetwork() {
+			return network;
+		}
+		
+	}	
+*/	
 }

@@ -1,4 +1,4 @@
-package examples;
+package examples.batch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +59,9 @@ public class BGD_RPROP_INTER {
 							}
 						}).
 				setDeferredAgregateFunction( new SUMMATOR())
-				).setErrorFunction(new MSE());
+				)
+//				.setParallelLimit(10)
+				.setErrorFunction(new MSE()); 
 
 		final IStreamWrapper streamWrapper = new ResourceStreamWrapper(resource_training);
 		final IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");

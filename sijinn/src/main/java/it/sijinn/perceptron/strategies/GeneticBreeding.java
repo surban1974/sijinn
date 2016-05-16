@@ -1,6 +1,14 @@
 package it.sijinn.perceptron.strategies;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import it.sijinn.common.Network;
 import it.sijinn.perceptron.algorithms.IGeneticAlgorithm;
@@ -8,6 +16,7 @@ import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.functions.error.MSE;
 import it.sijinn.perceptron.genetic.Species;
+
 import it.sijinn.perceptron.utils.IStrategyListener;
 import it.sijinn.perceptron.utils.Utils;
 import it.sijinn.perceptron.utils.io.IDataReader;
@@ -24,6 +33,8 @@ public class GeneticBreeding implements ITrainingStrategy {
 	protected ITrainingAlgorithm algorithm;
 	protected IErrorFunctionApplied errorFunction;
 	protected IStrategyListener listener;
+	private int parallelLimit=0;
+	private long parallelTimeout=1000;
 
 	public GeneticBreeding(){
 		super();
@@ -67,47 +78,69 @@ public class GeneticBreeding implements ITrainingStrategy {
 	}
 
 	
-/*	
-	@Override
-	public float apply(Network network, IDataReader dataReader, IReadLinesAggregator dataAggregator) throws Exception {
-		if(network==null || dataReader==null)
-			return -1;
-
-		float error = 0;
-		
-	
-		if(population==null)
-			population = new Population(populationSize, network.getWeight());
-		else
-			population = Algorithm.evolvePopulation(population);
-		
-		for(Species entity: population.getSpecies())
-			error = calculateFitness(network, dataReader, dataAggregator, entity);
-		
-		Species fittest = population.getFittest();
-		
-		if(fittest!=null){
-			network.setWeight(fittest.getWeights());
-			error = fittest.getFitness();
-			network.setError(error);
-		}
-		
-		
-		return error;
-	}
-*/
 	
 	@Override
-	public float apply(Network network, IDataReader dataReader, IReadLinesAggregator dataAggregator) throws Exception {
+	public float apply(Network network, final IDataReader dataReader, final IReadLinesAggregator dataAggregator) throws Exception {
 		if(network==null || dataReader==null || algorithm==null || !(algorithm instanceof IGeneticAlgorithm))
 			return -1;
 	
 		algorithm.calculate(network);	
-			if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,-1,null);
+			if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,-1,null);		
 		
-		
-		for(Species entity: ((IGeneticAlgorithm)algorithm).getPopulation().getSpecies())
-			calculateFitness(network, dataReader, dataAggregator, entity);
+			
+		if(parallelLimit<=1){	
+			for(Species entity: ((IGeneticAlgorithm)algorithm).getPopulation().getSpecies())
+				calculateFitness(network, dataReader, dataAggregator, entity);
+		}else{
+			final List<Network> networkPool = new ArrayList<Network>();
+			for(int i=0;i<parallelLimit;i++){
+				final Network networkclone = new Network(network);
+				networkPool.add(networkclone);
+			}
+			final List<Species> accumulator = new ArrayList<Species>();
+			Species next = null;
+			Iterator<Species> it = ((IGeneticAlgorithm)algorithm).getPopulation().getSpeciesIterable().iterator();
+
+
+			while((next= (it.hasNext())?it.next():null)!=null || accumulator.size()>0){
+				if((next!=null && accumulator.size()==parallelLimit) || (next==null && accumulator.size()>0)){
+					final ExecutorService executorService = Executors.newFixedThreadPool(
+							parallelLimit,
+							new ThreadFactory() {					
+								@Override
+								 public Thread newThread(Runnable r) {
+								     return new Thread(r, "GB-"+algorithm.getClass().getSimpleName());
+								   }
+							}
+						);
+						
+					for(int i=0;i<accumulator.size();i++){
+						final Species species = accumulator.get(i);
+						final Network networkclone = networkPool.get(i);
+
+						executorService.submit(new Callable<Float>() {
+							@Override
+							public Float call() throws Exception {
+								return calculateFitness(networkclone, dataReader, dataAggregator, species);
+							}
+						}).get();
+					}
+					executorService.shutdown();
+					try{
+						final boolean done = executorService.awaitTermination(parallelTimeout, TimeUnit.MILLISECONDS);
+						if(!done)
+							executorService.shutdownNow();
+						
+					}catch (InterruptedException e) {	
+						network.obtainLogger().error(e);
+					}
+					accumulator.clear();
+				}
+					
+				if(next!=null)
+					accumulator.add(next);
+			}
+		}
 		
 		algorithm.updateWeights(network);
 			if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,-1,null);
@@ -124,6 +157,7 @@ public class GeneticBreeding implements ITrainingStrategy {
 				if(listener!=null) listener.onAfterReaderOpen(network,dataReader);
 			Object next=null;
 			int linenumber=0;
+
 			while((next = dataReader.readNext()) !=null){
 				Object[] aggregated = dataAggregator.aggregate(next,linenumber);
 					if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
@@ -136,6 +170,7 @@ public class GeneticBreeding implements ITrainingStrategy {
 						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param);					
 				}
 				linenumber++;
+				
 			}
 			dataReader.close();
 				if(listener!=null) listener.onAfterReaderClose(network,dataReader);
@@ -187,7 +222,7 @@ public class GeneticBreeding implements ITrainingStrategy {
 		result+= 
 				Utils.normalXML(
 					this.getClass().getSimpleName()+
-//					((algorithm==null)?"":";"+algorithm.getDefinition()+"")+
+					((algorithm==null)?"":";"+algorithm.getDefinition()+"")+
 					((errorFunction==null)?"":";"+errorFunction.getDefinition()+"")
 				,"utf8");
 		return result;
@@ -202,6 +237,24 @@ public class GeneticBreeding implements ITrainingStrategy {
 	@Override
 	public String getId(){
 		return this.getClass().getSimpleName();
+	}
+
+	public int getParallelLimit() {
+		return parallelLimit;
+	}
+
+	public GeneticBreeding setParallelLimit(int parallelLimit) {
+		this.parallelLimit = parallelLimit;
+		return this;
+	}
+
+	public long getParallelTimeout() {
+		return parallelTimeout;
+	}
+
+	public GeneticBreeding setParallelTimeout(long parallelTimeout) {
+		this.parallelTimeout = parallelTimeout;
+		return this;
 	}
 
 

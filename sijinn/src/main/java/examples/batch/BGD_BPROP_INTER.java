@@ -58,7 +58,9 @@ public class BGD_BPROP_INTER {
 				.setLearningMomentum(learningMomentum)
 				.setDeferredAgregateFunction(new SUMMATOR())
 				)
-				.setErrorFunction(new MSE());
+//				.setParallelLimit(10)
+				.setErrorFunction(new MSE())
+				;
 
 /*		
 		final ITrainingStrategy trainingStrategy = new BatchGradientDescent(

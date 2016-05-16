@@ -45,10 +45,11 @@ public class Species {
 
     @Override
     public String toString() {
-        String geneString = "";
-        for (int i = 0; i < size(); i++) {
-            geneString += getWeight(i)+",";
-        }
+        String geneString = fitness+",{";
+        for (float weight:weights) 
+            geneString += weight+",";
+        geneString+="}";
+        
         return geneString;
     }
 

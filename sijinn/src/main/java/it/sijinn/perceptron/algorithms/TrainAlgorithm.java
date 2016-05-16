@@ -3,7 +3,6 @@ package it.sijinn.perceptron.algorithms;
 import it.sijinn.common.Network;
 import it.sijinn.common.Neuron;
 import it.sijinn.common.Synapse;
-import it.sijinn.perceptron.algorithms.RPROP.RPROPSynapseProperty;
 import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
@@ -75,9 +74,9 @@ public abstract class TrainAlgorithm implements ITrainingAlgorithm {
 					relation2.setProperty(instanceProperty());				
 
 				if(deferredAgregateFunction==null)
-					((RPROPSynapseProperty)relation1.getProperty()).setAggregated(relation1.getProperty().getAggregated()+relation2.getProperty().getAggregated());
+					relation1.getProperty().setAggregated(relation1.getProperty().getAggregated()+relation2.getProperty().getAggregated());
 				else
-					((RPROPSynapseProperty)relation1.getProperty()).setAggregated(
+					relation1.getProperty().setAggregated(
 						deferredAgregateFunction.apply(relation1.getProperty().getAggregated(), relation2.getProperty().getAggregated())
 					);
 			}

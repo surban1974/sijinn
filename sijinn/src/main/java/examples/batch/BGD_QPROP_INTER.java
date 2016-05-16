@@ -56,6 +56,7 @@ public class BGD_QPROP_INTER {
 				.setLearningRate(learningRate)
 				.setDeferredAgregateFunction(new SUMMATOR())
 				)
+//				.setParallelLimit(10)
 				.setErrorFunction(new MSE());
 
 

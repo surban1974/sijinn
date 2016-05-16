@@ -1,0 +1,14 @@
+<network>
+	<error>-1.0</error>
+	<neuron>0,0,</neuron>
+	<neuron>0,1,</neuron>
+	<neuron>1,0,examples.functions.XORSigmoid</neuron>
+	<neuron>1,1,examples.functions.XORSigmoid</neuron>
+	<neuron>2,0,examples.functions.XORSigmoid</neuron>
+	<synapse>0,0,1,0,-0.082843,{}</synapse>
+	<synapse>0,0,1,1,-0.011006,{}</synapse>
+	<synapse>0,1,1,0,0.018629,{}</synapse>
+	<synapse>0,1,1,1,-0.071407,{}</synapse>
+	<synapse>1,0,2,0,0.03268,{}</synapse>
+	<synapse>1,1,2,0,0.020701,{}</synapse>
+</network>

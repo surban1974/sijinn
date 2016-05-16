@@ -1,5 +1,7 @@
 package it.sijinn.perceptron.genetic;
 
+import java.util.Arrays;
+
 public class Population {
 
     private Species[] species;
@@ -44,5 +46,12 @@ public class Population {
 
 	public Species[] getSpecies() {
 		return species;
+	}
+	
+	public Iterable<Species> getSpeciesIterable() {
+		if(species!=null)
+			return Arrays.asList(species);
+		else 
+			return Arrays.asList(new Species[0]);
 	}
 }
