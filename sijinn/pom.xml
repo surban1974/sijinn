@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.sijinn</groupId>
   <artifactId>sijinn-base</artifactId>
-  <version>1.1.0-alfa</version>
+  <version>1.1.1-alfa</version>
   <name>Simple Java Implementation Neuron Network</name>
   <description>Simple Java Implementation Neuron Network</description>
   	<issueManagement>
