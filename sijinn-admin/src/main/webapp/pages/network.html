@@ -149,8 +149,8 @@
       	box-shadow: 1px 1px 6px gray;
       	padding:4px;
       	color:white;
-      	background-color:#87C5F0; 
-      	border: 1px solid #87C5F0;  
+      	background-color:#5BC0DE; 
+      	border: 1px solid #5BC0DE;  
       }
       
       table.progressbar  td.progress-right{
@@ -215,7 +215,7 @@
 											  		<label >Example:</label>
 											  	</td>
 											  	<td class="label_datas">
-											  		<span ng-bind="view.model.defaultNetwork"></span>
+											  		<button type="button" data-toggle="button"  class="btn btn-default" autocomplete="off" ng-bind="view.model.defaultNetwork"></button>
 											  	</td>
 				 							</tr>
 				 						</table>
@@ -335,7 +335,7 @@
 											  		<label >Algorithm:</label>
 											  	</td>
 						  						<td>
-						  							<button type="button" id="infoAButton" data-toggle="button" data-loading-text="+" class="btn btn-default" autocomplete="off">?</button>
+						  							<button type="button" id="infoAButton" data-toggle="button" data-loading-text="?" class="btn btn-default" autocomplete="off">?</button>
 						  						</td>											  	
 											  	<td >
 											  		<select id="trainingAlgorithm" 
@@ -353,7 +353,7 @@
 						  							&nbsp;&nbsp;
 						  						</td>	
 						  						<td class="label_datas">
-											  		<label for="settings.root">Approximation:</label>
+											  		<label for="settings.root">Approx:</label>
 						  						</td>
 				  						
 						  						<td>	
@@ -366,7 +366,7 @@
 						  						</td>
 						  						<td valign="middle" style="padding: 10px; min-width: 150px">	
 											  			<label>MSE:</label>
-											  			<span ng-bind="view.model.worker.delta"></span>
+											  			<button type="button" data-toggle="button"  class="btn btn-default" autocomplete="off" ng-bind="view.model.worker.delta"></button>
 												</td>
 											</tr>
 										</table>
@@ -376,20 +376,38 @@
 									<td>
 										<table>
 											<tr>
+										  		<td class="label_datas">	
+											  		<label >Initial Weight:</label>
+											  	</td>
+											  	<td >
+											  		<select id="initWeight" 
+											  			style="width:195px"
+											  			class="bs-select form-control"
+											  			ng-model="view.model.initWeight"
+											  			ng-disabled="view.model.worker.executionState == 1"
+											  			 >
+												    	<option value="R">Random [-1,1]</option>
+												    	<option value="RP">Random Positive [0,1]</option>
+												    	<option value="Z">Zero {0}</option>
+												    	<option value="FR">From Resource (otherwise {0})</option>
+												    	<option value="NI">Not initialize</option>
+													</select>
+											  	</td>												
+						  						<td>
+						  							&nbsp;&nbsp;
+						  						</td>												
 										 		<td >
 													<button type="button" id="dataButton" data-toggle="button" data-loading-text="Loading..." class="btn btn-info" 
 														autocomplete="off"
 														ng-disabled="view.model.worker.executionState == 1">
 													  	Training Data
-													</button>							 		
-
-										
-												</td>	
-												<td class="label_datas" align="right">	
-											  		<label >Epoch:</label>
-											  	</td>		
-												<td valign="middle" style="padding: 10px; min-width: 450px">
-												  		<table class="progressbar">
+													</button>
+												</td>
+						  						<td class="label_datas" align="right">
+											  		<label for="settings.root">Epoch:</label>
+						  						</td>	
+												<td valign="middle" style="padding: 10px; min-width: 380px">
+												  		<table class="progressbar" >
 													  			<tr>
 														  			<td class="progress-left" align="center" 
 														  				ng-style="{'width': (view.model.worker.step * 100 / view.model.worker.maxSteps) + '%'}"
@@ -596,6 +614,7 @@ app.controller('networksCtrl',
 				.extend({
 					activationFunctions:"",
 					defaultNetwork:"",
+					initWeight:"",
 					algorithm:"",
 					strategy:"",
 					worker:{},
@@ -1355,6 +1374,26 @@ app.directive('validNumber', function() {
 				);
 			}
 			
+			var selectinitWeight = document.getElementById('initWeight');
+			if(selectinitWeight){
+				selectinitWeight.value = $scope.view.model.initWeight;
+				selectinitWeight.addEventListener('change', function() {
+					if($scope.view.model.worker.executionState!=1){
+						$http
+						.post('network-change',JSON.stringify({type:'initWeight',value:selectinitWeight.value}))
+						.success(function(data, status, headers, config) { 
+							setPostRendered($scope,false);
+					    	cleanSynapses($scope);
+					    	$scope.view.model.network = {
+								neurons : [],
+								synapses : [] 
+						    };
+					    	$scope.view.init(data);
+						});
+					}
+				}
+				);
+			}			
 			
 			if($scope.view.model.worker.executionState==1){		    			
 				$timeout(function () {

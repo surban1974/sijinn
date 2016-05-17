@@ -46,7 +46,11 @@ import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.applied.IFunctionApplied;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.MSE;
+import it.sijinn.perceptron.functions.generator.DefiniteWeightGenerator;
+import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
+import it.sijinn.perceptron.functions.generator.RandomWeightGenerator;
+import it.sijinn.perceptron.functions.generator.ZeroWeightGenerator;
 import it.sijinn.perceptron.genetic.NeuralBreeding;
 import it.sijinn.perceptron.strategies.BatchGradientDescent;
 import it.sijinn.perceptron.strategies.GeneticBreeding;
@@ -88,13 +92,18 @@ public class ControllerNetwork extends AbstractBase implements i_action, i_bean,
 	private NetworkWrapper wrapper;	
 	private ITrainingStrategy strategy;	
 	private ITrainingAlgorithm algorithm;
+
 	
 	private float learningRate = 0.5f;
 	private float learningMomentum = 0.01f;
 	private String activationFunctions = "SimpleSigmoidFermi";
 	private String defaultNetwork = "Interpolation";
+	private String initWeight = "RP";
+	
 	private boolean parallel = false;
 	private Map<String, Neuron> selectedn = new HashMap<String, Neuron>();
+	
+	
 
 	
 public ControllerNetwork(){
@@ -131,6 +140,12 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 		String json = JsonWriter.object2json(this.get_bean(), "model");
 		clear();
 		return json;
+	}else if(type.equals("initWeight")){	
+		initWeight = value;
+		if(wrapper!=null && wrapper.obtainInstance()!=null)
+			wrapper.obtainInstance().clearSynapses(createWeightGenerator(), true);
+		
+		return JsonWriter.object2json(this.get_bean(), "model");
 	}else if(type.equals("activationFunctions")){
 		if(wrapper!=null && wrapper.obtainInstance()!=null){
 			if(!this.activationFunctions.equals(value)){
@@ -251,7 +266,7 @@ public String stop(){
 public String restart(){
 	if(event!=null)
 		event.interrupt();	
-	wrapper.obtainInstance().clearSynapses(new RandomPositiveWeightGenerator(),true);
+//	wrapper.obtainInstance().clearSynapses(createWeightGenerator(),true);
 	
 	if(worker==null)
 		worker = new Worker();
@@ -265,7 +280,7 @@ public String restart(){
 		.setStep(0)
 		.setDelta(0)
 		
-		.setNetwork(wrapper.obtainInstance().clearSynapses(new RandomPositiveWeightGenerator(), true))
+		.setNetwork(wrapper.obtainInstance().clearSynapses(createWeightGenerator(), true))
 		.setTrainingStrategy(strategy)
 		.setDataReader(dataReader)
 		.setReadLinesAggregator(readLinesAggregator)
@@ -656,7 +671,7 @@ private Network createDefaultNetwork(){
 									Network.createLayer(3, Neuron.create(activationFunctions, null)),
 									Network.createLayer(1, Neuron.create(activationFunctions, null))
 									)),
-							new RandomPositiveWeightGenerator()
+							createWeightGenerator()
 						);
 		}else if(getDefaultNetwork().equals("XOR")){
 			activationFunctions = "examples.functions.XORSigmoid";
@@ -673,6 +688,25 @@ private Network createDefaultNetwork(){
 	}catch(Exception e){
 		return null;
 	}
+}
+
+private IGenerator createWeightGenerator(){
+	try{
+		if(this.initWeight.equals("R"))
+			return new RandomWeightGenerator();
+		else if(this.initWeight.equals("RP"))
+			return new RandomPositiveWeightGenerator();
+		else if(this.initWeight.equals("Z"))
+			return new ZeroWeightGenerator();
+		else if(this.initWeight.equals("FR")){
+			if(getDefaultNetwork().equals("XOR"))
+				return new DefiniteWeightGenerator(new Network().open(new ResourceStreamWrapper("examples/resources/XOR_init.net")));
+			else 
+				return new ZeroWeightGenerator();
+		}
+	}catch(Exception e){		
+	}
+	return null;
 }
 
 @Override
@@ -775,6 +809,15 @@ public void setParallel(boolean parallel) {
 		else
 			((GeneticBreeding)this.strategy).setParallelLimit(0);
 
+}
+
+@Serialized
+public String getInitWeight() {
+	return initWeight;
+}
+
+public void setInitWeight(String initWeight) {
+	this.initWeight = initWeight;
 }
 
 
