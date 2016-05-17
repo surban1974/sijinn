@@ -247,6 +247,46 @@ public class Network extends Neuron implements Serializable{
 		return this;
 	}
 	
+	
+	public Synapse findSynapse(Neuron from, Neuron to){
+		if(layers==null || layers.size()==0)
+			return null;
+		
+		Neuron neuronFrom = null;
+		Neuron neuronTo = null;
+		
+		for(int i=0;i<this.layers.size();i++){
+			if(neuronFrom!=null && neuronTo!=null)
+				break;			
+			List<Neuron> currentLayer = layers.get(i);
+			for(Neuron neuron:currentLayer){
+				if(neuronFrom!=null && neuronTo!=null)
+					break;
+				if(neuron!=null){
+					if(neuron.getLayer()==from.getLayer() && neuron.getOrder()==from.getOrder())
+						neuronFrom = neuron;
+					if(neuron.getLayer()==to.getLayer() && neuron.getOrder()==to.getOrder())
+						neuronTo = neuron;
+				}
+			}
+		}
+		if(neuronFrom!=null && neuronTo!=null){
+			if(neuronFrom.obtainChildren()!=null){
+				for(Synapse synapse:neuronFrom.obtainChildren()){
+					if(synapse.getTo()!=null && synapse.getTo().getLayer()==neuronTo.getLayer() && synapse.getTo().getOrder()==neuronTo.getOrder())
+						return synapse;
+				}
+			}else if(neuronTo.obtainParents()!=null){
+				for(Synapse synapse:neuronTo.obtainParents()){
+					if(synapse.getFrom()!=null && synapse.getFrom().getLayer()==neuronFrom.getLayer() && synapse.getFrom().getOrder()==neuronFrom.getOrder())
+						return synapse;
+				}
+			}
+			
+		}
+		return null;
+	}
+	
 	public Network removeSynapse(Neuron from, Neuron to){
 
 		if(layers==null || layers.size()==0)
@@ -538,6 +578,21 @@ public class Network extends Neuron implements Serializable{
 		return this;
 	}		
 
+	
+	public Neuron findNeuron(Neuron find){
+		if(layers==null || layers.size()==0)
+			return null;
+		for(int i=0;i<this.layers.size();i++){
+			List<Neuron> currentLayer = layers.get(i);
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null){
+					if(neuron.getLayer()==find.getLayer() && neuron.getOrder()==find.getOrder())
+						return neuron;
+				}
+			}
+		}
+		return null;
+	}
 	
 	public Network addNeurons(Neuron[] neurons){
 		for(Neuron neuron:neurons)
