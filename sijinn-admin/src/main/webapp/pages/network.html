@@ -185,6 +185,7 @@
 		                		<li ng-if="view.model.worker.executionState != 1" class="dropdown-header">Examples:</li>
 		                  		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(scopeSetDefault('Interpolation'))">&nbsp;&nbsp;- interpolation</a></li>
 		                  		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(scopeSetDefault('XOR'))">&nbsp;&nbsp;- xor</a></li>
+		                  		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(scopeSetDefault('CUST'))">&nbsp;&nbsp;- custom</a></li>
 		                		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(document.getElementById('previewButton').click())">Network source</a></li>
 		                		<li ng-if="view.model.worker.executionState != 1"><a href="javascript:void(document.getElementById('dataButton').click())">Training data</a></li>
 		                		<li ng-if="view.model.worker.executionState != 1" role="separator" class="divider"></li>
@@ -215,7 +216,19 @@
 											  		<label >Example:</label>
 											  	</td>
 											  	<td class="label_datas">
+													<select id="defaultNetwork" 
+											  			class="bs-select form-control"
+											  			ng-model="view.model.defaultNetwork"
+											  			ng-disabled="view.model.worker.executionState == 1"
+											  			ng-change="chengeType(view.model.defaultNetwork, '{{view.model.defaultNetwork}}')"
+											  		 >
+								    					<option value="Interpolation">Interpolation</option>
+												    	<option value="XOR">Logic XOR</option>
+												    	<option value="CUST">Custom</option>
+													</select>
+<!-- 											  	
 											  		<button type="button" data-toggle="button"  class="btn btn-default" autocomplete="off" ng-bind="view.model.defaultNetwork"></button>
+-->
 											  	</td>
 				 							</tr>
 				 						</table>
@@ -230,22 +243,12 @@
 											  		<label >Activation functions:</label>
 											  	</td>
 											  	<td >
+
 											  		<select id="activationFunctions" 
 											  			class="bs-select form-control"
 											  			ng-model="view.model.activationFunctions"
 											  			ng-disabled="view.model.worker.executionState == 1"
-											  			ng-if="view.model.defaultNetwork!='XOR'"
-											  		 >
-								    					<option value="SimpleGaussian">Gaussian</option>
-												    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
-												    	<option value="SimpleSigmoidFermi">Sigmoid Fermi</option>
-												    	<option value="SimpleSin">Sin</option>
-													</select>
-											  		<select id="activationFunctions" 
-											  			class="bs-select form-control"
-											  			ng-model="view.model.activationFunctions"
-											  			ng-disabled="view.model.worker.executionState == 1"
-											  			ng-if="view.model.defaultNetwork=='XOR'"
+											  			ng-if_="view.model.defaultNetwork=='XOR'"
 											  		 >
 								    					<option value="SimpleGaussian">Gaussian</option>
 												    	<option value="SimpleHyperbolicTangent">Hyperbolic Tangent</option>
@@ -670,8 +673,45 @@ app.controller('networksCtrl',
 		
 		}	
 		
-		$scope.chengeType = function(type){
+		$scope.chengeType = function(type, prevType){
 			if($scope.view.model.worker.executionState!=1){
+				if(prevType)
+					$scope.view.model.defaultNetwork = prevType;
+				else if(type==$scope.view.model.defaultNetwork)
+					return;
+				
+
+				var btnid = '_'+new Date().getTime();
+				new clpopup({
+					type: 'warning',
+					footer: '<button id="btnUpdateType'+btnid+'" type="button" class="btn btn-danger" data-loading-text="Wait..." >Update</button>',
+					message: 'This action will cause a loss of data. <font color="red"><b>Are you sure to change</b></font> the current network type?',
+					success: function(){
+						var instance = this;
+						var btnUpdate = document.getElementById('btnUpdateType'+btnid);
+						btnUpdate.addEventListener('click', function() {
+						  	new Button(btnUpdate,'loading'); 
+							$http
+							.post('network-change',JSON.stringify({type:'type',value:type}))
+							.success(function(data, status, headers, config) { 
+								
+								setPostRendered($scope,false);
+						    	cleanSynapses($scope);
+						    	$scope.view.model.network = {
+									neurons : [],
+									synapses : [] 
+							    };
+						    	$scope.view.init(data);
+						    	
+								new Button(btnUpdate,"reset");
+								instance.close();
+							});
+						});
+					}
+				}).open();					 
+				
+				
+/*				
 				$http
 				.post('network-change',JSON.stringify({type:'type',value:type}))
 				.success(function(data, status, headers, config) { 
@@ -683,7 +723,9 @@ app.controller('networksCtrl',
 				    };
 			    	$scope.view.init(data);
 				});
+*/				
 			}
+			
 		}
 
 //Layers		

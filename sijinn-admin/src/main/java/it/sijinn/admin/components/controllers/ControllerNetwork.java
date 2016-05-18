@@ -83,6 +83,9 @@ public class ControllerNetwork extends AbstractBase implements i_action, i_bean,
 	private static final long serialVersionUID = 1L;
 	
 	final private String resource_training = "examples/resources/interpolation_training.txt";
+//	final private String resource_training = "it/sijinn/admin/resources/interpolation_training.txt";
+	final private String resource_xor_net = "examples/resources/XOR_init.net";
+
 	private IDataReader dataReader;
 	private IReadLinesAggregator readLinesAggregator = new SimpleLineDataAggregator(";");	
 	
@@ -148,24 +151,22 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 		return JsonWriter.object2json(this.get_bean(), "model");
 	}else if(type.equals("activationFunctions")){
 		if(wrapper!=null && wrapper.obtainInstance()!=null){
-			if(!this.activationFunctions.equals(value)){
-				try{
-					IFunctionApplied function = Neuron.create(value, null);
-					if(function==null)
-						setError("Activation Function "+value+" is not exsist.");
-					wrapper.obtainInstance().updateActivationFunctions(function);
-					setSuccess("Activation Function "+value+" updated successfully.");
-					this.activationFunctions = value;
-				}catch(Exception e){
-					setError("Error instance Activation Function: "+e.toString());
-				}
-				
-				String json = JsonWriter.object2json(this.get_bean(), "model");
-				clear();
-//				selectedn.clear();
-				return json;
+
+			try{
+				IFunctionApplied function = Neuron.create(value, null);
+				if(function==null)
+					setError("Activation Function "+value+" is not exsist.");
+				wrapper.obtainInstance().updateActivationFunctions(function);
+				setSuccess("Activation Function "+value+" updated successfully.");
+				this.activationFunctions = value;
+			}catch(Exception e){
+				setError("Error instance Activation Function: "+e.toString());
 			}
-			return JsonWriter.object2json(this.get_bean(), "model");
+				
+			String json = JsonWriter.object2json(this.get_bean(), "model");
+			clear();
+			return json;
+
 		}
 	}else if(type.equals("trainingStrategy")){
 		try{
@@ -682,7 +683,14 @@ private Network createDefaultNetwork(){
 		        "0;0;0\n",
 		        null
 			);		
-			return new Network().open(new ResourceStreamWrapper("examples/resources/XOR_init.net"));
+			return new Network().open(new ResourceStreamWrapper(resource_xor_net));
+		}else if(getDefaultNetwork().equals("CUST")){
+			activationFunctions = "SimpleSigmoidFermi";
+			dataReader = new SimpleStringReader(						
+				"",
+		        null
+			);		
+			return new Network().open("<network><neuron>0,0, ,false</neuron><neuron>1,0,SimpleSigmoidFermi{0.1},false</neuron><synapse>0,0,1,0,-0.5,{}</synapse></network>");
 		}else
 			return null;
 	}catch(Exception e){
@@ -700,7 +708,7 @@ private IGenerator createWeightGenerator(){
 			return new ZeroWeightGenerator();
 		else if(this.initWeight.equals("FR")){
 			if(getDefaultNetwork().equals("XOR"))
-				return new DefiniteWeightGenerator(new Network().open(new ResourceStreamWrapper("examples/resources/XOR_init.net")));
+				return new DefiniteWeightGenerator(new Network().open(new ResourceStreamWrapper(resource_xor_net)));
 			else 
 				return new ZeroWeightGenerator();
 		}
