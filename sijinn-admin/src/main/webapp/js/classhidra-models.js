@@ -73,9 +73,9 @@ GenericViewModel.extend(
 		postDirty : function($http,newValue){
 		},		
 		
-		getDirty : function(oldModel,exclude){
+		getDirty : function(oldModel,exclude,include){
 			var result = [];
-			dirtyModelElements(this,oldModel,result,null,exclude);
+			dirtyModelElements(this,oldModel,result,null,exclude,include);
 			return result;
 		},
 		
@@ -125,19 +125,30 @@ function isEmpty(obj) {
     return true && JSON.stringify(obj) === JSON.stringify({});
 }
 
-function dirtyModelElements(newModel, oldModel, array, prefix, exclude){
+function dirtyModelElements(newModel, oldModel, array, prefix, exclude, include){
 	for(var property in newModel){
-	
+			var exc=false;
+			var inc=true;
 			if(typeof newModel[property] === 'object'){
-				if(newModel[property] && oldModel[property])
-					dirtyModelElements(newModel[property],oldModel[property],array,((!prefix || prefix=='')?'':prefix+'.')+property,exclude);
-			}else{	
-				var exc=false;
-				if(exclude && typeof exclude === 'function')
-					exc = exclude(property);
 				
-				if(!exc){
-//					if(newModel[property] && oldModel[property]){
+				if(exclude && typeof exclude === 'function')
+					exc = exclude(((!prefix || prefix=='')?'':prefix+'.')+property);
+				if(include && typeof include === 'function')
+					inc = include(((!prefix || prefix=='')?'':prefix+'.')+property);	
+				
+				if(!exc && inc){
+					if(newModel[property] && oldModel[property])
+						dirtyModelElements(newModel[property],oldModel[property],array,((!prefix || prefix=='')?'':prefix+'.')+property,exclude);
+				}
+			}else if (typeof newModel[property] === 'function'){
+			}else{	
+				
+				if(exclude && typeof exclude === 'function')
+					exc = exclude(property) || exclude(((!prefix || prefix=='')?'':prefix+'.')+property);
+				if(include && typeof include === 'function')
+					inc = include(property) && include(((!prefix || prefix=='')?'':prefix+'.')+property);				
+				
+				if(!exc && inc){
 					try{
 						if(newModel[property] != oldModel[property]){
 							var data = {};
@@ -147,7 +158,6 @@ function dirtyModelElements(newModel, oldModel, array, prefix, exclude){
 					}catch(e){
 						
 					}
-//					}
 				}
 			}
 	}

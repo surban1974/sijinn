@@ -361,7 +361,6 @@ public String addlayer(){
 		wrapper.obtainInstance()
 		.insertLayer(wrapper.obtainInstance().getLayers().size()-2, 1, Neuron.create(activationFunctions, null), false,true)
 		;
-//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -392,7 +391,6 @@ public String removelayer(@Parameter(name="layer") int layer){
 		.removeLayer(layer,true)
 		;
 	}
-//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -413,7 +411,6 @@ public String addneuron(@Parameter(name="layer") int layer){
 			;
 		}
 	}
-//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -435,7 +432,6 @@ public String removeneuron(@Parameter(name="layer") int layer, @Parameter(name="
 			selectedn.remove("n"+neuron.getLayer()+","+neuron.getOrder());
 		}
 	}
-//	selectedn.clear();
 
 	return JsonWriter.object2json(this.get_bean(), "model");
 }
@@ -654,7 +650,6 @@ public void initController(){
 	if(dataReader==null)
 		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
 	
-	selectedn.clear();
 	Network.addExtLogger(new ExtLogger());	
 
 }
