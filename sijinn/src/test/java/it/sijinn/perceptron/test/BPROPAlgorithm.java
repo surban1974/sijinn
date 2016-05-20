@@ -68,7 +68,7 @@ public class BPROPAlgorithm {
 		
 	  	float delta = network.training(trainingData, trainingStrategy);		
 	  	
-	  	Assert.assertArrayEquals(network.getWeight(), new float[]{0.09915663f, 0.39722574f, 0.79783136f, 0.5928662f, 0.272326f, 0.87299836f}, approximation);
+	  	Assert.assertArrayEquals(network.getWeight(), new float[]{0.098278925f, 0.39418897f, 0.79557437f, 0.5850574f, 0.25938162f, 0.8603685f}, approximation);
 	  	Assert.assertEquals(delta, 0.018103901f, approximation);
 
 	  	int step=0;
@@ -84,9 +84,9 @@ public class BPROPAlgorithm {
 					{0, 0}
 				});
 		
-	  	Assert.assertEquals(step, 89);
-	  	Assert.assertEquals(delta, 9.949853E-7f, approximation);
-	  	Assert.assertArrayEquals(execution[0], new float[]{0.5035274f}, approximation);
+	  	Assert.assertEquals(step, 63);
+	  	Assert.assertEquals(delta, 9.978461E-7f, approximation);
+	  	Assert.assertArrayEquals(execution[0], new float[]{0.5042761f}, approximation);
 	  	
 
 

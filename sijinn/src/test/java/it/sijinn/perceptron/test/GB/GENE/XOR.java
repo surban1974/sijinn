@@ -26,7 +26,7 @@ public class XOR {
 
   
   @Test
-  public void backPropagation() throws Exception {
+  public void beeding() throws Exception {
 	  
 	  	network = new Network().open(new ResourceStreamWrapper("it/sijinn/perceptron/test/resources/XOR_init.net"));
 	  	  

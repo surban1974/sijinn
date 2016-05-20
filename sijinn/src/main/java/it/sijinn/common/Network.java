@@ -1199,6 +1199,21 @@ public class Network extends Neuron implements Serializable{
 		
 		return synapses.toArray(result);
 	}
+	
+	public Neuron[] getNeurons(){
+		if(this.layers==null || this.layers.size()<2)
+			return new Neuron[0];	
+		List<Neuron> neurons = new ArrayList<Neuron>();
+		for(List<Neuron> currentLayer: this.layers){
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null)
+					neurons.add(neuron);
+			}
+		}
+		Neuron[] result = new Neuron[neurons.size()];
+		
+		return neurons.toArray(result);
+	}	
 
 	
 	public Network obtainCloned() throws Exception {
