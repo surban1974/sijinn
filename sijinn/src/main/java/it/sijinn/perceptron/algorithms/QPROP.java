@@ -141,7 +141,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma0=0;
 				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());
 					sigma0+=relation.getWeight()*((QPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
@@ -149,7 +149,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				sigma0*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma0,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());
 					
 					float newDelta = learningRate * sigma0 * relation.getFrom().getOutput();
@@ -198,7 +198,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		if(lastLayer){
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());
 					
 					final float shrink = this.learningRate/(1f+this.learningRate);
@@ -244,7 +244,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());
 					
 					final float shrink = this.learningRate/(1f+this.learningRate);
@@ -299,7 +299,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());
 					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					float newDelta = sigma * relation.getFrom().getOutput();
@@ -316,7 +316,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
 				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());					
 					sigma+=relation.getWeight()*((QPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
@@ -324,7 +324,7 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());
 					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					

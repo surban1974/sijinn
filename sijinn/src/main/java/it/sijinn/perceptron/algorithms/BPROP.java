@@ -169,7 +169,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 					
 					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
@@ -183,7 +183,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
 				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 					sigma+=relation.getWeight()*((BPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
@@ -191,7 +191,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 					
 					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
@@ -210,7 +210,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		if(lastLayer){
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 					
 					float newDelta = ((BPROPSynapseProperty)relation.getProperty()).getAggregated();
@@ -225,7 +225,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 					
 					float newDelta = ((BPROPSynapseProperty)relation.getProperty()).getAggregated();
@@ -248,7 +248,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
@@ -266,14 +266,14 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
 				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 					sigma+=relation.getWeight() * ((BPROPSynapseProperty)relation.getProperty()).getSigma();
 				}				
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
 						relation.setProperty(new BPROPSynapseProperty());
 
 					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);

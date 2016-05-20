@@ -200,7 +200,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 					
 
@@ -233,7 +233,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
 				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 	
 					sigma+=relation.getWeight()*((RPROPSynapseProperty)relation.getProperty()).getSigma();
@@ -242,7 +242,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				sigma*=((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0);
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 					
 					
@@ -279,7 +279,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		if(lastLayer){
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 					
 					float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregated();
@@ -318,7 +318,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 					
 					float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregated();
@@ -371,7 +371,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainParents()!=null){
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					float newDelta = sigma * relation.getFrom().getOutput();
@@ -388,7 +388,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
 				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());					
 					sigma+=relation.getWeight()*((RPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
@@ -396,7 +396,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				
 				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 					((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 					
