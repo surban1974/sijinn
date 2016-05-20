@@ -67,21 +67,31 @@ public class SijinnRouter extends bsFilter{
 			bsController.isInitialized(appInitProperty,otherProperties);
 */
 			bsController.isInitialized(
-					new Properties(){{
+					new Properties(){
+						private static final long serialVersionUID = 1L;
+
+					{
 						put(app_init.id_path,"sijinn-admin");
 						put(app_init.id_extention_do,"");
 						put(app_init.id_actioncall_separator,"-");
 						put(app_init.id_external_loader,"it.sijinn.admin.loaders.ExternalLoader");
 						put(app_init.id_package_annotated,"it.sijinn.admin.components");
 					}},
-					new HashMap<String, Properties>(){{
+					new HashMap<String, Properties>(){
+						private static final long serialVersionUID = 1L;
+
+					{
 						put(log_init.id_property,
-							new Properties(){{
+							new Properties(){
+								private static final long serialVersionUID = 1L;
+
+							{
 								put(log_init.id_Write2Concole,"true");
 							}}						
 						);
 					}}
 			);
+
 
 			super.doFilter(req, resp, chain);
 		}else{
