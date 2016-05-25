@@ -9,49 +9,78 @@ import it.sijinn.perceptron.utils.ISynapseProperty;
 public abstract class TrainAlgorithm implements ITrainingAlgorithm {
 
 	protected IDAFloatFunction deferredAgregateFunction;
+	protected boolean reversed = false;
 	
-	public ITrainingAlgorithm calculateAndUpdateWeights(Network network) throws Exception{		
+	public ITrainingAlgorithm calculateAndUpdateWeights(Network network, boolean reversed) throws Exception{		
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return this;
 
-		for(int i=network.getLayers().size()-1;i>0;i--){
-			for(Neuron neuron: network.getLayers().get(i)){
-				if(neuron!=null)
-					backPropagation(neuron, i==network.getLayers().size()-1);
+		if(!reversed){
+			for(int i=network.getLayers().size()-1;i>0;i--){
+				for(Neuron neuron: network.getLayers().get(i)){
+					if(neuron!=null)
+						backPropagation(neuron, i==network.getLayers().size()-1);
+				}
 			}
-		}
-		return this;
-	}
-	
-	public ITrainingAlgorithm calculate(Network network) throws Exception{		
-		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
-			return this;
-		if(deferredAgregateFunction!=null)
-			deferredAgregateFunction.init();
-		for(int i=network.getLayers().size()-1;i>0;i--){
-			for(Neuron neuron: network.getLayers().get(i)){
-				if(neuron!=null)
-					updateGradients(neuron, i==network.getLayers().size()-1);
-			}
-		}
-		return this;
-	}
-	
-	public ITrainingAlgorithm updateWeights(Network network) throws Exception{		
-		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
-			return this;
-
-		for(int i=network.getLayers().size()-1;i>0;i--){
-			for(Neuron neuron: network.getLayers().get(i)){
-				if(neuron!=null){
-					updateWeights(neuron, i==network.getLayers().size()-1);
+		}else{
+			for(int i=0;i<network.getLayers().size()-1;i++){
+				for(Neuron neuron: network.getLayers().get(i)){
+					if(neuron!=null)
+						backPropagationReversed(neuron, i==0);
 				}
 			}
 		}
 		return this;
+	}
+	
+	
+	public ITrainingAlgorithm calculate(Network network, boolean reversed) throws Exception{		
+		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
+			return this;
+		if(deferredAgregateFunction!=null)
+			deferredAgregateFunction.init();
+		if(!reversed){
+			for(int i=network.getLayers().size()-1;i>0;i--){
+				for(Neuron neuron: network.getLayers().get(i)){
+					if(neuron!=null)
+						updateGradients(neuron, i==network.getLayers().size()-1);
+				}
+			}
+		}else{
+			for(int i=0;i<network.getLayers().size()-1;i++){
+				for(Neuron neuron: network.getLayers().get(i)){
+					if(neuron!=null)
+						updateGradientsReversed(neuron, i==0);
+				}
+			}	
+		}
+		return this;
+	}
+	
+	
+	public ITrainingAlgorithm updateWeights(Network network, boolean reversed) throws Exception{		
+		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
+			return this;
+		if(!reversed){
+			for(int i=network.getLayers().size()-1;i>0;i--){
+				for(Neuron neuron: network.getLayers().get(i)){
+					if(neuron!=null){
+						updateWeights(neuron, i==network.getLayers().size()-1);
+					}
+				}
+			}
+		}else{
+			for(int i=0;i<network.getLayers().size()-1;i++){
+				for(Neuron neuron: network.getLayers().get(i)){
+					if(neuron!=null)
+						updateWeightsReversed(neuron, i==0);
+				}
+			}			
+		}
+		return this;
 	}	
 	
-	public ITrainingAlgorithm sync(Network network1, Network network2, int type) throws Exception{	
+	public ITrainingAlgorithm sync(Network network1, Network network2, int type, boolean reversed) throws Exception{	
 		switch (type) {
 		case SYNC_WEIGHT_DELTA:
 			if(network1==null || network1.getLayers()==null || network1.getLayers().size()==0)
@@ -91,17 +120,23 @@ public abstract class TrainAlgorithm implements ITrainingAlgorithm {
 	
 	protected abstract ISynapseProperty instanceProperty();
 
-	protected void backPropagation(Neuron neuron, boolean lastLayer){
-		
+	protected void backPropagation(Neuron neuron, boolean lastLayer){		
 	}
 	
-	protected void updateWeights(Neuron neuron, boolean lastLayer){
-		
+	protected void backPropagationReversed(Neuron neuron, boolean lastLayer){		
+	}	
+	
+	protected void updateWeights(Neuron neuron, boolean lastLayer){		
 	}
 	
-	protected void updateGradients(Neuron neuron, boolean lastLayer){
-		
+	protected void updateWeightsReversed(Neuron neuron, boolean lastLayer){		
+	}	
+	
+	protected void updateGradients(Neuron neuron, boolean lastLayer){		
 	}
+	
+	protected void updateGradientsReversed(Neuron neuron, boolean lastLayer){		
+	}	
 	
 	public IDAFloatFunction getDeferredAgregateFunction() {
 		return deferredAgregateFunction;

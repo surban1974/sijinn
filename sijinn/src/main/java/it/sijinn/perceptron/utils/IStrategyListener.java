@@ -13,9 +13,9 @@ public interface IStrategyListener {
 	void onAfterReaderFinalize(Network network,IDataReader reader) throws Exception;
 	void onAfterLinePrepared(Network network,int linenumber, Object[] aggregated) throws Exception;
 	void onAfterDataPrepared(Network network,int linenumber, PairIO param) throws Exception;
-	void onAfterDataComputed(Network network,int linenumber, PairIO param) throws Exception;
-	void onAfterAlgorithmCalculated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param) throws Exception;
-	void onAfterAlgorithmUpdated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param) throws Exception;
-	void onAfterAlgorithmCalculatedAndUpdated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param) throws Exception;
-	void onAfterErrorComputed(Network network, float error, int linenumber, PairIO param) throws Exception;
+	void onAfterDataComputed(Network network,int linenumber, PairIO param, boolean reversed) throws Exception;
+	void onAfterAlgorithmCalculated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param, boolean reversed) throws Exception;
+	void onAfterAlgorithmUpdated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param, boolean reversed) throws Exception;
+	void onAfterAlgorithmCalculatedAndUpdated(Network network, ITrainingAlgorithm algorithm, int linenumber, PairIO param, boolean reversed) throws Exception;
+	void onAfterErrorComputed(Network network, float error, int linenumber, PairIO param, boolean reversed) throws Exception;
 }

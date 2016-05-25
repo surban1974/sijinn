@@ -73,92 +73,7 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		return new BPROPSynapseProperty();
 	}
 	
-/*
-	public ITrainingAlgorithm calculateAndUpdateWeights(Network network)  throws Exception{			
-		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
-			return this;
 
-		for(int i=network.getLayers().size()-1;i>0;i--){
-			for(Neuron neuron: network.getLayers().get(i)){
-				if(neuron!=null)
-					backPropagation(neuron, i==network.getLayers().size()-1);
-			}
-		}
-		return this;
-		
-	}
-	
-	public ITrainingAlgorithm calculate(Network network) throws Exception{			
-		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
-			return this;
-
-		if(deferredAgregateFunction!=null)
-			deferredAgregateFunction.init();
-		for(int i=network.getLayers().size()-1;i>0;i--){
-			for(Neuron neuron: network.getLayers().get(i)){
-				if(neuron!=null)
-					updateGradients(neuron, i==network.getLayers().size()-1);
-			}
-		}
-		return this;
-	}
-	
-	public ITrainingAlgorithm updateWeights(Network network)  throws Exception{		
-		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
-			return this;
-
-		for(int i=network.getLayers().size()-1;i>0;i--){
-			for(Neuron neuron: network.getLayers().get(i)){
-				if(neuron!=null){
-					updateWeights(neuron, i==network.getLayers().size()-1);
-				}
-			}
-		}
-		return this;
-	}	
-	
-
-	
-	public ITrainingAlgorithm sync(Network network1, Network network2, int type) throws Exception{	
-		switch (type) {
-		case SYNC_WEIGHT_DELTA:
-			if(network1==null || network1.getLayers()==null || network1.getLayers().size()==0)
-				return this;
-			if(network2==null || network2.getLayers()==null || network2.getLayers().size()==0)
-				return this;
-			
-			Synapse[] synapses1 = network1.getSynapses();
-			Synapse[] synapses2 = network2.getSynapses();
-			
-			if(synapses1==null || synapses2==null || synapses1.length!=synapses2.length)
-				return this;
-			
-			for(int i=0;i<synapses1.length;i++){
-				Synapse relation1 = synapses1[i];
-				Synapse relation2 = synapses2[i];
-				if(relation1.getProperty()==null)
-					relation1.setProperty(new BPROPSynapseProperty());
-				if(relation2.getProperty()==null)
-					relation2.setProperty(new BPROPSynapseProperty());				
-
-				
-				if(deferredAgregateFunction==null)
-					((BPROPSynapseProperty)relation1.getProperty()).setAggregated(((BPROPSynapseProperty)relation1.getProperty()).getAggregated()+((BPROPSynapseProperty)relation2.getProperty()).getAggregated());
-				else
-					((BPROPSynapseProperty)relation1.getProperty()).setAggregated(
-						deferredAgregateFunction.apply(((BPROPSynapseProperty)relation1.getProperty()).getAggregated(), ((BPROPSynapseProperty)relation2.getProperty()).getAggregated())
-					);
-				
-			}
-			
-			break;
-		default:
-			break;
-		}
-		return this;
-
-	}
-*/
 	
 	protected void backPropagation(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
@@ -205,6 +120,51 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		}
 	}	
 	
+	protected void backPropagationReversed(Neuron neuron, boolean lastLayer){
+		if(lastLayer){
+			float sigma = (neuron.getTarget() - neuron.getOutput()) * 
+					(
+						((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0)+
+						((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0)
+					);
+			if(neuron.obtainChildren()!=null){
+				for(Synapse relation:neuron.obtainChildren()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+					
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
+							(1-learningMomentum) * learningRate  * sigma * relation.getTo().getOutput();
+					relation.setWeight(relation.getWeight()+newDelta);
+					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
+				}
+			}			
+		}else{
+			if(neuron.obtainChildren()!=null && neuron.obtainChildren()!=null){
+				float sigma=0;
+				for(Synapse relation:neuron.obtainParents()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+					sigma+=relation.getWeight()*((BPROPSynapseProperty)relation.getProperty()).getSigma();
+				}
+				
+				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
+				
+				for(Synapse relation:neuron.obtainChildren()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+					
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
+							(1-learningMomentum) * learningRate * sigma * relation.getTo().getOutput();
+					relation.setWeight(relation.getWeight()+newDelta);
+					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
+				}
+			
+			}
+		}
+	}		
+	
 	protected void updateWeights(Neuron neuron, boolean lastLayer){
 		
 		if(lastLayer){
@@ -237,6 +197,39 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			}
 		}
 	}
+	
+	protected void updateWeightsReversed(Neuron neuron, boolean lastLayer){
+		
+		if(lastLayer){
+			if(neuron.obtainChildren()!=null){
+				for(Synapse relation:neuron.obtainChildren()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+					
+					float newDelta = ((BPROPSynapseProperty)relation.getProperty()).getAggregated();
+
+					relation.setWeight(relation.getWeight()+newDelta);
+					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
+					((BPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+
+				}
+			}			
+		}else{
+			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
+				
+				for(Synapse relation:neuron.obtainChildren()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+					
+					float newDelta = ((BPROPSynapseProperty)relation.getProperty()).getAggregated();
+					
+					relation.setWeight(relation.getWeight()+newDelta);
+					((BPROPSynapseProperty)relation.getProperty()).setDelta(newDelta);
+					((BPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+				}
+			}
+		}
+	}	
 	
 	protected void updateGradients(Neuron neuron, boolean lastLayer){
 		
@@ -290,6 +283,59 @@ public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 			}
 		}
 	}		
+	
+	protected void updateGradientsReversed(Neuron neuron, boolean lastLayer){
+		
+		if(lastLayer){
+			float sigma = (neuron.getTarget() - neuron.getOutput()) *
+					(
+							((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0)+
+							((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0)
+					);
+			if(neuron.obtainChildren()!=null){
+				for(Synapse relation:neuron.obtainChildren()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
+							(1-learningMomentum) * learningRate * sigma * relation.getTo().getOutput();
+					if(deferredAgregateFunction==null)
+						((BPROPSynapseProperty)relation.getProperty()).setAggregated(((BPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
+					else
+						((BPROPSynapseProperty)relation.getProperty()).setAggregated(
+							deferredAgregateFunction.apply(((BPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
+						);
+
+				}
+			}			
+		}else{
+			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
+				float sigma=0;
+				for(Synapse relation:neuron.obtainParents()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+					sigma+=relation.getWeight() * ((BPROPSynapseProperty)relation.getProperty()).getSigma();
+				}				
+				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
+				
+				for(Synapse relation:neuron.obtainChildren()){
+					if(relation.getProperty()==null || !(relation.getProperty() instanceof BPROPSynapseProperty))
+						relation.setProperty(new BPROPSynapseProperty());
+
+					((BPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+					float newDelta = learningMomentum * ((BPROPSynapseProperty)relation.getProperty()).getDelta() +
+							(1-learningMomentum) * learningRate * sigma * relation.getTo().getOutput();					
+					if(deferredAgregateFunction==null)
+						((BPROPSynapseProperty)relation.getProperty()).setAggregated(((BPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
+					else
+						((BPROPSynapseProperty)relation.getProperty()).setAggregated(
+							deferredAgregateFunction.apply(((BPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
+						);
+
+				}
+			}
+		}
+	}			
 	
 	public float getLearningRate(){
 		return learningRate;

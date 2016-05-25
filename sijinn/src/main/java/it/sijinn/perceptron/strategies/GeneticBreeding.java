@@ -33,6 +33,7 @@ public class GeneticBreeding implements ITrainingStrategy {
 	protected ITrainingAlgorithm algorithm;
 	protected IErrorFunctionApplied errorFunction;
 	protected IStrategyListener listener;
+	protected boolean reversed = false;
 	private int parallelLimit=0;
 	private long parallelTimeout=1000;
 
@@ -84,8 +85,8 @@ public class GeneticBreeding implements ITrainingStrategy {
 		if(network==null || dataReader==null || algorithm==null || !(algorithm instanceof IGeneticAlgorithm))
 			return -1;
 	
-		algorithm.calculate(network);	
-			if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,-1,null);		
+		algorithm.calculate(network, reversed);	
+			if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,-1,null, reversed);		
 		
 			
 		if(parallelLimit<=1){	
@@ -142,8 +143,8 @@ public class GeneticBreeding implements ITrainingStrategy {
 			}
 		}
 		
-		algorithm.updateWeights(network);
-			if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,-1,null);
+		algorithm.updateWeights(network, reversed);
+			if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,-1,null, reversed);
 		
 		
 		return network.getError();
@@ -164,10 +165,10 @@ public class GeneticBreeding implements ITrainingStrategy {
 				if(aggregated!=null){
 					PairIO param = dataAggregator.getData(network,aggregated);
 						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-					network.compute(param.getInput(), param.getOutput());
-						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param);
-					error+=errorFunction.compute(network, 0);
-						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param);					
+					network.compute(param.getInput(), param.getOutput(), reversed);
+						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param, reversed);
+					error+=errorFunction.compute(network, 0, reversed);
+						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param, reversed);					
 				}
 				linenumber++;
 				
@@ -257,5 +258,13 @@ public class GeneticBreeding implements ITrainingStrategy {
 		return this;
 	}
 
+	public boolean isReversed() {
+		return reversed;
+	}
+
+	public GeneticBreeding setReversed(boolean reversed) {
+		this.reversed = reversed;
+		return this;
+	}	
 
 }

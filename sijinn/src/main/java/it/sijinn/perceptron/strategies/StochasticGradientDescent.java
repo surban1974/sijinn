@@ -36,12 +36,16 @@ public class StochasticGradientDescent extends OnlineGradientDescent implements 
 				if(aggregated!=null){
 					PairIO param = dataAggregator.getData(network,aggregated);
 						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-					network.compute(param.getInput(), param.getOutput());
-						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param);
-					algorithm.calculateAndUpdateWeights(network);
-						if(listener!=null) listener.onAfterAlgorithmCalculatedAndUpdated(network,algorithm,linenumber,param);
-					error+=errorFunction.compute(network, 0);
-						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param);
+						
+					network.compute(param.getInput(), param.getOutput(), reversed);
+						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param, reversed);
+					algorithm.calculateAndUpdateWeights(network, reversed);
+						if(listener!=null) listener.onAfterAlgorithmCalculatedAndUpdated(network,algorithm,linenumber,param, reversed);						
+					error+=errorFunction.compute(network, 0, reversed);
+						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param, reversed);
+	
+						
+						
 				}
 				linenumber++;
 			}
@@ -50,7 +54,6 @@ public class StochasticGradientDescent extends OnlineGradientDescent implements 
 			dataReader.finalizer();
 				if(listener!=null) listener.onAfterReaderFinalize(network,dataReader);
 		}
-//		algorithm.clear(network);
 		
 		return error;
 	}
@@ -68,6 +71,12 @@ public class StochasticGradientDescent extends OnlineGradientDescent implements 
 	public StochasticGradientDescent setListener(IStrategyListener _listener){
 		if(this.listener!=null)
 			this.listener.setTrainingStrategy(this);
+		return this;
+	}
+
+	@Override
+	public StochasticGradientDescent setReversed(boolean reversed) {
+		this.reversed = reversed;
 		return this;
 	}	
 	

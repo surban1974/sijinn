@@ -22,5 +22,8 @@ public interface ITrainingStrategy {
 	String toSaveString(String prefix);
 	String getDefinition();
 	ITrainingStrategy setErrorFunction(IErrorFunctionApplied errorFunction);
+	ITrainingStrategy setReversed(boolean reversed);
+	boolean isReversed();
 	String getId();
+	
 }

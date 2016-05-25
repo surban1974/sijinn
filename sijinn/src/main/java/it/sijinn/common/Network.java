@@ -847,8 +847,10 @@ public class Network extends Neuron implements Serializable{
 		return error;
 	}	
 
-	
 	public float test(float[][][] testData, IErrorFunctionApplied errorFunction) throws Exception{
+		return test(testData, errorFunction, false);
+	}
+	public float test(float[][][] testData, IErrorFunctionApplied errorFunction, boolean reversed) throws Exception{
 		
 		if(testData==null)
 			return -1;
@@ -896,8 +898,8 @@ public class Network extends Neuron implements Serializable{
 					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(this,aggregated);
-						compute(param.getInput(), param.getOutput());
-						error+=errorFunction.compute(this, 0);
+						compute(param.getInput(), param.getOutput(), reversed);
+						error+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -914,6 +916,9 @@ public class Network extends Neuron implements Serializable{
 	}
 
 	public float test(File file, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
+		return test(file, dataAggregator, errorFunction, false);
+	}
+	public float test(File file, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction, boolean reversed) throws Exception{
 		
 		if(file==null)
 			return -1;
@@ -936,8 +941,8 @@ public class Network extends Neuron implements Serializable{
 					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(this,aggregated);
-						compute(param.getInput(), param.getOutput());
-						error+=errorFunction.compute(this, 0);
+						compute(param.getInput(), param.getOutput(), reversed);
+						error+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -953,8 +958,10 @@ public class Network extends Neuron implements Serializable{
 		return error;
 	}
 
-	
 	public float test(IStreamWrapper streamWrapper, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
+		return test(streamWrapper, dataAggregator, errorFunction, false);
+	}
+	public float test(IStreamWrapper streamWrapper, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction, boolean reversed) throws Exception{
 		
 		if(streamWrapper==null)
 			return -1;
@@ -977,8 +984,8 @@ public class Network extends Neuron implements Serializable{
 					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(this,aggregated);
-						compute(param.getInput(), param.getOutput());
-						error+=errorFunction.compute(this, 0);
+						compute(param.getInput(), param.getOutput(), reversed);
+						error+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -994,8 +1001,10 @@ public class Network extends Neuron implements Serializable{
 		return error;
 	}
 	
-	
 	public float test(IDataReader dataReader, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
+		return test(dataReader, dataAggregator, errorFunction, false);
+	}
+	public float test(IDataReader dataReader, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction, boolean reversed) throws Exception{
 		
 		if(dataReader==null)
 			return -1;
@@ -1016,8 +1025,8 @@ public class Network extends Neuron implements Serializable{
 					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(this,aggregated);
-						compute(param.getInput(), param.getOutput());
-						error+=errorFunction.compute(this, 0);
+						compute(param.getInput(), param.getOutput(), reversed);
+						error+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -1034,8 +1043,10 @@ public class Network extends Neuron implements Serializable{
 	}
 	
 
-	
 	public float[][] compute(IDataReader dataReader, IReadLinesAggregator dataAggregator) throws Exception{
+		return compute(dataReader, dataAggregator, false);
+	}
+	public float[][] compute(IDataReader dataReader, IReadLinesAggregator dataAggregator, boolean reversed) throws Exception{
 		
 		if(dataReader==null || dataAggregator==null)
 			return new float[0][0];
@@ -1050,7 +1061,7 @@ public class Network extends Neuron implements Serializable{
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(network,aggregated);
 						result.add(
-							network.compute(param.getInput(), null)
+							network.compute(param.getInput(), null, reversed)
 						);
 					}
 					linenumber++;
@@ -1067,6 +1078,14 @@ public class Network extends Neuron implements Serializable{
 		return (float[][])result.toArray();
 	}
 	
+
+	public float[][] compute(float[][] _data, boolean reversed){
+		if(!reversed)
+			return compute(_data);
+		else
+			return computeReversed(_data);
+	}
+	
 	public float[][] compute(float[][] _data){
 		float[][] result = new float[_data.length][0];
 		for(int i=0;i<_data.length;i++){
@@ -1075,15 +1094,21 @@ public class Network extends Neuron implements Serializable{
 		return result;
 	}
 	
+	public float[][] computeReversed(float[][] _data){
+		float[][] result = new float[_data.length][0];
+		for(int i=0;i<_data.length;i++){
+			result[i] = computeReversed(null, _data[i]);
+		}		
+		return result;
+	}	
+	
 	public float[] compute(float[] input, float[] output){
 		if(this.layers==null || this.layers.size()<2)
 			return new float[0];
-
-
-
-		
-		setInputValues(0, input);
-		setOutputValues(0, output);
+		if(input!=null && input.length>0)
+			setInputValues(0, input);
+		if(output!=null && output.length>0)
+			setOutputValues(0, output);
 		
 		float[] result = new float[0];
 		for(List<Neuron> currentLayer: this.layers){
@@ -1095,6 +1120,40 @@ public class Network extends Neuron implements Serializable{
 		}
 		return result;
 	}
+	
+	public float[] computeReversed(float[] input, float[] output){
+		if(this.layers==null || this.layers.size()<2)
+			return new float[0];
+		if(input!=null && input.length>0)
+			setInputValuesReversed(0, input);
+		if(output!=null && output.length>0)
+			setOutputValuesReversed(0, output);
+		
+		float[] result = new float[0];
+		for(int i=this.layers.size()-1;i>=0; i--){
+			List<Neuron> currentLayer = this.layers.get(i);
+			result = new float[currentLayer.size()]; 
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null)
+					result[neuron.getOrder()] = neuron.calculationReversed();
+			}
+		}
+		return result;
+	}	
+	
+	public float[] compute(float[] input, float[] output, boolean reversed){
+		if(!reversed)
+			return compute(input, output);
+		else 
+			return computeReversed(input, output);
+	}
+	
+	public float[] compute(boolean reversed){
+		if(!reversed)
+			return compute(new float[0], new float[0]);
+		else 
+			return computeReversed(new float[0], new float[0]);
+	}	
 	
 	public float[] compute(){
 		float[] result = new float[0];
@@ -1108,6 +1167,18 @@ public class Network extends Neuron implements Serializable{
 		return result;
 	}
 	
+	public float[] computeReversed(){
+		float[] result = new float[0];
+		for(List<Neuron> currentLayer: this.layers){
+			result = new float[currentLayer.size()]; 
+			for(Neuron neuron:currentLayer){
+				if(neuron!=null)
+					result[neuron.getOrder()] = neuron.calculationReversed();
+			}
+		}
+		return result;
+	}	
+	
 	public int setInputValues(int start, float[] input){
 		int result = start;
 		if(this.layers==null || this.layers.get(0).size()==0 || input==null)
@@ -1120,9 +1191,27 @@ public class Network extends Neuron implements Serializable{
 				biases++;
 			else	
 				this.layers.get(0).get(result).setOutput(input[result]);
+			
 		}
 		return result-biases;
 	}
+	
+	public int setInputValuesReversed(int start, float[] input){
+		int result = start;
+		if(this.layers==null || this.layers.get(0).size()==0 || input==null)
+			return start;
+		int biases=0;
+		for(;result<input.length && result<this.layers.get(0).size();result++){
+			if(this.layers.get(0).get(result) instanceof Network){
+				result=((Network)this.layers.get(0).get(result)).setInputValues(result, input);
+			}else if(this.layers.get(0).get(result).isBias())
+				biases++;
+			else
+				this.layers.get(0).get(result).setTarget(input[result]);
+			
+		}
+		return result-biases;
+	}	
 	
 	public int setOutputValues(int start, float[] output){
 		int result = start;
@@ -1138,8 +1227,32 @@ public class Network extends Neuron implements Serializable{
 		return result;
 	}	
 	
+	public int setOutputValuesReversed(int start, float[] output){
+		int result = start;
+		int lastLayer = this.layers.size()-1;
+		if(this.layers==null || this.layers.get(lastLayer).size()==0 || output==null)
+			return start;
+		for(;result<output.length && result<this.layers.get(lastLayer).size();result++){
+			if(this.layers.get(lastLayer).get(result) instanceof Network){
+				result=((Network)this.layers.get(lastLayer).get(result)).setOutputValues(result, output);
+			}else
+				this.layers.get(lastLayer).get(result).setOutput(output[result]);
+
+		}
+		return result;
+	}	
+	
+	public float[] getInputValues(){
+		if(this.layers==null || this.layers.size()==0 || this.layers.get(0).size()==0)
+			return new float[0];
+		float[] result = new float[this.layers.get(0).size()];
+		for(int i=0;i<this.layers.get(0).size();i++)
+			result[i] = this.layers.get(0).get(i).getOutput();
+		return result;
+	}
+	
 	public float[] getOutputValues(){
-		if(this.layers==null || this.layers.get(this.layers.size()-1).size()==0)
+		if(this.layers==null || this.layers.size()==0 || this.layers.get(this.layers.size()-1).size()==0)
 			return new float[0];
 		float[] result = new float[this.layers.get(this.layers.size()-1).size()];
 		for(int i=0;i<this.layers.get(this.layers.size()-1).size();i++)

@@ -35,21 +35,6 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 		final IDataReader reader = new SimpleArrayReader(data);
 		final IReadLinesAggregator aggregator = new SimpleArrayDataAggregator();
 		return apply(network, reader, aggregator);
-		
-		
-		
-/*		
-		for(int i=0;i<data.length;i++){
-			network.compute(data[i][0], data[i][1]);		
-			algorithm.updateGradients(network);	
-			algorithm.updateWeights(_network);	
-			error+=errorFunction.compute(network, 0);	
-		}		
-	
-		return error;
-*/
-		
-		
 
 	}
 	
@@ -91,14 +76,14 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 				if(aggregated!=null){
 					PairIO param = dataAggregator.getData(network,aggregated);
 						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-					network.compute(param.getInput(), param.getOutput());
-						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param);
-					algorithm.calculate(network);	
-						if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param);
-					algorithm.updateWeights(network);
-						if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,param);
-					error+=errorFunction.compute(network, 0);
-						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param);					
+					network.compute(param.getInput(), param.getOutput(), reversed);
+						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param, reversed);
+					algorithm.calculate(network, reversed);	
+						if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param, reversed);
+					algorithm.updateWeights(network, reversed);
+						if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,param, reversed);
+					error+=errorFunction.compute(network, 0, reversed);
+						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param, reversed);					
 				}
 				linenumber++;
 			}
@@ -140,6 +125,10 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 		return this;
 	}	
 	
-
+	@Override
+	public OnlineGradientDescent setReversed(boolean reversed) {
+		this.reversed = reversed;
+		return this;
+	}
 	
 }

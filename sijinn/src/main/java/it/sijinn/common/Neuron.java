@@ -223,6 +223,27 @@ public class Neuron implements Serializable{
 		return output;
 	}
 	
+	public float calculationReversed(){
+		if(children!=null){
+			output=0;
+			for(Synapse relation: children)
+				output+= relation.getTo().getOutput()*relation.getWeight();
+			
+			if(this instanceof Network){
+				((Network)this).setInputValues(0, new float[]{output});
+				float[] outputs =((Network)this).compute();
+				if(outputs!=null && outputs.length>0)
+					output = outputs[0];
+			}
+			output = ((getFunction()!=null)?getFunction().execution(new float[]{output}):0);
+		}else if(parents==null && this instanceof Network && !isBias()){
+			float[] outputs = ((Network)this).computeReversed();
+			if(outputs!=null && outputs.length>0)
+				output = outputs[0];
+		}
+		return output;
+	}	
+	
 	
 	public boolean setChildSynapse(Synapse synapse, boolean updateIfExist){
 		if(synapse==null)

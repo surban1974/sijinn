@@ -13,7 +13,6 @@ import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.functions.deferred.SUMMATOR;
 import it.sijinn.perceptron.functions.error.IErrorFunctionApplied;
 import it.sijinn.perceptron.utils.IStrategyListener;
-import it.sijinn.perceptron.utils.Utils;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
@@ -54,11 +53,10 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 					if(aggregated!=null){
 						PairIO param = dataAggregator.getData(network,aggregated);
 							if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-						float out[] = network.compute(param.getInput(), param.getOutput());
-						Utils.print(out, " ");
-							if(listener!=null) listener.onAfterDataComputed(network,linenumber,param);
-						algorithm.calculate(network);	
-							if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param);
+						network.compute(param.getInput(), param.getOutput(), reversed);
+							if(listener!=null) listener.onAfterDataComputed(network,linenumber,param,reversed);
+						algorithm.calculate(network,reversed);	
+							if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param, reversed);
 					}
 					linenumber++;
 				}
@@ -90,15 +88,16 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 									executorService.submit(new Callable<Network>() {
 										@Override
 										public Network call() throws Exception {
-											cNetwork.compute(cPair.getInput(), cPair.getOutput());
-												if(listener!=null) listener.onAfterDataComputed(cNetwork,cPair.getLinenumber(),cPair);
-											algorithm.calculate(cNetwork);
-												if(listener!=null) listener.onAfterAlgorithmCalculated(cNetwork,algorithm,cPair.getLinenumber(),cPair);
+											cNetwork.compute(cPair.getInput(), cPair.getOutput(), reversed);
+												if(listener!=null) listener.onAfterDataComputed(cNetwork,cPair.getLinenumber(),cPair,reversed);
+											algorithm.calculate(cNetwork,reversed);
+												if(listener!=null) listener.onAfterAlgorithmCalculated(cNetwork,algorithm,cPair.getLinenumber(),cPair, reversed);
 											return cNetwork;	
 		
 										}
 									}).get(),
-									ITrainingAlgorithm.SYNC_WEIGHT_DELTA
+									ITrainingAlgorithm.SYNC_WEIGHT_DELTA,
+									reversed
 							);
 						}
 /*						
@@ -147,8 +146,8 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 			dataReader.close();
 			dataReader.finalizer();
 			
-			algorithm.updateWeights(network);
-				if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,null);
+			algorithm.updateWeights(network,reversed);
+				if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,null, reversed);
 //			algorithm.clear(network);
 		}
 			
@@ -164,10 +163,10 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 				if(aggregated!=null){
 					PairIO param = dataAggregator.getData(network,aggregated);
 						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-					network.compute(param.getInput(), param.getOutput());
-						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param);
-					error+=errorFunction.compute(network, 0);
-						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param);
+					network.compute(param.getInput(), param.getOutput(), reversed);
+						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param,reversed);
+					error+=errorFunction.compute(network, 0, reversed);
+						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param,reversed);
 				}
 				linenumber++;
 			}
@@ -216,6 +215,12 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 		this.listener = _listener;
 		if(this.listener!=null)
 			this.listener.setTrainingStrategy(this);
+		return this;
+	}	
+	
+	@Override
+	public BatchGradientDescent setReversed(boolean reversed) {
+		this.reversed = reversed;
 		return this;
 	}	
 	

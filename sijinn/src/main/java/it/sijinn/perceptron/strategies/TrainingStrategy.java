@@ -11,6 +11,7 @@ public abstract class TrainingStrategy implements ITrainingStrategy {
 	protected ITrainingAlgorithm algorithm;
 	protected IErrorFunctionApplied errorFunction;
 	protected IStrategyListener listener;
+	protected boolean reversed = false;
 	
 
 	public TrainingStrategy(){
@@ -64,5 +65,14 @@ public abstract class TrainingStrategy implements ITrainingStrategy {
 	@Override
 	public String getId(){
 		return this.getClass().getSimpleName();
+	}
+
+	public boolean isReversed() {
+		return reversed;
+	}
+
+	public ITrainingStrategy setReversed(boolean reversed) {
+		this.reversed = reversed;
+		return this;
 	}
 }

@@ -1,4 +1,4 @@
-package examples.stochastic;
+package examples.reversed.stochastic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,12 +19,11 @@ import it.sijinn.perceptron.utils.io.ResourceStreamWrapper;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.SimpleLineDataAggregator;
 
-public class SGD_BPROP_INTER {
+public class SGD_BPROP_N {
 
 	public static void main(String[] args) {
 		
-		final String resource_training = "examples/resources/interpolation_training.txt";
-		final String resource_test = "examples/resources/interpolation_test.txt";
+		final String resource_training = "examples/resources/test.txt";
 
 		final float learningRate = 0.5f;
 		final float learningMomentum = 0.01f;
@@ -40,7 +39,7 @@ public class SGD_BPROP_INTER {
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2, new SimpleSigmoidFermi()),
 						Network.createLayer(4, new SimpleSigmoidFermi()),
-						Network.createLayer(1, new SimpleSigmoidFermi())
+						Network.createLayer(2, new SimpleSigmoidFermi())
 						)),
 				new RandomPositiveWeightGenerator()
 //				new ZeroWeightGenerator()
@@ -86,22 +85,20 @@ public class SGD_BPROP_INTER {
 				}else
 					break;
 			}
+			System.out.println("Step: " + step + " MSE: " + delta+ " Weights: "+Utils.print(network.getWeight()," "));
 			System.out.println("Time: " + (new Date().getTime()-startTime)/1000+"s");
 			System.out.println("Steps: " + step);
 			System.out.println("MSE: " + delta);
 			
-			network.save("c:/tmp/SGD_BPROP_INTER.net", new ITrainingStrategy[]{trainingStrategy});
+			network.save("c:/tmp/R.net", new ITrainingStrategy[]{trainingStrategy});
 			
-			final IStreamWrapper streamWrapperTest = new ResourceStreamWrapper(resource_test);
-			
-			final float error_test = network.test(streamWrapperTest, readLinesAggregator, new MSE());
-			System.out.println("MSE Test: " + error_test);
 			
 			float[][] test = network.compute(
 					new float[][] {					
-						{0.823593752f,0.176406248f},	//0.842274203
-						{0.453583164f,0.546416836f},  	//0.7101472
-			          }
+						{0,1},	//{1,0}
+						{1,0},  //{0,1}
+			          },
+					false
 			);
 
 			System.out.print(Utils.print(test, new String[]{" ","\n"}));

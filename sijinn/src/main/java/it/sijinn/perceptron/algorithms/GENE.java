@@ -18,11 +18,11 @@ public class GENE implements IGeneticAlgorithm{
     	this.neuralBreeding = neuralBreeding;
     }
     
-	public ITrainingAlgorithm calculateAndUpdateWeights(Network network) throws Exception{		
+	public ITrainingAlgorithm calculateAndUpdateWeights(Network network, boolean reversed) throws Exception{		
 		return this;
 	}
-	
-	public ITrainingAlgorithm calculate(Network network) throws Exception{		
+
+	public ITrainingAlgorithm calculate(Network network, boolean reversed) throws Exception{		
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return this;
 
@@ -35,7 +35,8 @@ public class GENE implements IGeneticAlgorithm{
 		return this;
 	}
 	
-	public ITrainingAlgorithm updateWeights(Network network) throws Exception{		
+	
+	public ITrainingAlgorithm updateWeights(Network network, boolean reversed) throws Exception{		
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return this;
 
@@ -49,10 +50,8 @@ public class GENE implements IGeneticAlgorithm{
 		return this;
 	}	
 	
-	public ITrainingAlgorithm sync(Network network1, Network network2, int type) throws Exception{	
-
+	public ITrainingAlgorithm sync(Network network1, Network network2, int type, boolean reversed) throws Exception{
 		return this;
-
 	}	
 	
 	
