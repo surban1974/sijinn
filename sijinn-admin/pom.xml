@@ -148,7 +148,9 @@
 				            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
 				            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
 				            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
-				            <exclude>it/classhidra/plugin/**/*.java</exclude>
+				            <exclude>it/classhidra/plugin/provider/**/*.java</exclude>
+				            <exclude>it/classhidra/plugin/vfs/**/*.java</exclude>
+				            <exclude>it/classhidra/plugin/was/**/*.java</exclude>
 						</excludes> 
 						                  
 	                    <targetPath>WEB-INF/classes</targetPath>	

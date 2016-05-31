@@ -38,8 +38,8 @@ import it.sijinn.admin.beans.SettingProperties;
 		property="allway:public"
 	),
 	redirects={
-		@Redirect(auth_id="k-settings",path="/pages/k-settings.html",avoidPermissionCheck="true"),
-		@Redirect(auth_id="a-settings",path="/pages/a-settings.html",avoidPermissionCheck="true")
+		@Redirect(auth_id="k-settings",path="/pages/deprecated/k-settings.html",avoidPermissionCheck="true"),
+		@Redirect(auth_id="a-settings",path="/pages/deprecated/a-settings.html",avoidPermissionCheck="true")
 	}
 )
 

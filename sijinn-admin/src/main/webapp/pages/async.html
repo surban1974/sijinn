@@ -1,0 +1,167 @@
+	<!--  ClassHidra Ajax JavaScript -->
+	<script src='js/clAjax.js'></script> 
+	<!--  ClassHidra Model JavaScript -->
+	<script src='js/clModels.js'></script> 
+	
+
+<div  style="width: 600px; height: 300px; border: 1px solid silver; overflow: auto;"><pre><code id="tacheck"></code></pre></div>
+<br>
+<input type="button" value="start"
+onclick="
+	clAjax
+	.setResponseLength(0)
+	.clone()
+	.setUrl('sijinn-admin/async-check?asyncInterrupt=false&tmp='+new Date().getTime())
+	.request('POST');
+"/>
+<input type="button" value="interrupt"
+onclick="
+	clAjax
+	.setResponseLength(0)	
+	.clone()
+	.setUrl('sijinn-admin/async-check?asyncInterrupt=true&tmp='+new Date().getTime())
+	.request('POST');
+"/>
+
+
+<script>
+
+var clAjax = 
+		new clajax(
+		{
+			acceptableReadyState:	[
+										{
+											readyState:			3,
+											acceptableStatus: 	[
+															 	{
+															 		status:		200,
+															 		success:	function(http_request,instance){ 			
+																		console.log(3200);
+																		var chunk = '';
+																		if(http_request.responseText.length>instance.response_length)
+																			chunk = http_request.responseText.substring(instance.response_length);
+																		instance.response_length=http_request.responseText.length;
+																		document.getElementById('tacheck').innerHTML += chunk;
+																	}
+															 	},
+															 	{
+															 		status:		500,
+															 		success:	function(http_request,instance){ 			
+																		console.log(3500);
+																	}
+															 	}														 	
+															 	]
+										},
+										{
+											readyState:			4,
+											acceptableStatus: 	[
+															 	{
+															 		status:		200,
+															 		success:	function(http_request,instance){ 	
+																		console.log(4200);
+																		var chunk = '';
+																		if(http_request.responseText.length>instance.response_length)
+																			chunk = http_request.responseText.substring(instance.response_length);
+																		instance.response_length=http_request.responseText.length;
+																		document.getElementById('tacheck').innerHTML += chunk;
+																	}
+															 	},
+															 	{
+															 		status:		500,
+															 		success:	function(http_request,instance){ 			
+																		console.log(4500);
+																	}
+															 	}	
+															 	]
+										}		
+									],
+			timeout:	function(http_request,instance){			
+			},
+			extention: 	{
+							response_length:0,
+							setResponseLength: function(_response_length){
+								this.response_length=_response_length;
+								return this;
+							}
+						}
+		}
+	).instance();
+/*
+var extention = {
+		response_length:0,
+		setResponseLength: function(_response_length){
+			this.response_length=_response_length;
+			return this;
+		},
+		clone : function(){
+			if(extention){
+				var cl = Object.create(this._clone())
+				.extend(extention);
+				return cl;
+			}else{
+				return Object.create(this._clone());
+			}
+		}
+	}
+
+var clAjax = 
+	Object.create(
+		new clajax(
+		{
+			acceptableReadyState:	[
+										{
+											readyState:			3,
+											acceptableStatus: 	[
+															 	{
+															 		status:		200,
+															 		success:	function(http_request,instance){ 			
+																		console.log(3200);
+																		var chunk = '';
+																		if(http_request.responseText.length>instance.response_length)
+																			chunk = http_request.responseText.substring(this.response_length);
+																		instance.response_length=http_request.responseText.length;
+																		document.getElementById('tacheck').innerHTML += chunk;
+																	}
+															 	},
+															 	{
+															 		status:		500,
+															 		success:	function(http_request,instance){ 			
+																		console.log(3500);
+																	}
+															 	}														 	
+															 	]
+										},
+										{
+											readyState:			4,
+											acceptableStatus: 	[
+															 	{
+															 		status:		200,
+															 		success:	function(http_request,instance){ 	
+																		console.log(4200);
+																		var chunk = '';
+																		if(http_request.responseText.length>instance.response_length)
+																			chunk = http_request.responseText.substring(this.response_length);
+																		instance.response_length=http_request.responseText.length;
+																		document.getElementById('tacheck').innerHTML += chunk;
+																	}
+															 	},
+															 	{
+															 		status:		500,
+															 		success:	function(http_request,instance){ 			
+																		console.log(4500);
+																	}
+															 	}	
+															 	]
+										}		
+									],
+			timeout:	function(http_request,instance){ 
+			
+			}
+		}
+		)
+	).extend(
+		extention		
+	);
+*/
+
+</script>

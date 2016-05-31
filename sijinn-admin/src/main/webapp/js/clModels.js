@@ -1,3 +1,9 @@
+/**
+* Name: classhidra-models.js
+* Version: 1.1.1 
+* Creation date: (19/05/2016)
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
+*/
 var GenericModel = {
 	extend: function(props) {
 	    for(var prop in props) {

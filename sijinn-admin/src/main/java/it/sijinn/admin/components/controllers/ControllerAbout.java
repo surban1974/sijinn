@@ -17,7 +17,7 @@ import it.classhidra.core.controller.i_bean;
 	redirect="/pages/about.html",
 	entity=@Entity(
 			property="allway:public"
-	)
+	) 
 )
 
 @SessionDirective
