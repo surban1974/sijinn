@@ -6,6 +6,7 @@ package it.sijinn.admin.components.controllers;
 
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -25,7 +26,9 @@ import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.util.util_format;
 import it.classhidra.serialize.JsonWriter;
+
 import it.sijinn.admin.workers.Worker;
 
 @Action (
@@ -46,6 +49,7 @@ public class ControllerAsync extends AbstractBase implements i_action, i_bean, S
 
 	private static final long serialVersionUID = 1L;
 	private boolean stop = false;
+	private String initTime;
 
 	public ControllerAsync(){
 		super();
@@ -58,6 +62,15 @@ public class ControllerAsync extends AbstractBase implements i_action, i_bean, S
 	}
 
 	@ActionCall(
+			name="stop",
+			navigated="false",
+			Expose=@Expose(methods = {Expose.POST,Expose.GET})			
+			)
+	public void stop(HttpServletRequest request){
+		setAsyncInterrupt(true);
+	}
+	
+	@ActionCall(
 			name="check",
 			navigated="false",
 			Redirect=@Redirect(contentType="text/event-stream"),
@@ -65,7 +78,7 @@ public class ControllerAsync extends AbstractBase implements i_action, i_bean, S
 			Async=@Async(
 					value=true,
 					flushBuffer=true,
-					timeout=0,
+					timeout=60000,
 					loopEvery=5000,
 					headers = {
 							@ResponseHeader(name="Cache-Control",value="no-cache"),
@@ -81,12 +94,60 @@ public class ControllerAsync extends AbstractBase implements i_action, i_bean, S
 		}catch(Exception e){			
 		}
 		if(bean!=null){
+/*
+			final int step = ((Worker)((ControllerNetwork)bean).getWorker()).getStep();
+			final int hash = bean.hashCode();
+			final boolean interrupted = bean.isAsyncInterrupt();
+
 			ControllerNetwork network = (ControllerNetwork)bean;
-			return JsonWriter.object2json(((Worker)network.getWorker()).getStep(), "step");
 			
+			Object toJson = new Serializable() {
+				private static final long serialVersionUID = 1L;
+
+				@Serialized
+				public int getStep(){
+					return step;
+				}
+				
+				@Serialized
+				public int getHash(){
+					return hash;
+				}
+				
+				@Serialized
+				public String getInitTime(){
+					return initTime;
+				}
+				
+				@Serialized
+				public String getTime(){
+					return util_format.dataToString(new Date(), "yyyy-MM-dd HH:mm:sss");
+				}	
+				
+				@Serialized
+				public boolean isInterrupted(){
+					return interrupted;
+				}						
+			};
+			
+			return JsonWriter.object2json(
+					new String[]{
+							String.valueOf(((Worker)((ControllerNetwork)bean).getWorker()).getStep()),
+							String.valueOf(bean.hashCode()),
+							initTime,
+							util_format.dataToString(new Date(), "yyyy-MM-dd HH:mm:sss"),
+							String.valueOf(bean.isAsyncInterrupt()),
+					}
+,
+					"step",
+					null,
+					true,
+					2);
+*/
+			return "{step: "+((Worker)((ControllerNetwork)bean).getWorker()).getStep()+",init:\""+initTime+"\",retrived:\""+util_format.dataToString(new Date(), "yyyy-MM-dd HH:mm:sss")+"\" }";
 		}
 		
-		return "{step:0}";
+		return "{status: \"not avaliable\",retrived:\""+util_format.dataToString(new Date(), "yyyy-MM-dd HH:mm:sss")+"\" }";
 	}	
 	
 	@ActionCall(
@@ -132,6 +193,12 @@ public class ControllerAsync extends AbstractBase implements i_action, i_bean, S
 
 	public void setStop(boolean stop) {
 		this.stop = stop;
+	}
+
+	@Override
+	public void init(HttpServletRequest request) throws bsControllerException {
+		initTime = util_format.dataToString(new Date(), "yyyy-MM-dd HH:mm:sss");
+		super.init(request);
 	}		
 
 }

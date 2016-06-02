@@ -1,7 +1,7 @@
 /**
 * Name: clAjax.js
-* Version: 1.0.1 
-* Creation date: (31/05/2016)
+* Version: 1.0.2 
+* Creation date: (01/06/2016)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -25,6 +25,7 @@
 
 	var clajax = function(prot){
 		
+		this.id =					-1;
 		this.form = 				(prot)?prot.form:null;
 		this.action = 				(prot)?prot.action:null;
 		this.method = 				(prot)?prot.method:null;
@@ -318,6 +319,11 @@
 				this.extention = _extention;
 				return this;
 			},
+			
+			setId : function(_id){
+				this.id = _id;
+				return this;
+			},
 	
 			extend: function(props) {
 			    for(var prop in props) {
@@ -331,7 +337,7 @@
 			instance: function(){
 				if(this.extention){
 					var inst = Object.create(this).extend(this.extention);
-					return inst;
+					return inst.setId(new Date().getTime());
 				}else{
 					return this;
 				}
@@ -340,9 +346,9 @@
 			clone : function(){
 				if(this.extention){
 					var cloned = Object.create(this._clone()).extend(this.extention);
-					return cloned;
+					return cloned.setId(new Date().getTime());;
 				}
-				return this._clone();
+				return this._clone().setId(new Date().getTime());;
 			},
 			
 			_clone : function(){
@@ -388,7 +394,12 @@
 			},
 	
 			exception : function(e){
-				console.error(e);
+				  var stack = e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+			      .replace(/^\s+at\s+/gm, '')
+			      .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
+			      .split('\n');
+			  console.log(stack);
+//				console.log(e);
 			},
 			
 			load : function(){
@@ -705,7 +716,7 @@
 			    
 		
 			    var instance  = this.clone();
-			    
+		    
 //onreadystatechange			    
 			    http_request.onreadystatechange = function() {
 				    	try{
@@ -734,6 +745,9 @@
 					    		var statusAccepted = false;				    		
 					    		var _fready;
 					    		var _fsuccess;
+					    		var _ffail;
+					    		var _ffinish;
+					    		var _ferror;
 					    		
 					    		if (http_request.status == 200 ) {
 					    			statusAccepted = true;
@@ -741,6 +755,13 @@
 				            			_fready = instance.ready;
 					    			if(instance.success && instance.success!='')
 				            			_fsuccess = instance.success;
+					    			if(instance.fail && instance.fail!='')
+				            			_ffail = instance.fail;
+					    			if(instance.finish && instance.finish!='')
+				            			_ffinish = instance.finish;
+					    			if(instance.error && instance.error!='')
+				            			_ferror = instance.error;
+					    			
 					    		}
 					    		if(_facceptableStatus && _facceptableStatus.length>0){
 					    			
@@ -755,6 +776,14 @@
 				            				acceptable = _facceptableStatus[i];
 				            			i++;				            			
 				            		}
+				            		if(!acceptable && i<_facceptableStatus.length){
+					            		i=0;
+					            		while(!acceptable && i<_facceptableStatus.length){
+					            			if(_facceptableStatus[i].status == -1)
+					            				acceptable = _facceptableStatus[i];
+					            			i++;				            			
+					            		}				            			
+				            		}
 					            	if(acceptable){
 					            		statusAccepted = true;
 					            		if(acceptable.ready && acceptable.ready!='')
@@ -765,36 +794,71 @@
 					            			_fsuccess = acceptable.success;
 					            		else if(instance.success && instance.success!='')
 					            			_fsuccess = instance.success;
+					            		if(acceptable.fail && acceptable.fail!='')
+					            			_ffail = acceptable.fail;
+					            		else if(instance.fail && instance.fail!='')
+					            			_ffail = instance.fail;
+					            		if(acceptable.finish && acceptable.finish!='')
+					            			_ffinish = acceptable.finish;
+					            		else if(instance.finish && instance.finish!='')
+					            			_ffinish = instance.finish;
+					            		if(acceptable.error && acceptable.error!='')
+					            			_ferror = acceptable.finish;
+					            		else if(instance.error && instance.error!='')
+					            			_ferror = instance.error;
 					            	
 					            	}				            	
 					    		}
-					    		if(statusAccepted==true){
-					            	if(_fready){
-					            		if (typeof _fready === 'function') {
-					            			_fready(http_request,instance);
+					    		try{
+						    		if(statusAccepted==true){
+						            	if(_fready){
+						            		if (typeof _fready === 'function') {
+						            			_fready(http_request,instance);
+						            		}else{
+						            			eval(_fready + '(http_request,instance)');
+						            		}
+						            	}else{
+						            		if(instance.target)
+						            			instance.target.innerHTML=http_request.responseText;
+						            	}
+						            	if(_fsuccess){
+						            		if (typeof _fsuccess === 'function') {
+						            			_fsuccess(http_request,instance);
+						            		}
+						            		else
+						            			eval(_fsuccess + '(http_request,instance)');				            		
+						            	}				    			
+						    		}else{
+						            	if(_ffail){
+						            		if (typeof _ffail === 'function') {
+						            			_ffail(http_request,instance);
+						            		}else{
+						            			eval(_ffail + '(http_request,instance)');
+						            		}
+						            	}		            	
+						            }
+					    		}catch(e){
+						    		instance.exception(e);
+						    		if(_ferror){
+					            		if (typeof _ferror === 'function') {
+					            			_ferror(http_request, e, e.toString() ,instance);
 					            		}else{
-					            			eval(_fready + '(http_request,instance)');
+					            			eval(_ferror + '(http_request, e, e.toString(), instance)');
 					            		}
-					            	}else{
-					            		if(instance.target)
-					            			instance.target.innerHTML=http_request.responseText;
-					            	}
-					            	if(_fsuccess){
-					            		if (typeof _fsuccess === 'function') {
-					            			_fsuccess(http_request,instance);
-					            		}
-					            		else
-					            			eval(_fsuccess + '(http_request,instance)');				            		
-					            	}				    			
-					    		}else{
-					            	if(instance.fail && instance.fail!=''){
-					            		if (typeof instance.fail === 'function') {
-					            			instance.fail(http_request,instance);
-					            		}else{
-					            			eval(instance.fail + '(http_request,instance)');
-					            		}
-					            	}		            	
-					            }
+						    		}else
+					            		alert('There was a generic problem with callback_function():'+e.toString());
+					    		}
+					    		
+					    		
+						    	if(_ffinish){
+					        		if (typeof _ffinish === 'function') {
+					        			_ffinish(http_request,instance);
+					        		}else{
+					        			eval(_ffinish + '(http_request,instance)');
+					        		}
+					        	}
+					    		
+					    		
 /*
 					    		if(!instance.opened){
 						            try{
@@ -816,7 +880,7 @@
 			            	}else
 			            		alert('There was a generic problem with callback_function():'+e.toString());
 				    	}
-				    	
+/*				    	
 				    	if(instance.finish && instance.finish!=''){
 			        		if (typeof instance.finish === 'function') {
 			        			instance.finish(http_request,instance);
@@ -824,7 +888,7 @@
 			        			eval(instance.finish + '(http_request,instance)');
 			        		}
 			        	}
-			
+*/			
 		        };
 //------
 		        
@@ -892,7 +956,7 @@
 			    	http_request.send(this.mpart);
 			    }
 			    
-			    return this;
+			    return instance;
 		
 			},
 
