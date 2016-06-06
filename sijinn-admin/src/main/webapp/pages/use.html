@@ -115,7 +115,7 @@ final Network network = new Network();
 	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),1,2), false)
 	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),1,3), false)
 	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),2,0), false)
-	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),1,1), false)
+	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),2,1), false)
 	.createSynapses(new RandomPositiveWeightGenerator());			
 					</xmp></pre>
 
@@ -130,7 +130,7 @@ final Network network = new Network();
 	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),1,2), false)
 	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),1,3), false)
 	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),2,0), false)
-	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),1,1), false)
+	.addNeuron(new Neuron(network,new SimpleSigmoidFermi(),2,1), false)
 	.addSynapse(new Synapse(0, 0, 1, 0, new RandomPositiveWeightGenerator()), false)
 	.addSynapse(new Synapse(0, 0, 1, 1, new RandomPositiveWeightGenerator()), false)
 	.addSynapse(new Synapse(0, 0, 1, 2, new RandomPositiveWeightGenerator()), false)
