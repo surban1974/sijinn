@@ -3,14 +3,15 @@
   <groupId>com.github.surban1974.sijinn</groupId>
   <artifactId>sijinn-admin</artifactId>
   <versioning>
-    <release>1.1.1-alfa</release>
+    <release>1.1.2-alfa</release>
     <versions>
       <version>1.0.0-alfa</version>
       <version>1.0.1-alfa</version>
       <version>1.0.2-alfa</version>
       <version>1.1.0-alfa</version>
       <version>1.1.1-alfa</version>
+      <version>1.1.2-alfa</version>
     </versions>
-    <lastUpdated>20160520215035</lastUpdated>
+    <lastUpdated>20160606131110</lastUpdated>
   </versioning>
 </metadata>
