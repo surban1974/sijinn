@@ -83,7 +83,6 @@ public class ControllerNetwork extends AbstractBase implements i_action, i_bean,
 	private static final long serialVersionUID = 1L;
 	
 	final private String resource_training = "examples/resources/interpolation_training.txt";
-//	final private String resource_training = "it/sijinn/admin/resources/interpolation_training.txt";
 	final private String resource_xor_net = "examples/resources/XOR_init.net";
 
 	private IDataReader dataReader;
@@ -105,6 +104,7 @@ public class ControllerNetwork extends AbstractBase implements i_action, i_bean,
 	
 	private boolean parallel = false;
 	private Map<String, Neuron> selectedn = new HashMap<String, Neuron>();
+	private boolean initialized = false;
 	
 	
 
@@ -122,7 +122,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 @ActionCall(
 		name="check",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String check(){
@@ -131,7 +131,7 @@ public String check(){
 
 @ActionCall(
 		name="change",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String change(@Parameter(name="type") String type, @Parameter(name="value") String value ){
@@ -244,7 +244,7 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 
 @ActionCall(
 		name="stop",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String stop(){
@@ -261,13 +261,12 @@ public String stop(){
 
 @ActionCall(
 		name="restart",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String restart(){
 	if(event!=null)
 		event.interrupt();	
-//	wrapper.obtainInstance().clearSynapses(createWeightGenerator(),true);
 	
 	if(worker==null)
 		worker = new Worker();
@@ -299,7 +298,7 @@ public String restart(){
 
 @ActionCall(
 		name="exec",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String exec(){
@@ -312,7 +311,7 @@ public String exec(){
 
 @ActionCall(
 		name="removesynapses",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String removesynapses(){
@@ -325,7 +324,7 @@ public String removesynapses(){
 
 @ActionCall(
 		name="removesynapse",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String removesynapse(@Parameter(name="from") Neuron from, @Parameter(name="to") Neuron to){
@@ -338,7 +337,7 @@ public String removesynapse(@Parameter(name="from") Neuron from, @Parameter(name
 
 @ActionCall(
 		name="addsynapse",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String addsynapse(@Parameter(name="from") Neuron from, @Parameter(name="to") Neuron to){
@@ -352,7 +351,7 @@ public String addsynapse(@Parameter(name="from") Neuron from, @Parameter(name="t
 
 @ActionCall(
 		name="addlayer",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String addlayer(){
@@ -367,7 +366,7 @@ public String addlayer(){
 
 @ActionCall(
 		name="removelayer",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String removelayer(@Parameter(name="layer") int layer){
@@ -397,7 +396,7 @@ public String removelayer(@Parameter(name="layer") int layer){
 
 @ActionCall(
 		name="addneuron",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String addneuron(@Parameter(name="layer") int layer){
@@ -417,7 +416,7 @@ public String addneuron(@Parameter(name="layer") int layer){
 
 @ActionCall(
 		name="removeneuron",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String removeneuron(@Parameter(name="layer") int layer, @Parameter(name="order") int order){
@@ -439,7 +438,7 @@ public String removeneuron(@Parameter(name="layer") int layer, @Parameter(name="
 
 @ActionCall(
 		name="diff",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(method = Expose.POST))
 public String diffAsJson(){
@@ -451,7 +450,7 @@ public String diffAsJson(){
 
 @ActionCall(
 		name="viewdata",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String viewdata(){
@@ -486,7 +485,7 @@ public String viewdata(){
 
 @ActionCall(
 		name="setdata",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public void setdata(@Parameter(name="data") String data){
@@ -500,7 +499,7 @@ public void setdata(@Parameter(name="data") String data){
 
 @ActionCall(
 		name="reset",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String reset(){
@@ -538,7 +537,7 @@ public String reset(){
 
 @ActionCall(
 		name="viewnetwork",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(methods = {Expose.POST,Expose.GET}))
 public String viewnetwork(){
@@ -554,7 +553,7 @@ public String viewnetwork(){
 
 @ActionCall(
 		name="updatenetwork",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(method = Expose.POST))
 public String updatenetwork(@Parameter(name="networksource") String networksource){
@@ -588,7 +587,7 @@ public String updatenetwork(@Parameter(name="networksource") String networksourc
 
 @ActionCall(
 		name="updatedata",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(method = Expose.POST))
 public String updatedata(@Parameter(name="data") String updatedata){
@@ -601,7 +600,7 @@ public String updatedata(@Parameter(name="data") String updatedata){
 
 @ActionCall(
 		name="selectneuron",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(method = Expose.POST))
 public String selectneuron(@Parameter(name="neuron") Neuron neuron, @Parameter(name="sel") boolean sel){
@@ -616,7 +615,7 @@ public String selectneuron(@Parameter(name="neuron") Neuron neuron, @Parameter(n
 
 @ActionCall(
 		name="ainfo",
-		navigated="false",
+		
 		Redirect=@Redirect(contentType="application/json"),
 		Expose=@Expose(method = Expose.POST))
 public String ainfo(){
@@ -651,6 +650,7 @@ public void initController(){
 		dataReader = new SimpleStreamReader(new ResourceStreamWrapper(resource_training));
 	
 	Network.addExtLogger(new ExtLogger());	
+	initialized = true;
 
 }
 
@@ -821,6 +821,13 @@ public String getInitWeight() {
 
 public void setInitWeight(String initWeight) {
 	this.initWeight = initWeight;
+}
+
+@Override
+public void init(HttpServletRequest request) throws bsControllerException {
+	super.init(request);
+	if(!initialized)
+		initController();
 }
 
 

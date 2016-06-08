@@ -1,19 +1,13 @@
 package it.sijinn.admin.components.controllers;
 
-import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 
 
 @ActionMapping (
 		memoryInContainer_streams="true",
-		redirects={},
-		actions={
-			@Action (
-					path="operator",
-					redirect = "/menuCreator"
-			)					
-		}
-		
+		error=			"/pages/framework/action_mappings_Error.html",
+        auth_error=		"/pages/framework/action_mappings_authError.html",
+        session_error=	"/pages/framework/action_mappings_sessionError.html"		
 	)
 
 

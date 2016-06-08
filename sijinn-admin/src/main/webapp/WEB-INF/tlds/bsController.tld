@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<!DOCTYPE taglib
-  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
-         "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
 
-<taglib>
+<taglib 
+	version="2.0" 
+	xmlns="http://java.sun.com/xml/j2ee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
 
-  <tlib-version>classHidra 1.5.3</tlib-version>
+
+  <tlib-version>classHidra 1.5.4</tlib-version>
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
   <description> Tag library for classHidra   </description>
@@ -271,6 +272,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	<dynamic-attributes>true</dynamic-attributes>
 
   </tag>
   
@@ -713,7 +715,8 @@
         <name>additionalAttr</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+	<dynamic-attributes>true</dynamic-attributes>	
   </tag>
 
   <tag>
@@ -1070,7 +1073,8 @@
         <name>additionalAttr</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+	<dynamic-attributes>true</dynamic-attributes>	
   </tag>
 
 
@@ -1280,7 +1284,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
-	
+	<dynamic-attributes>true</dynamic-attributes>
 
   </tag>
 
@@ -1315,6 +1319,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	<dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <tag>
@@ -1382,6 +1387,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag> 
   
@@ -1440,6 +1446,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag> 
   
@@ -1498,6 +1505,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag> 
   
@@ -1551,7 +1559,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
-
+	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag>  
 
@@ -2142,8 +2150,10 @@
         <name>additionalAttr</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+	<dynamic-attributes>true</dynamic-attributes>	
   </tag> 
+  
   <tag>
     <name>link</name>
     <tag-class>it.classhidra.core.controller.tags.tagLink</tag-class>
@@ -2278,7 +2288,8 @@
         <name>additionalAttr</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute>
+	<dynamic-attributes>true</dynamic-attributes>    
 </tag>
 <tag>
     <name>sequence</name>
@@ -2611,7 +2622,7 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
-	
+	<dynamic-attributes>true</dynamic-attributes>
   </tag>
 
   <tag>
@@ -2678,6 +2689,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
     </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
     
   </tag> 
 
@@ -2701,6 +2713,7 @@
         <required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
     </attribute>    
+    <dynamic-attributes>true</dynamic-attributes>
   </tag> 
 
 
@@ -2712,12 +2725,12 @@
     <attribute>
         <name>styleClass</name>
         <required>false</required>
-    <rtexprvalue>true</rtexprvalue>
+    	<rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
         <name>style</name>
         <required>false</required>
-    <rtexprvalue>true</rtexprvalue>
+    	<rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag> 
 
@@ -3033,6 +3046,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	<dynamic-attributes>true</dynamic-attributes>
   </tag>      
   <tag>
     <name>into</name>

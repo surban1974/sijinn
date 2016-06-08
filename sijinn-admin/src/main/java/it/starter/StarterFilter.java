@@ -1,27 +1,22 @@
-package it.sijinn.admin.components.routers;
-
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+package it.starter;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Properties;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.bsFilter;
-import it.classhidra.core.init.app_init;
-import it.classhidra.core.init.log_init;
 
 @WebFilter(
-		filterName="SijinnRouter",
+		filterName="StarterFilter",
 		value={
 				"/actions/*",
 				"/*"
@@ -37,9 +32,10 @@ import it.classhidra.core.init.log_init;
 				DispatcherType.REQUEST,
 				DispatcherType.FORWARD,
 				DispatcherType.INCLUDE
-		}
+		},
+		asyncSupported = true
 	)
-public class SijinnRouter extends bsFilter{
+public class StarterFilter extends bsFilter{
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
@@ -48,24 +44,7 @@ public class SijinnRouter extends bsFilter{
 
 		if(req!=null && req instanceof HttpServletRequest && resp!=null && resp instanceof HttpServletResponse){
 		
-
-			
-/*			
-			final Properties appInitProperty = new Properties();
-				appInitProperty.setProperty(app_init.id_path,"sijinn-admin");
-				appInitProperty.setProperty(app_init.id_extention_do,"");
-				appInitProperty.setProperty(app_init.id_actioncall_separator,"-");
-				appInitProperty.setProperty(app_init.id_external_loader,"it.sijinn.admin.loaders.ExternalLoader");
-				appInitProperty.setProperty(app_init.id_package_annotated,"it.sijinn.admin.components");
-				
-			final Properties logInitProperty = new Properties();
-				logInitProperty.setProperty(log_init.id_Write2Concole,"true");
-			
-			final HashMap<String, Properties> otherProperties = new HashMap<String, Properties>();
-				otherProperties.put(log_init.id_property, logInitProperty);
-			
-			bsController.isInitialized(appInitProperty,otherProperties);
-*/
+/*
 			bsController.isInitialized(
 					new Properties(){
 						private static final long serialVersionUID = 1L;
@@ -92,7 +71,11 @@ public class SijinnRouter extends bsFilter{
 						);
 					}}
 			);
-
+*/
+			bsController.isInitialized(
+					StarterInitializer.applicationProperties(),
+					StarterInitializer.otherProperties()
+			);
 
 			super.doFilter(req, resp, chain);
 		}else{
