@@ -34,7 +34,6 @@ public class SimpleLineDataAggregator implements IReadLinesAggregator {
 			return new PairIO(new float[0],new float[0]);
 		String[] lines = (String[])objs;
 		if(lines!=null && lines.length>0){
-			int biases=0;
 
 			float[] input = new float[network.getLayers().get(0).size() - network.getLayerBiases(0)];
 			float[] target = new float[network.getLayers().get(network.getLayers().size()-1).size()];

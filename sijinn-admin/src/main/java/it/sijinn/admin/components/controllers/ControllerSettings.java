@@ -22,6 +22,7 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.redirects;
+
 import it.classhidra.serialize.JsonReader2Map;
 import it.classhidra.serialize.JsonWriter;
 import it.classhidra.serialize.Serialized;
@@ -46,7 +47,8 @@ import it.sijinn.admin.beans.SettingProperties;
 @SessionDirective
 public class ControllerSettings extends AbstractBase implements i_action, i_bean, Serializable{
 	private static final long serialVersionUID = 1L;
-	
+
+	@Serialized
 	protected SettingProperties settings;
 
 
@@ -157,11 +159,12 @@ public class ControllerSettings extends AbstractBase implements i_action, i_bean
 	}	
 	
 	
-	@Serialized
+//	@Serialized(output = @Format(name="settings"), input = @Format(name="settings"))
 	public SettingProperties getSettings() {
 		return settings;
 	}
 	
+//	@Serialized(output = @Format(name="settings"), input = @Format(name="settings"))
 	public void setSettings(SettingProperties settings) {
 		this.settings = settings;
 	}

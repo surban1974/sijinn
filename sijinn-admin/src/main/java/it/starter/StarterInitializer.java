@@ -15,6 +15,7 @@ public class StarterInitializer {
 	
 			{
 				put(app_init.id_path,"sijinn-admin");
+				put(app_init.id_debug,"true");
 				put(app_init.id_extention_do,"");
 				put(app_init.id_actioncall_separator,"-");
 				put(app_init.id_external_loader,"it.sijinn.admin.loaders.ExternalLoader");

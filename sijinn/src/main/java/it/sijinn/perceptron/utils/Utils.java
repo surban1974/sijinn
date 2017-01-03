@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 
 
 public class Utils {
@@ -39,6 +42,24 @@ public class Utils {
 		
 		return type.cast(retVal);
 	}
+
+public static <T extends Object> Class<?> getClass(T type){
+	if (type instanceof Class){
+		return (Class<?>)type;
+	}else if (type instanceof ParameterizedType){
+		return getClass(((ParameterizedType)type).getRawType());
+	}else if (type instanceof GenericArrayType){
+		Class<?> componentClass = getClass(((GenericArrayType)type).getGenericComponentType());
+		if (componentClass != null){
+			return Array.newInstance(componentClass, 0).getClass();
+		}else{
+			return null;
+		}
+	}else{
+		return null;
+	}
+}
+
 	
 	static public byte[] serialize(Object obj) throws IOException {
         try(ByteArrayOutputStream b = new ByteArrayOutputStream()){
