@@ -1,6 +1,10 @@
 package it.sijinn.perceptron.genetic;
 
-public class Species {
+import java.io.Serializable;
+
+public class Species implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
     private float[] weights;
     private float fitness = 0;

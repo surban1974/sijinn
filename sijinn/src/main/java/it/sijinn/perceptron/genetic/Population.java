@@ -1,10 +1,12 @@
 package it.sijinn.perceptron.genetic;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Population {
+public class Population implements Serializable{
 
-    private Species[] species;
+	private static final long serialVersionUID = 1L;
+	private Species[] species;
 
     public Population(int populationSize, float[] initialWeights, INeuralBreeding iBreading) {
     	species = new Species[populationSize];

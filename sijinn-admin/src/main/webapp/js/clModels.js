@@ -1,6 +1,6 @@
 /**
 * Name: classhidra-models.js
-* Version: 1.1.1 
+* Version: 1.1.2 
 * Creation date: (19/05/2016)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
@@ -133,6 +133,9 @@ function isEmpty(obj) {
 
 function dirtyModelElements(newModel, oldModel, array, prefix, exclude, include){
 	for(var property in newModel){
+			if(property.indexOf("$$hashKey")>=0){
+				return;
+			}		
 			var exc=false;
 			var inc=true;
 			if(typeof newModel[property] === 'object'){
