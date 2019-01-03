@@ -5,7 +5,7 @@
   <version>1.1.2-alfa</version>
   <packaging>war</packaging>
   <name>SIJINN - web admin tool</name>
-  <description>Web (jetty) administration tool</description>
+  <description>Simple Java Implementation Neuron Network</description>
   	<issueManagement>
 		<url>https://github.com/surban1974/sijinn/issues</url>
 		<system>GitHub Issues</system>
@@ -19,25 +19,7 @@
 		</license>
 	</licenses>  
   <build>
-    <resources>
 
-		<resource>
- 			<directory>file:///C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
- 			<includes>
- 				<include>config/messages/classhidra_messages.xml</include>
- 				<include>it/classhidra/version.properties</include>
- 				<include>it/classhidra/core/controller/resources/*.*</include>
- 				<include>it/classhidra/framework/resources/**/*.*</include>
- 				<include>it/classhidra/scheduler/*.properties</include>
- 				<include>it/classhidra/scheduler/**/*.properties</include>
- 				<include>it/classhidra/scheduler/**/*.sql</include>
- 			</includes>
- 			<excludes>
- 				<exclude>config/**/*.*</exclude>
- 			</excludes>
- 		</resource>
-      
-    </resources>
 
     <plugins>
     
@@ -103,25 +85,7 @@
             </plugin>    
     
     
-		<plugin>
-			<groupId>org.codehaus.mojo</groupId>
-		    <artifactId>build-helper-maven-plugin</artifactId>
-		    <version>1.7</version>
-		    <executions>
-		        <execution>
-		            <phase>generate-sources</phase>
-		            <goals>
-		            	<goal>add-source</goal>
-		            </goals>
-		            <configuration>
-		                <sources>
-		                    <source>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/sijinn/sijinn/src/main/java</source>
-		                    <source>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</source>
-		                </sources>
-		            </configuration>
-		        </execution>
-		    </executions>
-		</plugin>    
+ 
     
     
       	<plugin>
@@ -130,29 +94,21 @@
 	        <configuration>
 	          	<warName>sijinn-admin</warName>
 	          	<warSourceDirectory>src/main/webapp</warSourceDirectory>
-	          	<packagingExcludes>WEB-INF/lib/javax.servlet-api-3.0.1.jar, WEB-INF/lib/jsp-api-2.2.jar</packagingExcludes>
+	          	<packagingExcludes>WEB-INF/lib/javax.servlet-api-3.0.1.jar, WEB-INF/lib/jsp-api-2.2.jar, WEB-INF/lib/jsp-api-2.4.jar, WEB-INF/lib/servlet-api-2.4.jar</packagingExcludes>
 	          	<failOnMissingWebXml>false</failOnMissingWebXml>
 	          	<webResources>
+	          	
+					<resource>
+						<directory>src/main/webapp</directory>
+					</resource>
+	          	
+	          	
 	          		<resource>
-						<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+						<directory>src/main/java</directory>
 						<includes>
-								<include>it/**/*.*</include>
-		            			<include>external_loaders/**/*.java</include>
+								<include>**/*.*</include>
 						</includes>      
-				 		<excludes>
-				 			<exclude>application/**/*.*</exclude>
-				 			<exclude>config/**/*.*</exclude>
-				 			<exclude>examples/**/*.*</exclude>
-				 			<exclude>test/**/*.*</exclude>
-							<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
-				            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
-				            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
-				            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
-				            <exclude>it/classhidra/plugin/provider/**/*.java</exclude>
-				            <exclude>it/classhidra/plugin/vfs/**/*.java</exclude>
-				            <exclude>it/classhidra/plugin/was/**/*.java</exclude>
-						</excludes> 
-						                  
+                  
 	                    <targetPath>WEB-INF/classes</targetPath>	
                     </resource>          	
 	          	</webResources>
@@ -163,43 +119,57 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
         <configuration>
-		 		<excludes>
-					<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
-		            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
-		            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
-		            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/**/*.java</exclude>
-				</excludes>
 		                  
 				<includes>
 					<include>it/**/*.java</include>
-		            <include>external_loaders/**/*.java</include>
-		            <include>pool/**/*.java</include> 
-		            <include>stubs/**/*.java</include>
-		            <include>neohort/**/*.java</include>
+					<include>integration/**/*.java</include>
+					<include>utils/**/*.java</include>
+					<include>config/**/*.java</include>
 	     
 				</includes>        
+      
           <source>1.7</source>
           <target>1.7</target>
         </configuration>
       </plugin>
 
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>2.19.1</version>
-    <configuration>
-    	<test>it.sijinn.admin.test.**.*</test>
-    	<parallel>methods</parallel>
-        <threadCount>1</threadCount>
-    </configuration>
-</plugin> 
+
 
     </plugins>
   </build>
   
+ 	<repositories>
+    	<repository>
+        	<id>classhidra-mvn-repo</id>
+        	<url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
+        	<snapshots>
+            	<enabled>true</enabled>
+            	<updatePolicy>always</updatePolicy>
+        	</snapshots>
+    	</repository>	
+    	<repository>
+        	<id>sijinn-mvn-repo</id>
+        	<url>https://github.com/surban1974/sijinn/raw/mvn-repo/</url>
+        	<snapshots>
+            	<enabled>true</enabled>
+            	<updatePolicy>always</updatePolicy>
+        	</snapshots>
+    	</repository>
+  	</repositories>   
+  
   <dependencies>  
-
+ 
+   	 	<dependency>
+			<groupId>com.github.surban1974.classhidra</groupId>
+			<artifactId>classhidra-base</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		
+   	 	<dependency>
+			<groupId>com.github.surban1974.sijinn</groupId>
+			<artifactId>sijinn-base</artifactId>
+			<version>1.1.2-alfa</version>
+		</dependency>		
 		
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -236,7 +206,13 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>	  
-	
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-math3</artifactId>
+		    <version>3.6.1</version>
+		</dependency>	
 <!-- 	 
 <dependency>
     <groupId>org.glassfish</groupId>
