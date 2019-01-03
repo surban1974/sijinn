@@ -12,7 +12,7 @@ public class Population implements Serializable{
     	species = new Species[populationSize];
         if (initialWeights!=null) {
             for (int i = 0; i < size(); i++) {
-                Species newspecies = new Species(initialWeights.length);
+            	final Species newspecies = new Species(initialWeights.length);
                 newspecies.generate(initialWeights, iBreading);
                 setSpecies(i, newspecies);
             }

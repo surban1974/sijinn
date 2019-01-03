@@ -16,7 +16,7 @@ public class MSE implements IErrorFunctionApplied {
 		float wl2=0;
 		if(regularizationL1 || regularizationL2){
 			if(!(network==null || network.getLayers()==null || network.getLayers().size()==0)){
-				float[] weights = network.getWeight();
+				final float[] weights = network.getWeight();
 				for(float weight : weights){
 					if(regularizationL1)
 						wl1+=Math.abs(weight);
@@ -35,7 +35,7 @@ public class MSE implements IErrorFunctionApplied {
 		float error = initialError;
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return initialError;
-		for(Neuron neuron: network.getLayers().get(network.getLayers().size()-1)){
+		for(final Neuron neuron: network.getLayers().get(network.getLayers().size()-1)){
 			if(neuron!=null)
 				error+= Math.pow(neuron.getOutput()-neuron.getTarget(),2)/2;
 		}
@@ -46,7 +46,7 @@ public class MSE implements IErrorFunctionApplied {
 		float error = initialError;
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return initialError;
-		for(Neuron neuron: network.getLayers().get(0)){
+		for(final Neuron neuron: network.getLayers().get(0)){
 			if(neuron!=null)
 				error+= Math.pow(neuron.getOutput()-neuron.getTarget(),2)/2;
 		}

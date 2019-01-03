@@ -31,11 +31,13 @@ public class StochasticGradientDescent extends OnlineGradientDescent implements 
 			Object line = null;
 			int linenumber=0;
 			while ((line = dataReader.readNext()) != null) {
-				Object[] aggregated = dataAggregator.aggregate(line,linenumber);
-					if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
+				final Object[] aggregated = dataAggregator.aggregate(line,linenumber);
+					if(listener!=null) 
+						listener.onAfterLinePrepared(network,linenumber,aggregated);
 				if(aggregated!=null){
-					PairIO param = dataAggregator.getData(network,aggregated);
-						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
+					final PairIO param = dataAggregator.getData(network,aggregated);
+						if(listener!=null) 
+							listener.onAfterDataPrepared(network,linenumber,param);
 						
 					network.compute(param.getInput(), param.getOutput(), reversed);
 						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param, reversed);
@@ -43,9 +45,6 @@ public class StochasticGradientDescent extends OnlineGradientDescent implements 
 						if(listener!=null) listener.onAfterAlgorithmCalculatedAndUpdated(network,algorithm,linenumber,param, reversed);						
 					error+=errorFunction.compute(network, 0, reversed);
 						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param, reversed);
-	
-						
-						
 				}
 				linenumber++;
 			}

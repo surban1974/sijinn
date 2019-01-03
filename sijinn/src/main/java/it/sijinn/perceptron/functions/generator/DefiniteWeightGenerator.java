@@ -16,7 +16,7 @@ public class DefiniteWeightGenerator implements IGenerator {
 	@Override
 	public float generate(Neuron from, Neuron to) {
 		if(network!=null){
-			Synapse synapse = network.findSynapse(from, to);
+			final Synapse synapse = network.findSynapse(from, to);
 			if(synapse!=null)
 				return synapse.getWeight();
 		}

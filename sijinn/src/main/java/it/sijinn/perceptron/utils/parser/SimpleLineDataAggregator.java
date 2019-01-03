@@ -32,13 +32,13 @@ public class SimpleLineDataAggregator implements IReadLinesAggregator {
 	public PairIO getData(Network network, Object[] objs) {
 		if(objs==null && !(objs instanceof String[]))
 			return new PairIO(new float[0],new float[0]);
-		String[] lines = (String[])objs;
+		final String[] lines = (String[])objs;
 		if(lines!=null && lines.length>0){
 
-			float[] input = new float[network.getLayers().get(0).size() - network.getLayerBiases(0)];
-			float[] target = new float[network.getLayers().get(network.getLayers().size()-1).size()];
-			PairIO pairIO = new PairIO(input,target);
-			StringTokenizer st = new StringTokenizer(lines[0], separator);
+			final float[] input = new float[network.getLayers().get(0).size() - network.getLayerBiases(0)];
+			final float[] target = new float[network.getLayers().get(network.getLayers().size()-1).size()];
+			final PairIO pairIO = new PairIO(input,target);
+			final StringTokenizer st = new StringTokenizer(lines[0], separator);
 			int currentIndex=0;
 
 			while(st.hasMoreTokens()){
@@ -69,7 +69,7 @@ public class SimpleLineDataAggregator implements IReadLinesAggregator {
 	public Object getRowData(Network network, Object[] objs) {
 		if(objs==null && !(objs instanceof String[]))
 			return null;
-		String[] lines = (String[])objs;
+		final String[] lines = (String[])objs;
 		if(lines!=null && lines.length>0)
 			return lines[0];
 		return null;

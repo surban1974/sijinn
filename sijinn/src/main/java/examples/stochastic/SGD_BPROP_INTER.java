@@ -10,7 +10,8 @@ import it.sijinn.common.Neuron;
 import it.sijinn.perceptron.algorithms.BPROP;
 import it.sijinn.perceptron.functions.applied.SimpleSigmoidFermi;
 import it.sijinn.perceptron.functions.error.MSE;
-import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
+//import it.sijinn.perceptron.functions.generator.RandomPositiveWeightGenerator;
+import it.sijinn.perceptron.functions.generator.ZeroWeightGenerator;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.strategies.StochasticGradientDescent;
 import it.sijinn.perceptron.utils.Utils;
@@ -36,14 +37,14 @@ public class SGD_BPROP_INTER {
 		
 
 		
-		final Network network = new Network(
+		final Network network = new Network( 
 				new ArrayList<List<Neuron>>(Arrays.asList(
 						Network.createLayer(2, new SimpleSigmoidFermi()),
 						Network.createLayer(4, new SimpleSigmoidFermi()),
 						Network.createLayer(1, new SimpleSigmoidFermi())
 						)),
-				new RandomPositiveWeightGenerator()
-//				new ZeroWeightGenerator()
+//				new RandomPositiveWeightGenerator()
+				new ZeroWeightGenerator()
 
 			)
 			;
@@ -53,7 +54,9 @@ public class SGD_BPROP_INTER {
 		final ITrainingStrategy trainingStrategy = new StochasticGradientDescent(
 				new BPROP().
 				setLearningRate(learningRate).
-				setLearningMomentum(learningMomentum)
+				setLearningMomentum(learningMomentum).
+				setParallel(false).
+				setParallelLimit(2)
 			)
 			.setReversed(false)	
 			.setErrorFunction(new MSE());

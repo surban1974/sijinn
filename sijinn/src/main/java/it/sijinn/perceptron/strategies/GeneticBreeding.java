@@ -86,11 +86,12 @@ public class GeneticBreeding implements ITrainingStrategy {
 			return -1;
 	
 		algorithm.calculate(network, reversed);	
-			if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,-1,null, reversed);		
+		if(listener!=null) 
+			listener.onAfterAlgorithmCalculated(network,algorithm,-1,null, reversed);		
 		
 			
 		if(parallelLimit<=1){	
-			for(Species entity: ((IGeneticAlgorithm)algorithm).getPopulation().getSpecies())
+			for(final Species entity: ((IGeneticAlgorithm)algorithm).getPopulation().getSpecies())
 				calculateFitness(network, dataReader, dataAggregator, entity);
 		}else{
 			final List<Network> networkPool = new ArrayList<Network>();
@@ -100,7 +101,7 @@ public class GeneticBreeding implements ITrainingStrategy {
 			}
 			final List<Species> accumulator = new ArrayList<Species>();
 			Species next = null;
-			Iterator<Species> it = ((IGeneticAlgorithm)algorithm).getPopulation().getSpeciesIterable().iterator();
+			final Iterator<Species> it = ((IGeneticAlgorithm)algorithm).getPopulation().getSpeciesIterable().iterator();
 
 
 			while((next= (it.hasNext())?it.next():null)!=null || accumulator.size()>0){
@@ -144,8 +145,8 @@ public class GeneticBreeding implements ITrainingStrategy {
 		}
 		
 		algorithm.updateWeights(network, reversed);
-			if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,-1,null, reversed);
-		
+		if(listener!=null) 
+			listener.onAfterAlgorithmUpdated(network,algorithm,-1,null, reversed);		
 		
 		return network.getError();
 	}	
@@ -155,20 +156,25 @@ public class GeneticBreeding implements ITrainingStrategy {
 		
 		network.setWeight(entity.getWeights());	
 		if(dataReader.open()){
-				if(listener!=null) listener.onAfterReaderOpen(network,dataReader);
+			if(listener!=null) 
+				listener.onAfterReaderOpen(network,dataReader);
 			Object next=null;
 			int linenumber=0;
 
 			while((next = dataReader.readNext()) !=null){
-				Object[] aggregated = dataAggregator.aggregate(next,linenumber);
-					if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
+				final Object[] aggregated = dataAggregator.aggregate(next,linenumber);
+				if(listener!=null) 
+					listener.onAfterLinePrepared(network,linenumber,aggregated);
 				if(aggregated!=null){
-					PairIO param = dataAggregator.getData(network,aggregated);
-						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
+					final PairIO param = dataAggregator.getData(network,aggregated);
+						if(listener!=null) 
+							listener.onAfterDataPrepared(network,linenumber,param);
 					network.compute(param.getInput(), param.getOutput(), reversed);
-						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param, reversed);
+						if(listener!=null) 
+							listener.onAfterDataComputed(network,linenumber,param, reversed);
 					error+=errorFunction.compute(network, 0, reversed);
-						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param, reversed);					
+						if(listener!=null) 
+							listener.onAfterErrorComputed(network,error,linenumber,param, reversed);					
 				}
 				linenumber++;
 				

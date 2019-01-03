@@ -154,7 +154,7 @@ public class Synapse implements Serializable{
 		if(properties==null || properties.length()==0)
 			return null;
 		try{
-			StringTokenizer st = new StringTokenizer(properties, ",");
+			final StringTokenizer st = new StringTokenizer(properties, ",");
 			int layerFrom = -1;
 			int orderFrom = -1;
 			int layerTo = -1;

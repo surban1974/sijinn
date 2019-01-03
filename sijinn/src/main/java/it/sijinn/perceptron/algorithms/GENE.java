@@ -40,7 +40,7 @@ public class GENE implements IGeneticAlgorithm{
 		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
 			return this;
 
-		Species fittest = population.getFittest(neuralBreeding);
+		final Species fittest = population.getFittest(neuralBreeding);
 		
 		if(fittest!=null){
 			network.setWeight(fittest.getWeights());

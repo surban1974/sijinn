@@ -71,19 +71,25 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 			Object next=null;
 			int linenumber=0;
 			while((next = dataReader.readNext()) !=null){
-				Object[] aggregated = dataAggregator.aggregate(next,linenumber);
-					if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
+				final Object[] aggregated = dataAggregator.aggregate(next,linenumber);
+					if(listener!=null) 
+						listener.onAfterLinePrepared(network,linenumber,aggregated);
 				if(aggregated!=null){
-					PairIO param = dataAggregator.getData(network,aggregated);
-						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
+					final PairIO param = dataAggregator.getData(network,aggregated);
+						if(listener!=null) 
+							listener.onAfterDataPrepared(network,linenumber,param);
 					network.compute(param.getInput(), param.getOutput(), reversed);
-						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param, reversed);
+						if(listener!=null) 
+							listener.onAfterDataComputed(network,linenumber,param, reversed);
 					algorithm.calculate(network, reversed);	
-						if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param, reversed);
+						if(listener!=null) 
+							listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param, reversed);
 					algorithm.updateWeights(network, reversed);
-						if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,param, reversed);
+						if(listener!=null) 
+							listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,param, reversed);
 					error+=errorFunction.compute(network, 0, reversed);
-						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param, reversed);					
+						if(listener!=null) 
+							listener.onAfterErrorComputed(network,error,linenumber,param, reversed);					
 				}
 				linenumber++;
 			}

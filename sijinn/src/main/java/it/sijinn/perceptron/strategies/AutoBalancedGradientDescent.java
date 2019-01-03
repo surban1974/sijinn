@@ -32,11 +32,13 @@ public class AutoBalancedGradientDescent extends OnlineGradientDescent implement
 				Object line = null;
 				int linenumber=0;
 				if ((line = dataReader.readNext()) != null) {
-					Object[] aggregated = dataAggregator.aggregate(line,linenumber);
-						if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
+					final Object[] aggregated = dataAggregator.aggregate(line,linenumber);
+					if(listener!=null) 
+						listener.onAfterLinePrepared(network,linenumber,aggregated);
 					if(aggregated!=null){
-						PairIO param = dataAggregator.getData(network,aggregated);
-							if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
+						final PairIO param = dataAggregator.getData(network,aggregated);
+						if(listener!=null) 
+							listener.onAfterDataPrepared(network,linenumber,param);
 							
 						parameters = param;	
 							
@@ -48,9 +50,11 @@ public class AutoBalancedGradientDescent extends OnlineGradientDescent implement
 					linenumber++;
 				}
 				dataReader.close();
-					if(listener!=null) listener.onAfterReaderClose(network,dataReader);
+				if(listener!=null) 
+					listener.onAfterReaderClose(network,dataReader);
 				dataReader.finalizer();
-					if(listener!=null) listener.onAfterReaderFinalize(network,dataReader);
+				if(listener!=null) 
+					listener.onAfterReaderFinalize(network,dataReader);
 			}
 			initialised=true;
 		}
@@ -59,18 +63,24 @@ public class AutoBalancedGradientDescent extends OnlineGradientDescent implement
 		float errorReverse = 0;
 		
 		network.compute(false);
-			if(listener!=null) listener.onAfterDataComputed(network,0,parameters, false);
+		if(listener!=null) 
+			listener.onAfterDataComputed(network,0,parameters, false);
 		algorithm.calculateAndUpdateWeights(network, false);
-			if(listener!=null) listener.onAfterAlgorithmCalculatedAndUpdated(network,algorithm,0,parameters, false);						
+		if(listener!=null) 
+			listener.onAfterAlgorithmCalculatedAndUpdated(network,algorithm,0,parameters, false);						
 		errorDirect=errorFunction.compute(network, 0, false);
-			if(listener!=null) listener.onAfterErrorComputed(network,errorDirect,0,parameters, false);	
+		if(listener!=null) 
+			listener.onAfterErrorComputed(network,errorDirect,0,parameters, false);	
 				
 		network.compute(true);
-			if(listener!=null) listener.onAfterDataComputed(network,0,parameters, true);
+		if(listener!=null) 
+			listener.onAfterDataComputed(network,0,parameters, true);
 		algorithm.calculateAndUpdateWeights(network, true);
-			if(listener!=null) listener.onAfterAlgorithmCalculatedAndUpdated(network,algorithm,0,parameters, true);						
+		if(listener!=null) 
+			listener.onAfterAlgorithmCalculatedAndUpdated(network,algorithm,0,parameters, true);						
 		errorReverse=errorFunction.compute(network, 0, true);
-			if(listener!=null) listener.onAfterErrorComputed(network,errorReverse,0,parameters, true);				
+		if(listener!=null) 
+			listener.onAfterErrorComputed(network,errorReverse,0,parameters, true);				
 		
 		
 		return Math.min(errorDirect, errorReverse);

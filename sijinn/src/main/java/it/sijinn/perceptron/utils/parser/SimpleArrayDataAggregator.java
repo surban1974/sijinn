@@ -7,7 +7,7 @@ public class SimpleArrayDataAggregator implements IReadLinesAggregator{
 	public PairIO getData(Network network, Object[] lines) {
 		if(lines==null || lines.length==0)
 			return null;
-		float[][] f = (float[][])lines[0];
+		final float[][] f = (float[][])lines[0];
 		return new PairIO(f[0], f[1]);
 	}
 	

@@ -82,8 +82,8 @@ public class Neuron implements Serializable{
 	public boolean makeRelation(List<Neuron> layer, float initialWeight){
 		if(layer==null)
 			return false;
-		for(Neuron neuron:layer){
-			Synapse relation = new Synapse(this, neuron, initialWeight);
+		for(final Neuron neuron:layer){
+			final Synapse relation = new Synapse(this, neuron, initialWeight);
 			if(children==null)
 				children = new ArrayList<Synapse>();
 			children.add(relation);
@@ -96,8 +96,8 @@ public class Neuron implements Serializable{
 	public boolean makeRelation(List<Neuron> layer, IGenerator weightGenerator){
 		if(layer==null)
 			return false;
-		for(Neuron neuron:layer){
-			Synapse relation = new Synapse(this, neuron, weightGenerator);
+		for(final Neuron neuron:layer){
+			final Synapse relation = new Synapse(this, neuron, weightGenerator);
 			if(children==null)
 				children = new ArrayList<Synapse>();
 			children.add(relation);
@@ -129,12 +129,12 @@ public class Neuron implements Serializable{
 		if(neuron==null)
 			return false;
 
-			Synapse relation = new Synapse(this, neuron, initialWeight);
-			if(children==null)
-				children = new ArrayList<Synapse>();
-			children.add(relation);
-			if(!neuron.isBias())
-				neuron.addParentRelation(relation);
+		final Synapse relation = new Synapse(this, neuron, initialWeight);
+		if(children==null)
+			children = new ArrayList<Synapse>();
+		children.add(relation);
+		if(!neuron.isBias())
+			neuron.addParentRelation(relation);
 		return true;
 	}
 	
@@ -142,19 +142,19 @@ public class Neuron implements Serializable{
 		if(neuron==null)
 			return false;
 
-			Synapse relation = new Synapse(this, neuron, weightGenerator);
-			if(children==null)
-				children = new ArrayList<Synapse>();
-			children.add(relation);
-			if(!neuron.isBias())
-				neuron.addParentRelation(relation);
+		final Synapse relation = new Synapse(this, neuron, weightGenerator);
+		if(children==null)
+			children = new ArrayList<Synapse>();
+		children.add(relation);
+		if(!neuron.isBias())
+			neuron.addParentRelation(relation);
 
 		return true;
 	}	
 	
 	public boolean updateWeights(boolean clearProperties){
 		if(children!=null){
-			for(Synapse synapse:children){
+			for(final Synapse synapse:children){
 				synapse.setWeight(0f);
 				if(clearProperties && synapse.getProperty()!=null)
 //					synapse.getProperty().clear();
@@ -166,7 +166,7 @@ public class Neuron implements Serializable{
 	
 	public boolean updateWeights(float weight, boolean clearProperties){
 		if(children!=null){
-			for(Synapse synapse:children){
+			for(final Synapse synapse:children){
 				synapse.setWeight(weight);
 				if(clearProperties && synapse.getProperty()!=null)
 //					synapse.getProperty().clear();
@@ -180,7 +180,7 @@ public class Neuron implements Serializable{
 		if(weightGenerator==null)
 			return false;
 		if(children!=null){
-			for(Synapse synapse:children){
+			for(final Synapse synapse:children){
 				synapse.setWeight(weightGenerator.generate(synapse.getFrom(), synapse.getTo()));
 				if(clearProperties && synapse.getProperty()!=null)
 //					synapse.getProperty().clear();
@@ -205,18 +205,18 @@ public class Neuron implements Serializable{
 	public float calculation(){
 		if(parents!=null){
 			output=0;
-			for(Synapse relation: parents)
+			for(final Synapse relation: parents)
 				output+= relation.getFrom().getOutput()*relation.getWeight();
 			
 			if(this instanceof Network){
 				((Network)this).setInputValues(0, new float[]{output});
-				float[] outputs =((Network)this).compute();
+				final float[] outputs =((Network)this).compute();
 				if(outputs!=null && outputs.length>0)
 					output = outputs[0];
 			}
 			output = ((getFunction()!=null)?getFunction().execution(new float[]{output}):0);
 		}else if(parents==null && this instanceof Network && !isBias()){
-			float[] outputs = ((Network)this).compute();
+			final float[] outputs = ((Network)this).compute();
 			if(outputs!=null && outputs.length>0)
 				output = outputs[0];
 		}
@@ -226,18 +226,18 @@ public class Neuron implements Serializable{
 	public float calculationReversed(){
 		if(children!=null){
 			output=0;
-			for(Synapse relation: children)
+			for(final Synapse relation: children)
 				output+= relation.getTo().getOutput()*relation.getWeight();
 			
 			if(this instanceof Network){
 				((Network)this).setInputValues(0, new float[]{output});
-				float[] outputs =((Network)this).compute();
+				final float[] outputs =((Network)this).compute();
 				if(outputs!=null && outputs.length>0)
 					output = outputs[0];
 			}
 			output = ((getFunction()!=null)?getFunction().execution(new float[]{output}):0);
 		}else if(parents==null && this instanceof Network && !isBias()){
-			float[] outputs = ((Network)this).computeReversed();
+			final float[] outputs = ((Network)this).computeReversed();
 			if(outputs!=null && outputs.length>0)
 				output = outputs[0];
 		}
@@ -252,7 +252,7 @@ public class Neuron implements Serializable{
 			children = new ArrayList<Synapse>();
 		if(updateIfExist){
 			boolean found=false;
-			for(Synapse present:children){
+			for(final Synapse present:children){
 				if(	present.getFrom()!=null && synapse.getFrom()!=null && present.getFrom().equals(synapse.getFrom()) &&
 					present.getTo()!=null && synapse.getTo()!=null && present.getTo().equals(synapse.getTo())){
 					present.setWeight(synapse.getWeight());
@@ -274,7 +274,7 @@ public class Neuron implements Serializable{
 			parents = new ArrayList<Synapse>();
 		if(updateIfExist){
 			boolean found=false;
-			for(Synapse present:parents){
+			for(final Synapse present:parents){
 				if(	present.getFrom()!=null && synapse.getFrom()!=null && present.getFrom().equals(synapse.getFrom()) &&
 					present.getTo()!=null && synapse.getTo()!=null && present.getTo().equals(synapse.getTo())){
 					present.setWeight(synapse.getWeight());

@@ -10,7 +10,7 @@ public class NeuralBreeding implements INeuralBreeding {
 	@Override
 	public Population evolve(Population population) {
 
-		Population newPopulation = new Population(population.size(), null, this);
+		final Population newPopulation = new Population(population.size(), null, this);
         if(elitism) 
         	newPopulation.setSpecies(0, population.getFittest(this));
         int elitismOffset;
@@ -20,9 +20,9 @@ public class NeuralBreeding implements INeuralBreeding {
             elitismOffset = 0;
 
         for (int i = elitismOffset; i < population.size(); i++) {
-        	Species single1 = tournament(population);
-	        Species single2 = tournament(population);
-	        Species newSingle = crossover(single1, single2);
+        	final Species single1 = tournament(population);
+        	final Species single2 = tournament(population);
+        	final Species newSingle = crossover(single1, single2);
 	        newPopulation.setSpecies(i, newSingle);
 	    }
 
@@ -37,7 +37,7 @@ public class NeuralBreeding implements INeuralBreeding {
 
 	@Override
 	public Species crossover(Species species1, Species species2) {
-		Species newSol = new Species(species1.size());
+		final Species newSol = new Species(species1.size());
         for (int i = 0; i < species1.size(); i++) {
             if(Math.random() <= uniformRate)
                 newSol.setWeight(i, species1.getWeight(i));
@@ -58,10 +58,10 @@ public class NeuralBreeding implements INeuralBreeding {
 
 	@Override
 	public Species tournament(Population population) {
-        Population tournament = new Population(tournamentSize, null, this);
+		final Population tournament = new Population(tournamentSize, null, this);
         int min = Math.min(tournamentSize, population.size());
         for (int i = 0; i < min; i++) {
-            int randomId = (int) (Math.random() * population.size());
+        	final int randomId = (int) (Math.random() * population.size());
             if(randomId<population.size())
             	tournament.setSpecies(i, population.getSpecies(randomId));
         }

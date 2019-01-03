@@ -48,21 +48,23 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 			linenumber=0;
 			if(parallelLimit<=1){
 				while((next = dataReader.readNext()) !=null){
-					Object[] aggregated = dataAggregator.aggregate(next,linenumber);
-						if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
+					final Object[] aggregated = dataAggregator.aggregate(next,linenumber);
+					if(listener!=null) 
+						listener.onAfterLinePrepared(network,linenumber,aggregated);
 					if(aggregated!=null){
-						PairIO param = dataAggregator.getData(network,aggregated);
-							if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
-						network.compute(param.getInput(), param.getOutput(), reversed);
-							if(listener!=null) listener.onAfterDataComputed(network,linenumber,param,reversed);
+						final PairIO param = dataAggregator.getData(network,aggregated);
+						if(listener!=null) 
+							listener.onAfterDataPrepared(network,linenumber,param);
+						network.compute(param.getInput(), param.getOutput(), reversed);							
+						if(listener!=null) 
+							listener.onAfterDataComputed(network,linenumber,param,reversed);
 						algorithm.calculate(network,reversed);	
-							if(listener!=null) listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param, reversed);
+						if(listener!=null) 
+							listener.onAfterAlgorithmCalculated(network,algorithm,linenumber,param, reversed);
 					}
 					linenumber++;
 				}
-			}else{
-
-				
+			}else{				
 				final List<PairIO> accumulator = new ArrayList<PairIO>();
 				next = dataReader.readNext();
 				while(next!=null || (next==null && accumulator.size()>0)){
@@ -80,7 +82,7 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 							);
 
 
-						for(PairIO pair:accumulator){
+						for(final PairIO pair:accumulator){
 							final Network cNetwork = new Network(network);
 							final PairIO cPair = new PairIO(pair.getInput(), pair.getOutput(), pair.getLinenumber());
 							algorithm.sync(
@@ -100,11 +102,7 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 									reversed
 							);
 						}
-/*						
-						final List<Future<ApplyExecutor>> list = new ArrayList<Future<ApplyExecutor>>();
-						for(PairIO pair:accumulator)
-							list.add(executorService.submit(new ApplyExecutor(new Network(network), pair.getInput(), pair.getOutput(), pair.getLinenumber())));
-*/							
+							
 						executorService.shutdown();
 						try {
 							final boolean done = executorService.awaitTermination(parallelTimeout, TimeUnit.MILLISECONDS);
@@ -114,40 +112,35 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 						} catch (InterruptedException e) {	
 							network.obtainLogger().error(e);
 						}
-/*						
-						for(Future<ApplyExecutor> future:list){
-							algorithm.sync(network, future.get().getNetwork(), ITrainingAlgorithm.SYNC_WEIGHT_DELTA);
-							future.get().getNetwork().release();
-						}
-*/						
+				
 						accumulator.clear();
 						
 					}
 					
 					if(next!=null){
-						Object[] aggregated = dataAggregator.aggregate(next,linenumber);
-							if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
+						final Object[] aggregated = dataAggregator.aggregate(next,linenumber);
+						if(listener!=null) 
+							listener.onAfterLinePrepared(network,linenumber,aggregated);
 						if(aggregated!=null){
-							PairIO param = dataAggregator.getData(network,aggregated);
+							final PairIO param = dataAggregator.getData(network,aggregated);
 							param.setLinenumber(linenumber);
-								if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
+							if(listener!=null) 
+								listener.onAfterDataPrepared(network,linenumber,param);
 							accumulator.add(param);
 						}
 						linenumber++;
 						next = dataReader.readNext();
 					}
-
 				}
-
-			}
-			
+			}			
  
 			
 			dataReader.close();
 			dataReader.finalizer();
 			
 			algorithm.updateWeights(network,reversed);
-				if(listener!=null) listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,null, reversed);
+			if(listener!=null) 
+				listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,null, reversed);
 //			algorithm.clear(network);
 		}
 			
@@ -158,22 +151,28 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 			next=null;
 			linenumber=0;
 			while((next = dataReader.readNext()) !=null){
-				Object[] aggregated = dataAggregator.aggregate(next,linenumber);
-					if(listener!=null) listener.onAfterLinePrepared(network,linenumber,aggregated);
+				final Object[] aggregated = dataAggregator.aggregate(next,linenumber);
+				if(listener!=null) 
+					listener.onAfterLinePrepared(network,linenumber,aggregated);
 				if(aggregated!=null){
-					PairIO param = dataAggregator.getData(network,aggregated);
-						if(listener!=null) listener.onAfterDataPrepared(network,linenumber,param);
+					final PairIO param = dataAggregator.getData(network,aggregated);
+					if(listener!=null) 
+						listener.onAfterDataPrepared(network,linenumber,param);
 					network.compute(param.getInput(), param.getOutput(), reversed);
-						if(listener!=null) listener.onAfterDataComputed(network,linenumber,param,reversed);
+					if(listener!=null) 
+						listener.onAfterDataComputed(network,linenumber,param,reversed);
 					error+=errorFunction.compute(network, 0, reversed);
-						if(listener!=null) listener.onAfterErrorComputed(network,error,linenumber,param,reversed);
+					if(listener!=null) 
+						listener.onAfterErrorComputed(network,error,linenumber,param,reversed);
 				}
 				linenumber++;
 			}
 			dataReader.close();
-				if(listener!=null) listener.onAfterReaderClose(network,dataReader);
+			if(listener!=null) 
+				listener.onAfterReaderClose(network,dataReader);
 			dataReader.finalizer();
-				if(listener!=null) listener.onAfterReaderFinalize(network,dataReader);
+			if(listener!=null) 
+				listener.onAfterReaderFinalize(network,dataReader);
 		}
 		return error;
 	}
