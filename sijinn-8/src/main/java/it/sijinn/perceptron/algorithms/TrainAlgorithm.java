@@ -11,7 +11,6 @@ public abstract class TrainAlgorithm implements ITrainingAlgorithm {
 	protected IDAFloatFunction deferredAgregateFunction;
 	protected boolean reversed = false;
 	protected boolean parallel = false;
-	protected long parallelTimeout=1000;
 	protected int parallelLimit=0;
 	
 	public ITrainingAlgorithm calculateAndUpdateWeights(Network network, boolean reversed) throws Exception{		
@@ -161,27 +160,17 @@ public abstract class TrainAlgorithm implements ITrainingAlgorithm {
 	}
 
 
-	public TrainAlgorithm setParallel(boolean parallel) {
+	public ITrainingAlgorithm setParallel(boolean parallel) {
 		this.parallel = parallel;
 		return this;
 	}
 
 
-	public TrainAlgorithm setParallelTimeout(long parallelTimeout) {
-		this.parallelTimeout = parallelTimeout;
-		return this;
-	}
-
-
-	public TrainAlgorithm setParallelLimit(int parallelLimit) {
+	public ITrainingAlgorithm setParallelLimit(int parallelLimit) {
 		this.parallelLimit = parallelLimit;
 		return this;
 	}
 
-
-	public long getParallelTimeout() {
-		return parallelTimeout;
-	}
 
 
 	public int getParallelLimit() {

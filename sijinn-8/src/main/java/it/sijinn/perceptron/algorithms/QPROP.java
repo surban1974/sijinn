@@ -1,8 +1,10 @@
 package it.sijinn.perceptron.algorithms;
 
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import it.sijinn.common.Neuron;
 import it.sijinn.common.Synapse;
-
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
 
@@ -90,105 +92,103 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 	protected void backPropagation(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
-			float sigma0 = (neuron.getTarget() - neuron.getOutput()) * 
+			final float sigma0 = (neuron.getTarget() - neuron.getOutput()) * 
 					(
 						((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0)+
 						((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0)
 					);
 			if(neuron.obtainParents()!=null){
-				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null)
-						relation.setProperty(new QPROPSynapseProperty());
-
-					float newDelta = learningRate  * sigma0 * relation.getFrom().getOutput();
-					
-					final float shrink = this.learningRate/(1f+this.learningRate);
-					final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
-					final float sigma = -newDelta+this.decay*relation.getWeight();
-					final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
-					float weightChange=0;
-					
-					if(delta<0) {
-						if (sigma>0)
-							weightChange-=this.epsilon*sigma;
-						if (sigma>=(shrink*previousSigma)) 
-							weightChange+=this.learningRate * delta;
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma);
-					}else if(delta>0){
-						if (sigma<0)
-							weightChange-=this.epsilon*sigma;
-						else if(sigma<=(shrink*previousSigma))
-							weightChange+=this.learningRate * delta; 
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma); 
-					}else 
-						weightChange-=this.epsilon*sigma;
-
-					
-
-					
-					((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
-					((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(newDelta);
-
-					
-					
-					relation.setWeight(relation.getWeight()+weightChange);
-
-				}
-			}			
+				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+								
+									final float newDelta = learningRate  * sigma0 * relation.getFrom().getOutput();
+									
+									final float shrink = learningRate/(1f+learningRate);
+									final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
+									final float sigma = -newDelta+decay*relation.getWeight();
+									final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
+									float weightChange=0;
+									
+									if(delta<0) {
+										if (sigma>0)
+											weightChange-=epsilon*sigma;
+										if (sigma>=(shrink*previousSigma)) 
+											weightChange+=learningRate * delta;
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma);
+									}else if(delta>0){
+										if (sigma<0)
+											weightChange-=epsilon*sigma;
+										else if(sigma<=(shrink*previousSigma))
+											weightChange+=learningRate * delta; 
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma); 
+									}else 
+										weightChange-=epsilon*sigma;
+									
+									((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
+									((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(newDelta);
+									relation.setWeight(relation.getWeight()+weightChange);								
+							}
+						}
+				);
+			}
 		}else{
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma0=0;
-				for(Synapse relation:neuron.obtainChildren()){
+				for(final Synapse relation:neuron.obtainChildren()){
 					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());
 					sigma0+=relation.getWeight()*((QPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
 				
 				sigma0*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma0,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
-				
-				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					
-					float newDelta = learningRate * sigma0 * relation.getFrom().getOutput();
-					
-					
-					final float shrink = this.learningRate/(1f+this.learningRate);
-					final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
-					final float sigma = -newDelta+this.decay*relation.getWeight();
-					final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
-					float weightChange=0;
-					
-					if(delta<0) {
-						if (sigma>0)
-							weightChange-=this.epsilon*sigma;
-						if (sigma>=(shrink*previousSigma)) 
-							weightChange+=this.learningRate * delta;
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma);
-					}else if(delta>0){
-						if (sigma<0)
-							weightChange-=this.epsilon*sigma;
-						else if(sigma<=(shrink*previousSigma))
-							weightChange+=this.learningRate * delta; 
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma); 
-					}else 
-						weightChange-=this.epsilon*sigma;
-
-					
-
-					
-					((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
-					((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(newDelta);
-
-					
-					
-					relation.setWeight(relation.getWeight()+weightChange);
-
-				}
+				final float sigma0_ = sigma0;
+				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
+				stream.forEach(
+						new Consumer<Synapse>() {
+							@Override
+							public void accept(Synapse relation) {
+								if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+									relation.setProperty(new QPROPSynapseProperty());
+							
+								final float newDelta = learningRate * sigma0_ * relation.getFrom().getOutput();
+								
+								final float shrink = learningRate/(1f+learningRate);
+								final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
+								final float sigma = -newDelta+decay*relation.getWeight();
+								final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
+								float weightChange=0;
+								
+								if(delta<0) {
+									if (sigma>0)
+										weightChange-=epsilon*sigma;
+									if (sigma>=(shrink*previousSigma)) 
+										weightChange+=learningRate * delta;
+									else
+										weightChange+=delta*sigma/(previousSigma-sigma);
+								}else if(delta>0){
+									if (sigma<0)
+										weightChange-=epsilon*sigma;
+									else if(sigma<=(shrink*previousSigma))
+										weightChange+=learningRate * delta; 
+									else
+										weightChange+=delta*sigma/(previousSigma-sigma); 
+								}else 
+									weightChange-=epsilon*sigma;
+								
+								((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
+								((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(newDelta);
+								
+								relation.setWeight(relation.getWeight()+weightChange);
+							}
+						}
+				);
 			
 			}
 		}
@@ -197,93 +197,93 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	protected void updateWeights(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
 			if(neuron.obtainParents()!=null){
-				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					
-					final float shrink = this.learningRate/(1f+this.learningRate);
-					final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
-					final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+this.decay*relation.getWeight();
-					final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
-					float weightChange=0;
-					
-					if(delta<0) {
-						if (sigma>0)
-							weightChange-=this.epsilon*sigma;
-						if (sigma>=(shrink*previousSigma)) 
-							weightChange+=this.learningRate * delta;
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma);
-					}else if(delta>0){
-						if (sigma<0)
-							weightChange-=this.epsilon*sigma;
-						else if(sigma<=(shrink*previousSigma))
-							weightChange+=this.learningRate * delta; 
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma); 
-					}else 
-						weightChange-=this.epsilon*sigma;
-
-					
-
-					
-					((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
-					((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
-					((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
-				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
-
-
-
+				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									final float shrink = learningRate/(1f+learningRate);
+									final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
+									final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+decay*relation.getWeight();
+									final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
+									float weightChange=0;
+									
+									if(delta<0) {
+										if (sigma>0)
+											weightChange-=epsilon*sigma;
+										if (sigma>=(shrink*previousSigma)) 
+											weightChange+=learningRate * delta;
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma);
+									}else if(delta>0){
+										if (sigma<0)
+											weightChange-=epsilon*sigma;
+										else if(sigma<=(shrink*previousSigma))
+											weightChange+=learningRate * delta; 
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma); 
+									}else 
+										weightChange-=epsilon*sigma;
+									
+									((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
+									((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
+									((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+								
+									relation.setWeight(
+											relation.getWeight()+weightChange
+											);
+	
+								}
+							}
+					);
 				}
-			}			
+						
 		}else{
 			if(neuron.obtainParents()!=null){
-
-				
-				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					
-					final float shrink = this.learningRate/(1f+this.learningRate);
-					final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
-					final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+this.decay*relation.getWeight();
-					final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
-					float weightChange=0;
-					
-					if(delta<0) {
-						if (sigma>0)
-							weightChange-=this.epsilon*sigma;
-						if (sigma>=(shrink*previousSigma)) 
-							weightChange+=this.learningRate * delta;
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma);
-					}else if(delta>0){
-						if (sigma<0)
-							weightChange-=this.epsilon*sigma;
-						else if(sigma<=(shrink*previousSigma))
-							weightChange+=this.learningRate * delta; 
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma); 
-					}else 
-						weightChange-=this.epsilon*sigma;
-
-					
-
-					
-					((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
-					((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
-					((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
-				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
-
-	
+				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									final float shrink = learningRate/(1f+learningRate);
+									final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
+									final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+decay*relation.getWeight();
+									final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
+									float weightChange=0;
+									
+									if(delta<0) {
+										if (sigma>0)
+											weightChange-=epsilon*sigma;
+										if (sigma>=(shrink*previousSigma)) 
+											weightChange+=learningRate * delta;
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma);
+									}else if(delta>0){
+										if (sigma<0)
+											weightChange-=epsilon*sigma;
+										else if(sigma<=(shrink*previousSigma))
+											weightChange+=learningRate * delta; 
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma); 
+									}else 
+										weightChange-=epsilon*sigma;
+									
+									((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
+									((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
+									((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+								
+									relation.setWeight(
+											relation.getWeight()+weightChange
+											);
+								}
+							}
+					);
 				}
-			}
+			
 		}
 
 	}
@@ -291,92 +291,96 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	protected void updateWeightsReversed(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
 			if(neuron.obtainChildren()!=null){
-				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					
-					final float shrink = this.learningRate/(1f+this.learningRate);
-					final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
-					final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+this.decay*relation.getWeight();
-					final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
-					float weightChange=0;
-					
-					if(delta<0) {
-						if (sigma>0)
-							weightChange-=this.epsilon*sigma;
-						if (sigma>=(shrink*previousSigma)) 
-							weightChange+=this.learningRate * delta;
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma);
-					}else if(delta>0){
-						if (sigma<0)
-							weightChange-=this.epsilon*sigma;
-						else if(sigma<=(shrink*previousSigma))
-							weightChange+=this.learningRate * delta; 
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma); 
-					}else 
-						weightChange-=this.epsilon*sigma;
-
-					
-
-					
-					((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
-					((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
-					((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									final float shrink = learningRate/(1f+learningRate);
+									final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
+									final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+decay*relation.getWeight();
+									final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
+									float weightChange=0;
+									
+									if(delta<0) {
+										if (sigma>0)
+											weightChange-=epsilon*sigma;
+										if (sigma>=(shrink*previousSigma)) 
+											weightChange+=learningRate * delta;
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma);
+									}else if(delta>0){
+										if (sigma<0)
+											weightChange-=epsilon*sigma;
+										else if(sigma<=(shrink*previousSigma))
+											weightChange+=learningRate * delta; 
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma); 
+									}else 
+										weightChange-=epsilon*sigma;
 				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
-
-
-
-				}
+									
+				
+									
+									((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
+									((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
+									((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+								
+									relation.setWeight(
+											relation.getWeight()+weightChange
+											);
+	
+								}
+							}
+					);
 			}			
 		}else{
 			if(neuron.obtainChildren()!=null){
-
+				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									final float shrink = learningRate/(1f+learningRate);
+									final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
+									final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+decay*relation.getWeight();
+									final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
+									float weightChange=0;
+									
+									if(delta<0) {
+										if (sigma>0)
+											weightChange-=epsilon*sigma;
+										if (sigma>=(shrink*previousSigma)) 
+											weightChange+=learningRate * delta;
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma);
+									}else if(delta>0){
+										if (sigma<0)
+											weightChange-=epsilon*sigma;
+										else if(sigma<=(shrink*previousSigma))
+											weightChange+=learningRate * delta; 
+										else
+											weightChange+=delta*sigma/(previousSigma-sigma); 
+									}else 
+										weightChange-=epsilon*sigma;
 				
-				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					
-					final float shrink = this.learningRate/(1f+this.learningRate);
-					final float delta = ((QPROPSynapseProperty)relation.getProperty()).getDelta();
-					final float sigma = -((QPROPSynapseProperty)relation.getProperty()).getAggregated()+this.decay*relation.getWeight();
-					final float previousSigma = -((QPROPSynapseProperty)relation.getProperty()).getPreviousAggregated();
-					float weightChange=0;
-					
-					if(delta<0) {
-						if (sigma>0)
-							weightChange-=this.epsilon*sigma;
-						if (sigma>=(shrink*previousSigma)) 
-							weightChange+=this.learningRate * delta;
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma);
-					}else if(delta>0){
-						if (sigma<0)
-							weightChange-=this.epsilon*sigma;
-						else if(sigma<=(shrink*previousSigma))
-							weightChange+=this.learningRate * delta; 
-						else
-							weightChange+=delta*sigma/(previousSigma-sigma); 
-					}else 
-						weightChange-=this.epsilon*sigma;
-
-					
-
-					
-					((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
-					((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
-					((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+									
 				
-					relation.setWeight(
-							relation.getWeight()+weightChange
-							);
-
-	
-				}
+									
+									((QPROPSynapseProperty)relation.getProperty()).setDelta(weightChange);
+									((QPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated());
+									((QPROPSynapseProperty)relation.getProperty()).setAggregated(0);
+								
+									relation.setWeight(
+											relation.getWeight()+weightChange
+											);
+								}
+							}
+					);
 			}
 		}
 
@@ -386,51 +390,61 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	protected void updateGradients(Neuron neuron, boolean lastLayer){
 		
 		if(lastLayer){
-			float sigma = (neuron.getTarget() - neuron.getOutput()) * 
+			final float sigma = (neuron.getTarget() - neuron.getOutput()) * 
 					(
 							((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0)+
 							((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0)
 					);
 			if(neuron.obtainParents()!=null){
-				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					float newDelta = sigma * relation.getFrom().getOutput();
-					if(deferredAgregateFunction==null)
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
-					else
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(
-							deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
-						);
-
-				}
+				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+									final float newDelta = sigma * relation.getFrom().getOutput();
+									if(deferredAgregateFunction==null)
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
+									else
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(
+											deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
+										);
+								}
+							}
+					);
 			}			
 		}else{
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
-				for(Synapse relation:neuron.obtainChildren()){
+				for(final Synapse relation:neuron.obtainChildren()){
 					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());					
 					sigma+=relation.getWeight()*((QPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
 				
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
-				
-				for(Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					
-					float newDelta = sigma * relation.getFrom().getOutput();					
-					if(deferredAgregateFunction==null)
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
-					else
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(
-							deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
-						);
-
-				}
+				final float sigma_ = sigma;
+				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma_);
+									
+									final float newDelta = sigma_ * relation.getFrom().getOutput();					
+									if(deferredAgregateFunction==null)
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
+									else
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(
+											deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
+										);
+								}
+							}
+					);
 			}
 		}
 	}
@@ -438,51 +452,61 @@ public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	protected void updateGradientsReversed(Neuron neuron, boolean lastLayer){
 		
 		if(lastLayer){
-			float sigma = (neuron.getTarget() - neuron.getOutput()) * 
+			final float sigma = (neuron.getTarget() - neuron.getOutput()) * 
 					(
 							((neuron.getFunction()!=null)?neuron.getFunction().derivative((neuron.getTarget() - neuron.getOutput()),new float[]{neuron.getOutput()}):0)+
 							((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0)
 					);
 			if(neuron.obtainChildren()!=null){
-				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					float newDelta = sigma * relation.getTo().getOutput();
-					if(deferredAgregateFunction==null)
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
-					else
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(
-							deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
-						);
-
-				}
+				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
+									final float newDelta = sigma * relation.getTo().getOutput();
+									if(deferredAgregateFunction==null)
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
+									else
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(
+											deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
+										);
+								}
+							}
+					);		
 			}			
 		}else{
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
-				for(Synapse relation:neuron.obtainParents()){
+				for(final Synapse relation:neuron.obtainParents()){
 					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
 						relation.setProperty(new QPROPSynapseProperty());					
 					sigma+=relation.getWeight()*((QPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
 				
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
-				
-				for(Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
-						relation.setProperty(new QPROPSynapseProperty());
-					((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
-					
-					float newDelta = sigma * relation.getTo().getOutput();					
-					if(deferredAgregateFunction==null)
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
-					else
-						((QPROPSynapseProperty)relation.getProperty()).setAggregated(
-							deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
-						);
-
-				}
+				final float sigma_ = sigma;
+				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
+				stream.forEach(
+							new Consumer<Synapse>() {
+								@Override
+								public void accept(Synapse relation) {
+									if(relation.getProperty()==null || !(relation.getProperty() instanceof QPROPSynapseProperty))
+										relation.setProperty(new QPROPSynapseProperty());
+									((QPROPSynapseProperty)relation.getProperty()).setSigma(sigma_);
+									
+									final float newDelta = sigma_ * relation.getTo().getOutput();					
+									if(deferredAgregateFunction==null)
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(((QPROPSynapseProperty)relation.getProperty()).getAggregated()+newDelta);
+									else
+										((QPROPSynapseProperty)relation.getProperty()).setAggregated(
+											deferredAgregateFunction.apply(((QPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
+										);
+								}
+							}
+					);
 			}
 		}
 	}

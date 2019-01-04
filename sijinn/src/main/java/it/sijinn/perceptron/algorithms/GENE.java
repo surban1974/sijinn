@@ -13,6 +13,9 @@ public class GENE implements IGeneticAlgorithm{
 	protected int populationSize=50;
 	protected Population population;
 	
+	protected boolean parallel = false;
+	protected int parallelLimit=0;
+	
     public GENE(INeuralBreeding neuralBreeding){
     	super();
     	this.neuralBreeding = neuralBreeding;
@@ -87,5 +90,19 @@ public class GENE implements IGeneticAlgorithm{
 	public Population getPopulation() {
 		return population;
 	}
+	
+	public ITrainingAlgorithm setParallel(boolean parallel) {
+		this.parallel = parallel;
+		return this;
+	}
 
+
+	public ITrainingAlgorithm setParallelLimit(int parallelLimit) {
+		this.parallelLimit = parallelLimit;
+		return this;
+	}
+
+	public boolean isParallel() {
+		return parallel;
+	}
 }

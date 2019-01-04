@@ -220,8 +220,23 @@ public String change(@Parameter(name="type") String type, @Parameter(name="value
 		return json;
 	}else if(type.equals("trainingAlgorithm")){
 		try{
+			String second=null;
+			if(value!=null && value.indexOf("-")>-1){
+				try{					
+					second = value.split("-")[1];
+					value = value.split("-")[0];
+				}catch(Exception e){
+					
+				}
+			}
+
 			ITrainingAlgorithm cur_algorithm = Network.createAlgorithmById(value, null);
 			if(cur_algorithm!=null){
+				if(second!=null)
+					cur_algorithm.setParallel(true);
+				else
+					cur_algorithm.setParallel(false);
+				
 				cur_algorithm.setDeferredAgregateFunction(new SUMMATOR());
 				this.algorithm = cur_algorithm;
 			}
@@ -778,7 +793,7 @@ public String getStrategy() {
 
 @Serialized
 public String getAlgorithm() {
-	return (algorithm!=null)?algorithm.getId():"";
+	return (algorithm!=null)?algorithm.getId()+((algorithm.isParallel())?"-true":""):"";
 }
 
 @Serialized(children=true)

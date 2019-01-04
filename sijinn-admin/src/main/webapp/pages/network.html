@@ -183,12 +183,12 @@
 											  			ng-disabled="view.model.worker.executionState == 1"
 											  			 >
 												    	<option value="BatchGradientDescent">Batch Gradient Descent</option>
-<!-- 												    	
+ 												    	
 												    	<option value="BatchGradientDescent-true">&nbsp;&nbsp;- BGD Parallel (10 threads)</option>
- -->												    	
+												    	
 												    	<option value="StochasticGradientDescent">Stochastic Gradient Descent</option>
 												    	<option value="GeneticBreeding">Genetic Breeding</option>
-												    	<option value="GeneticBreeding-true">&nbsp;&nbsp;- Parallel (10 threads)</option>
+												    	<option value="GeneticBreeding-true">&nbsp;&nbsp;- GB Parallel (10 threads)</option>
 													</select>
 											  	</td>	
 										  		<td class="label_datas">	
@@ -203,8 +203,11 @@
 											  			ng-model="view.model.algorithm"
 											  			ng-disabled="view.model.worker.executionState == 1" >
 												    	<option value="BPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">Back Propagation</option>
+												    	<option value="BPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">&nbsp;&nbsp;- BPROP Parallel</option>
 												    	<option value="QPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">Quick Propagation</option>
+												    	<option value="QPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">&nbsp;&nbsp;- QPROP Parallel</option>
 												    	<option value="RPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">Resilient Propagation</option>
+												    	<option value="RPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">&nbsp;&nbsp;- RPROP Parallel</option>
 												    	<option value="GENE" ng-if="view.model.strategy.indexOf('GeneticBreeding') == 0">Genetic Neural</option>
 													</select>
 											  	</td>

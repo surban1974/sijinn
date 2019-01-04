@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.sijinn</groupId>
   <artifactId>sijinn-admin</artifactId>
-  <version>1.1.2-alfa</version>
+  <version>2.0.0-alfa</version>
   <packaging>war</packaging>
   <name>SIJINN - web admin tool</name>
   <description>Simple Java Implementation Neuron Network</description>
@@ -128,8 +128,8 @@
 	     
 				</includes>        
       
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 
@@ -167,8 +167,8 @@
 		
    	 	<dependency>
 			<groupId>com.github.surban1974.sijinn</groupId>
-			<artifactId>sijinn-base</artifactId>
-			<version>1.1.2-alfa</version>
+			<artifactId>sijinn-base-8</artifactId>
+			<version>2.0.0-alfa</version>
 		</dependency>		
 		
 		<dependency>

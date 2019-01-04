@@ -10,10 +10,12 @@ public interface ITrainingAlgorithm {
 	ITrainingAlgorithm calculateAndUpdateWeights(Network network, boolean reversed) throws Exception;
 	ITrainingAlgorithm sync(Network network1, Network network2, int type, boolean reversed) throws Exception;
 	IDAFloatFunction getDeferredAgregateFunction();
-	ITrainingAlgorithm setDeferredAgregateFunction(IDAFloatFunction deferredAgregateFunction);
-	
+	ITrainingAlgorithm setDeferredAgregateFunction(IDAFloatFunction deferredAgregateFunction);	
 	String getDefinition();
 	String getId();
+	ITrainingAlgorithm setParallel(boolean parallel);
+	ITrainingAlgorithm setParallelLimit(int parallelLimit);
+	boolean isParallel();
 	
 	
 }
