@@ -1,0 +1,224 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.surban1974.sijinn</groupId>
+  <artifactId>sijinn-admin-8</artifactId>
+  <version>2.0.0-alfa</version>
+  <packaging>war</packaging>
+  <name>SIJINN - web admin tool</name>
+  <description>Simple Java Implementation Neuron Network</description>
+  	<issueManagement>
+		<url>https://github.com/surban1974/sijinn/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>  
+	
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2.0 (GPLv2)</name>
+			<url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>  
+  <build>
+
+
+    <plugins>
+    
+		<plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                        
+                        	<pluginExecution>
+                                 <pluginExecutionFilter>
+                                       <groupId>org.apache.maven.plugins</groupId>
+                                       <artifactId>maven-compiler-plugin</artifactId>
+                                       <versionRange>[1.0.0,)</versionRange>
+                                     <goals>
+                                         <goal>compile</goal>
+                                     </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                      <ignore />
+                                 </action>
+                             </pluginExecution>
+
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-war-plugin</artifactId>
+                                    <versionRange>[2.0,)</versionRange>
+                                    <goals>
+                                        <goal>war</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute>
+                                        <runOnConfiguration>true</runOnConfiguration>
+                                        <runOnIncremental>true</runOnIncremental>
+                                    </execute>
+                                </action>
+                            </pluginExecution>
+
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-install-plugin</artifactId>
+                                    <versionRange>[2.5.0,)</versionRange>
+                                    <goals>
+                                        <goal>install</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute>
+                                        <runOnConfiguration>true</runOnConfiguration>
+                                        <runOnIncremental>true</runOnIncremental>
+                                    </execute>
+                                </action>
+                            </pluginExecution>
+
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
+                </configuration>
+            </plugin>    
+    
+    
+ 
+    
+    
+      	<plugin>
+	        <artifactId>maven-war-plugin</artifactId>
+	        <version>2.6</version>
+	        <configuration>
+	          	<warName>sijinn-admin</warName>
+	          	<warSourceDirectory>src/main/webapp</warSourceDirectory>
+	          	<packagingExcludes>WEB-INF/lib/javax.servlet-api-3.0.1.jar, WEB-INF/lib/jsp-api-2.2.jar, WEB-INF/lib/jsp-api-2.4.jar, WEB-INF/lib/servlet-api-2.4.jar</packagingExcludes>
+	          	<failOnMissingWebXml>false</failOnMissingWebXml>
+	          	<webResources>
+	          	
+					<resource>
+						<directory>src/main/webapp</directory>
+					</resource>
+	          	
+	          	
+	          		<resource>
+						<directory>src/main/java</directory>
+						<includes>
+								<include>**/*.*</include>
+						</includes>      
+                  
+	                    <targetPath>WEB-INF/classes</targetPath>	
+                    </resource>          	
+	          	</webResources>
+	        </configuration>
+      	</plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+		                  
+				<includes>
+					<include>it/**/*.java</include>
+					<include>integration/**/*.java</include>
+					<include>utils/**/*.java</include>
+					<include>config/**/*.java</include>
+	     
+				</includes>        
+      
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+
+
+    </plugins>
+  </build>
+  
+ 	<repositories>
+    	<repository>
+        	<id>classhidra-mvn-repo</id>
+        	<url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
+        	<snapshots>
+            	<enabled>true</enabled>
+            	<updatePolicy>always</updatePolicy>
+        	</snapshots>
+    	</repository>	
+    	<repository>
+        	<id>sijinn-mvn-repo</id>
+        	<url>https://github.com/surban1974/sijinn/raw/mvn-repo/</url>
+        	<snapshots>
+            	<enabled>true</enabled>
+            	<updatePolicy>always</updatePolicy>
+        	</snapshots>
+    	</repository>
+  	</repositories>   
+  
+  <dependencies>  
+ 
+   	 	<dependency>
+			<groupId>com.github.surban1974.classhidra</groupId>
+			<artifactId>classhidra-base</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		
+   	 	<dependency>
+			<groupId>com.github.surban1974.sijinn</groupId>
+			<artifactId>sijinn-base-8</artifactId>
+			<version>2.0.0-alfa</version>
+		</dependency>		
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.2</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>net.htmlparser.jericho</groupId>
+			<artifactId>jericho-html</artifactId>
+			<version>2.3</version>
+		</dependency>
+		
+	  <dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-api</artifactId>
+	    <version>2.5</version>
+	  </dependency>
+	  <dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+	    <version>2.5</version>
+	  </dependency>
+	  
+	<dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>	  
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-math3</artifactId>
+		    <version>3.6.1</version>
+		</dependency>	
+<!-- 	 
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.json</artifactId>
+    <version>1.0.4</version>
+</dependency>  
+ -->  	
+  </dependencies>  
+</project>
