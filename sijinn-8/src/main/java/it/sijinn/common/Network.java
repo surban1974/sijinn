@@ -37,7 +37,7 @@ import it.sijinn.perceptron.utils.parser.PairIO;
 public class Network extends Neuron implements Serializable{
 	private static final long serialVersionUID = 1L;
 	protected static IExtLogger extLogger;
-	protected List<List<Neuron>> layers;	
+	private List<List<Neuron>> layers;	
 	protected float error=-1;
 	
 
@@ -51,7 +51,7 @@ public class Network extends Neuron implements Serializable{
 		if(another!=null){
 			error=-1;
 			if(another.getLayers()!=null){
-				layers = new ArrayList<List<Neuron>>();
+				layers = new ArrayList<>();
 				for(final List<Neuron> list:another.getLayers()){
 					layers.add(new ArrayList<Neuron>());
 					for(final Neuron neuron:list)
@@ -73,25 +73,25 @@ public class Network extends Neuron implements Serializable{
 		}
 	}
 	
-	public Network(List<List<Neuron>> _layers){
+	public Network(List<List<Neuron>> initLayers){
 		super();
-		if(_layers!=null && _layers.size()>0)
-			this.layers = _layers;
+		if(initLayers!=null && !initLayers.isEmpty())
+			this.layers = initLayers;
 		indexingPositionOfNeurons();
 	}
 	
-	public Network(List<List<Neuron>> _layers, float ititialWeight){
+	public Network(List<List<Neuron>> initLayers, float ititialWeight){
 		super();
-		if(_layers!=null && _layers.size()>0)
-			this.layers = _layers;
+		if(initLayers!=null && !initLayers.isEmpty())
+			this.layers = initLayers;
 		indexingPositionOfNeurons();
 		createSynapses(ititialWeight);
 	}
 	
-	public Network(List<List<Neuron>> _layers, IGenerator weightGenerator){
+	public Network(List<List<Neuron>> initLayers, IGenerator weightGenerator){
 		super();
-		if(_layers!=null && _layers.size()>0)
-			this.layers = _layers;
+		if(initLayers!=null && !initLayers.isEmpty())
+			this.layers = initLayers;
 		indexingPositionOfNeurons();
 		createSynapses(weightGenerator);
 	}	
@@ -109,9 +109,10 @@ public class Network extends Neuron implements Serializable{
 	public static List<Neuron> createLayer(int neurons, IFunctionApplied function, boolean bias){
 		if(neurons<=0)
 			return null;
-		final List<Neuron> layer = new ArrayList<Neuron>();
+		final List<Neuron> layer = new ArrayList<>();
 		if(bias)
 			layer.add(new Neuron(null, function, true));
+		
 		for(int i=0;i<neurons;i++)
 			layer.add(new Neuron(null, function));		
 		return layer;
@@ -129,9 +130,9 @@ public class Network extends Neuron implements Serializable{
 			return this;
 
 		if(this.layers==null)
-			this.layers = new ArrayList<List<Neuron>>();
+			this.layers = new ArrayList<>();
 
-		final List<Neuron> layer = new ArrayList<Neuron>();
+		final List<Neuron> layer = new ArrayList<>();
 		if(bias)
 			layer.add(new Neuron(null, function, true));
 		for(int i=0;i<neurons;i++)
@@ -147,9 +148,9 @@ public class Network extends Neuron implements Serializable{
 			return this;
 
 		if(this.layers==null)
-			this.layers = new ArrayList<List<Neuron>>();
+			this.layers = new ArrayList<>();
 
-		final List<Neuron> layer = new ArrayList<Neuron>();
+		final List<Neuron> layer = new ArrayList<>();
 		if(bias){
 			final Neuron neuron = new Neuron(null, function, true);
 			neuron.setOrder(layer.size()).setLayer(afterLayer+1);
@@ -167,7 +168,7 @@ public class Network extends Neuron implements Serializable{
 		else if(afterLayer>=0){
 			int current = 0;
 			
-			final List<List<Neuron>> newLayers = new ArrayList<List<Neuron>>();
+			final List<List<Neuron>> newLayers = new ArrayList<>();
 
 			while(current<this.layers.size()){
 				if(current==afterLayer){
@@ -180,8 +181,9 @@ public class Network extends Neuron implements Serializable{
 					}
 					
 					
-				}else
+				}else {
 					newLayers.add(this.layers.get(current));
+				}
 				current++;
 			}
 			this.layers = newLayers;
@@ -193,12 +195,12 @@ public class Network extends Neuron implements Serializable{
 	
 	public Network removeLayer(int index, boolean updateSynapses){
 		if(this.layers==null)
-			this.layers = new ArrayList<List<Neuron>>();
+			this.layers = new ArrayList<>();
 		
 		if(index>=0){
 			int current = 0;
 			
-			final List<List<Neuron>> newLayers = new ArrayList<List<Neuron>>();
+			final List<List<Neuron>> newLayers = new ArrayList<>();
 			while(current<this.layers.size()){
 				if(current!=index)
 					newLayers.add(this.layers.get(current));
@@ -230,7 +232,7 @@ public class Network extends Neuron implements Serializable{
 	
 	public Network indexingPositionOfNeurons(){
 
-		if((layers!=null && layers.size()>0)){
+		if((layers!=null && !layers.isEmpty())){
 			for(int h=0;h<layers.size();h++){
 				List<Neuron> layer = layers.get(h);
 				for(int i=0; i<layer.size();i++){
@@ -249,7 +251,7 @@ public class Network extends Neuron implements Serializable{
 	
 	
 	public Synapse findSynapse(Neuron from, Neuron to){
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return null;
 		
 		Neuron neuronFrom = null;
@@ -288,7 +290,7 @@ public class Network extends Neuron implements Serializable{
 	
 	public Network removeSynapse(Neuron from, Neuron to){
 
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return this;
 		
 		Neuron neuronFrom = null;
@@ -311,7 +313,7 @@ public class Network extends Neuron implements Serializable{
 		}
 		
 		if(neuronFrom!=null && neuronTo!=null){
-			final List<Synapse> forRemove = new ArrayList<Synapse>();
+			final List<Synapse> forRemove = new ArrayList<>();
 			for(final Synapse synapse:neuronFrom.obtainChildren()){
 				if(synapse.getTo()!=null && synapse.getTo().getLayer()==neuronTo.getLayer() && synapse.getTo().getOrder()==neuronTo.getOrder())
 					forRemove.add(synapse);
@@ -335,7 +337,7 @@ public class Network extends Neuron implements Serializable{
 	public Network removeSynapses(){
 		indexingPositionOfNeurons();
 
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return this;
 		
 		
@@ -357,7 +359,7 @@ public class Network extends Neuron implements Serializable{
 	
 	public Network removeSynapses(List<Neuron> layer){
 
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return this;
 		
 		
@@ -404,7 +406,7 @@ public class Network extends Neuron implements Serializable{
 	
 	public Network removeSynapses(Neuron neuron){
 
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return this;
 		
 		
@@ -451,7 +453,7 @@ public class Network extends Neuron implements Serializable{
 	public Network createSynapses(float initalWeight){
 		indexingPositionOfNeurons();
 
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return this;
 		
 		
@@ -474,7 +476,7 @@ public class Network extends Neuron implements Serializable{
 	public Network createSynapses(IGenerator weightGenerator){
 		indexingPositionOfNeurons();
 
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return this;
 		
 		
@@ -498,7 +500,7 @@ public class Network extends Neuron implements Serializable{
 	public Network createSynapsesBetween(List<Neuron> currentLayer, List<Neuron> nextLayer, float initalWeight){
 		indexingPositionOfNeurons();
 
-		if(layers==null || layers.size()==0 || currentLayer==null || currentLayer.size()==0 || nextLayer==null || nextLayer.size()==0)
+		if(layers==null || layers.isEmpty() || currentLayer==null || currentLayer.isEmpty() || nextLayer==null || nextLayer.isEmpty())
 			return this;
 		
 		for(final Neuron neuron:nextLayer){
@@ -520,7 +522,7 @@ public class Network extends Neuron implements Serializable{
 	public Network createSynapsesBetween(List<Neuron> currentLayer, List<Neuron> nextLayer, IGenerator weightGenerator){
 		indexingPositionOfNeurons();
 
-		if(layers==null || layers.size()==0 || currentLayer==null || currentLayer.size()==0 || nextLayer==null || nextLayer.size()==0)
+		if(layers==null || layers.isEmpty() || currentLayer==null || currentLayer.isEmpty() || nextLayer==null || nextLayer.isEmpty())
 			return this;
 		
 		for(final Neuron neuron:nextLayer){
@@ -575,15 +577,16 @@ public class Network extends Neuron implements Serializable{
 
 	
 	public Neuron findNeuron(Neuron find){
-		if(layers==null || layers.size()==0)
+		if(layers==null || layers.isEmpty())
 			return null;
 		for(int i=0;i<this.layers.size();i++){
 			final List<Neuron> currentLayer = layers.get(i);
 			for(final Neuron neuron:currentLayer){
-				if(neuron!=null){
-					if(neuron.getLayer()==find.getLayer() && neuron.getOrder()==find.getOrder())
-						return neuron;
-				}
+				if(	neuron!=null &&
+					(neuron.getLayer()==find.getLayer() && neuron.getOrder()==find.getOrder())
+				)
+					return neuron;
+				
 			}
 		}
 		return null;
@@ -604,7 +607,7 @@ public class Network extends Neuron implements Serializable{
 			return this;
 		
 		if(this.layers==null)
-			this.layers = new ArrayList<List<Neuron>>();
+			this.layers = new ArrayList<>();
 		
 		while(neuron.getLayer()>this.layers.size()-1)
 			this.layers.add(new ArrayList<Neuron>());
@@ -624,8 +627,9 @@ public class Network extends Neuron implements Serializable{
 				layer.get(i).setOrder(i);
 			}
 			layer.set(neuron.getOrder(), neuron);
-		} else
+		} else {
 			layer.set(neuron.getOrder(), neuron);
+		}
 		
 		if(updateSynapses){
 			List<Neuron> prevLayer = null;
@@ -685,7 +689,7 @@ public class Network extends Neuron implements Serializable{
 		if(synapse==null || synapse.getFrom()==null || synapse.getTo()==null)
 			return this;
 
-		if(this.layers==null || this.layers.size()==0)
+		if(this.layers==null || this.layers.isEmpty())
 			return this;
 		
 		
@@ -700,24 +704,25 @@ public class Network extends Neuron implements Serializable{
 		while(currentLayer!=null && (from==null || to==null)){
 			for(final Neuron neuron:currentLayer){
 				if(neuron!=null){
-					if(from==null){
-						if(	neuron.getLayer()==synapse.getFrom().getLayer() &&
+					if(	from==null &&
+						(	neuron.getLayer()==synapse.getFrom().getLayer() &&
 							neuron.getOrder()==synapse.getFrom().getOrder())
-							from = neuron;
-					}
-					if(to==null){
-						if(	neuron.getLayer()==synapse.getTo().getLayer() &&
+					)
+						from = neuron;					
+					if(	to==null &&
+						(	neuron.getLayer()==synapse.getTo().getLayer() &&
 							neuron.getOrder()==synapse.getTo().getOrder())
-							to = neuron;
-					}				
+					)
+						to = neuron;
 				}
 			}
 			
 			if(nextLayerPosition<this.layers.size()){
 				currentLayer = this.layers.get(nextLayerPosition);
 				nextLayerPosition++;
-			}else
+			}else {
 				currentLayer = null;
+			}
 		}		
 		
 		if(from!=null && to!=null){
@@ -752,7 +757,7 @@ public class Network extends Neuron implements Serializable{
 		if(strategy.getTrainingAlgorithm()==null)
 			return -1;		
 
-		if(this.layers==null || this.layers.size()==0)
+		if(this.layers==null || this.layers.isEmpty())
 			return -1;
 		
 		error = strategy.apply(this, trainingData);
@@ -774,7 +779,7 @@ public class Network extends Neuron implements Serializable{
 		if(strategy.getTrainingAlgorithm()==null)
 			return -1;		
 
-		if(this.layers==null || this.layers.size()==0)
+		if(this.layers==null || this.layers.isEmpty())
 			return -1;
 		
 		try{
@@ -802,7 +807,7 @@ public class Network extends Neuron implements Serializable{
 		if(strategy.getTrainingAlgorithm()==null)
 			return -1;		
 
-		if(this.layers==null || this.layers.size()==0)
+		if(this.layers==null || this.layers.isEmpty())
 			return -1;
 		
 		try{
@@ -829,7 +834,7 @@ public class Network extends Neuron implements Serializable{
 		if(strategy.getTrainingAlgorithm()==null)
 			return -1;		
 
-		if(this.layers==null || this.layers.size()==0)
+		if(this.layers==null || this.layers.isEmpty())
 			return -1;
 		
 		try{
@@ -854,7 +859,7 @@ public class Network extends Neuron implements Serializable{
 			return -1;
 		
 	
-		float error=0;
+		float errorLocal=0;
 
 		final IDataReader dataReader = new SimpleArrayReader(testData);
 		
@@ -894,7 +899,7 @@ public class Network extends Neuron implements Serializable{
 					if(aggregated!=null){
 						final PairIO param = dataAggregator.getData(this,aggregated);
 						compute(param.getInput(), param.getOutput(), reversed);
-						error+=errorFunction.compute(this, 0, reversed);
+						errorLocal+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -907,7 +912,7 @@ public class Network extends Neuron implements Serializable{
 			throw e;
 		}
 		
-		return error;
+		return errorLocal;
 	}
 
 	public float test(File file, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
@@ -925,7 +930,7 @@ public class Network extends Neuron implements Serializable{
 			return -1;
 		
 	
-		float error=0;
+		float errorLocal=0;
 
 		IDataReader dataReader = new SimpleFileReader(file);
 		try{
@@ -937,7 +942,7 @@ public class Network extends Neuron implements Serializable{
 					if(aggregated!=null){
 						final PairIO param = dataAggregator.getData(this,aggregated);
 						compute(param.getInput(), param.getOutput(), reversed);
-						error+=errorFunction.compute(this, 0, reversed);
+						errorLocal+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -950,7 +955,7 @@ public class Network extends Neuron implements Serializable{
 			throw e;
 		}
 		
-		return error;
+		return errorLocal;
 	}
 
 	public float test(IStreamWrapper streamWrapper, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
@@ -968,7 +973,7 @@ public class Network extends Neuron implements Serializable{
 			return -1;
 		
 	
-		float error=0;
+		float errorLocal=0;
 
 		final IDataReader dataReader = new SimpleStreamReader(streamWrapper);
 		try{
@@ -980,7 +985,7 @@ public class Network extends Neuron implements Serializable{
 					if(aggregated!=null){
 						final PairIO param = dataAggregator.getData(this,aggregated);
 						compute(param.getInput(), param.getOutput(), reversed);
-						error+=errorFunction.compute(this, 0, reversed);
+						errorLocal+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -993,7 +998,7 @@ public class Network extends Neuron implements Serializable{
 			throw e;
 		}
 		
-		return error;
+		return errorLocal;
 	}
 	
 	public float test(IDataReader dataReader, IReadLinesAggregator dataAggregator, IErrorFunctionApplied errorFunction) throws Exception{
@@ -1010,7 +1015,7 @@ public class Network extends Neuron implements Serializable{
 		if(errorFunction==null)
 			return -1;
 
-		float error=0;
+		float errorLocal=0;
 		
 		try{
 			if(dataReader.open()){
@@ -1021,7 +1026,7 @@ public class Network extends Neuron implements Serializable{
 					if(aggregated!=null){
 						final PairIO param = dataAggregator.getData(this,aggregated);
 						compute(param.getInput(), param.getOutput(), reversed);
-						error+=errorFunction.compute(this, 0, reversed);
+						errorLocal+=errorFunction.compute(this, 0, reversed);
 					}
 					linenumber++;
 				}
@@ -1034,7 +1039,7 @@ public class Network extends Neuron implements Serializable{
 			throw e;
 		}
 
-		return error;
+		return errorLocal;
 	}
 	
 
@@ -1046,7 +1051,7 @@ public class Network extends Neuron implements Serializable{
 		if(dataReader==null || dataAggregator==null)
 			return new float[0][0];
 		
-		final List<float[]> result = new ArrayList<float[]>();
+		final List<float[]> result = new ArrayList<>();
 		try{
 			if(dataReader.open()){
 				Object line = null;
@@ -1070,29 +1075,29 @@ public class Network extends Neuron implements Serializable{
 			throw e;
 		}
 	
-		return (float[][])result.toArray();
+		return result.toArray(new float[0][0]);
 	}
 	
 
-	public float[][] compute(float[][] _data, boolean reversed){
+	public float[][] compute(float[][] data, boolean reversed){
 		if(!reversed)
-			return compute(_data);
+			return compute(data);
 		else
-			return computeReversed(_data);
+			return computeReversed(data);
 	}
 	
-	public float[][] compute(float[][] _data){
-		final float[][] result = new float[_data.length][0];
-		for(int i=0;i<_data.length;i++){
-			result[i] = compute(_data[i], null);
+	public float[][] compute(float[][] data){
+		final float[][] result = new float[data.length][0];
+		for(int i=0;i<data.length;i++){
+			result[i] = compute(data[i], null);
 		}		
 		return result;
 	}
 	
-	public float[][] computeReversed(float[][] _data){
-		final float[][] result = new float[_data.length][0];
-		for(int i=0;i<_data.length;i++){
-			result[i] = computeReversed(null, _data[i]);
+	public float[][] computeReversed(float[][] data){
+		final float[][] result = new float[data.length][0];
+		for(int i=0;i<data.length;i++){
+			result[i] = computeReversed(null, data[i]);
 		}		
 		return result;
 	}	
@@ -1176,16 +1181,17 @@ public class Network extends Neuron implements Serializable{
 	
 	public int setInputValues(int start, float[] input){
 		int result = start;
-		if(this.layers==null || this.layers.get(0).size()==0 || input==null)
+		if(this.layers==null || this.layers.get(0).isEmpty() || input==null)
 			return start;
 		int biases=0;
 		for(;result<input.length && result<this.layers.get(0).size();result++){
 			if(this.layers.get(0).get(result) instanceof Network){
 				result=((Network)this.layers.get(0).get(result)).setInputValues(result, input);
-			}else if(this.layers.get(0).get(result).isBias())
+			}else if(this.layers.get(0).get(result).isBias()) {
 				biases++;
-			else	
+			}else {	
 				this.layers.get(0).get(result).setOutput(input[result]);
+			}
 			
 		}
 		return result-biases;
@@ -1193,16 +1199,17 @@ public class Network extends Neuron implements Serializable{
 	
 	public int setInputValuesReversed(int start, float[] input){
 		int result = start;
-		if(this.layers==null || this.layers.get(0).size()==0 || input==null)
+		if(this.layers==null || this.layers.get(0).isEmpty() || input==null)
 			return start;
 		int biases=0;
 		for(;result<input.length && result<this.layers.get(0).size();result++){
 			if(this.layers.get(0).get(result) instanceof Network){
 				result=((Network)this.layers.get(0).get(result)).setInputValues(result, input);
-			}else if(this.layers.get(0).get(result).isBias())
+			}else if(this.layers.get(0).get(result).isBias()) {
 				biases++;
-			else
+			}else {
 				this.layers.get(0).get(result).setTarget(input[result]);
+			}
 			
 		}
 		return result-biases;
@@ -1210,35 +1217,41 @@ public class Network extends Neuron implements Serializable{
 	
 	public int setOutputValues(int start, float[] output){
 		int result = start;
+		if(this.layers==null)
+			return start;
 		int lastLayer = this.layers.size()-1;
-		if(this.layers==null || this.layers.get(lastLayer).size()==0 || output==null)
+		if(this.layers.get(lastLayer).isEmpty() || output==null)
 			return start;
 		for(;result<output.length && result<this.layers.get(lastLayer).size();result++){
 			if(this.layers.get(lastLayer).get(result) instanceof Network){
 				result=((Network)this.layers.get(lastLayer).get(result)).setOutputValues(result, output);
-			}else
+			}else {
 				this.layers.get(lastLayer).get(result).setTarget(output[result]);
+			}
 		}
 		return result;
 	}	
 	
 	public int setOutputValuesReversed(int start, float[] output){
 		int result = start;
+		if(this.layers==null)
+			return start;
 		int lastLayer = this.layers.size()-1;
-		if(this.layers==null || this.layers.get(lastLayer).size()==0 || output==null)
+		if(this.layers.get(lastLayer).isEmpty() || output==null)
 			return start;
 		for(;result<output.length && result<this.layers.get(lastLayer).size();result++){
 			if(this.layers.get(lastLayer).get(result) instanceof Network){
 				result=((Network)this.layers.get(lastLayer).get(result)).setOutputValues(result, output);
-			}else
+			}else {
 				this.layers.get(lastLayer).get(result).setOutput(output[result]);
+			}
 
 		}
 		return result;
 	}	
 	
 	public float[] getInputValues(){
-		if(this.layers==null || this.layers.size()==0 || this.layers.get(0).size()==0)
+		if(this.layers==null || this.layers.isEmpty() || this.layers.get(0).isEmpty())
 			return new float[0];
 		final float[] result = new float[this.layers.get(0).size()];
 		for(int i=0;i<this.layers.get(0).size();i++)
@@ -1247,7 +1260,7 @@ public class Network extends Neuron implements Serializable{
 	}
 	
 	public float[] getOutputValues(){
-		if(this.layers==null || this.layers.size()==0 || this.layers.get(this.layers.size()-1).size()==0)
+		if(this.layers==null || this.layers.isEmpty() || this.layers.get(this.layers.size()-1).isEmpty())
 			return new float[0];
 		final float[] result = new float[this.layers.get(this.layers.size()-1).size()];
 		for(int i=0;i<this.layers.get(this.layers.size()-1).size();i++)
@@ -1258,7 +1271,7 @@ public class Network extends Neuron implements Serializable{
 	public float[] getWeight(){
 		if(this.layers==null || this.layers.size()<2)
 			return new float[0];	
-		final List<Float> weights = new ArrayList<Float>();
+		final List<Float> weights = new ArrayList<>();
 		for(final List<Neuron> currentLayer: this.layers){
 			for(final Neuron neuron:currentLayer){
 				if(neuron!=null && neuron.obtainChildren()!=null){
@@ -1296,7 +1309,7 @@ public class Network extends Neuron implements Serializable{
 	public Synapse[] getSynapses(){
 		if(this.layers==null || this.layers.size()<2)
 			return new Synapse[0];	
-		final List<Synapse> synapses = new ArrayList<Synapse>();
+		final List<Synapse> synapses = new ArrayList<>();
 		for(final List<Neuron> currentLayer: this.layers){
 			for(final Neuron neuron:currentLayer){
 				if(neuron!=null && neuron.obtainChildren()!=null)
@@ -1311,7 +1324,7 @@ public class Network extends Neuron implements Serializable{
 	public Neuron[] getNeurons(){
 		if(this.layers==null || this.layers.size()<2)
 			return new Neuron[0];	
-		final List<Neuron> neurons = new ArrayList<Neuron>();
+		final List<Neuron> neurons = new ArrayList<>();
 		for(final List<Neuron> currentLayer: this.layers){
 			for(final Neuron neuron:currentLayer){
 				if(neuron!=null)
@@ -1400,7 +1413,6 @@ public class Network extends Neuron implements Serializable{
 		try{
 			final ByteArrayInputStream xmlSrcStream = new	ByteArrayInputStream(dataReader.readAll());
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//			dbf.setValidating(true);
 			final Document documentXML = dbf.newDocumentBuilder().parse(xmlSrcStream);
 			
 			Node node = null;
@@ -1410,10 +1422,9 @@ public class Network extends Neuron implements Serializable{
 					node = documentXML.getChildNodes().item(first);
 				first++;
 			}
-			if(node==null){
-				Exception e = new Exception("Network's structure is incomplet for initialization.");
-				throw e;
-			};
+			if(node==null)
+				throw new Exception("Network's structure is incomplet for initialization.");
+			
 			
 			return Network.create(this, node, logger);
 
@@ -1431,27 +1442,28 @@ public class Network extends Neuron implements Serializable{
 		return toSaveString("",null);
 	}
 	public String toSaveString(String prefix,ITrainingStrategy[] strategies){
-		String result=(prefix!=null)?prefix:"";
-		result+=prefix+"<network";
+		StringBuilder result = new StringBuilder();
+		result.append((prefix!=null)?prefix:"");
+		result.append(prefix+"<network");
 		if(layer>-1)
-			result+=" layer=\""+layer+"\"";
+			result.append(" layer=\""+layer+"\"");
 		if(order>-1)
-			result+=" order=\""+order+"\"";
+			result.append(" order=\""+order+"\"");
 		if(function!=null)	
-			result+=" function=\""+((function==null)?"":function.getDefinition())+"\"";
+			result.append(" function=\""+((function==null)?"":function.getDefinition())+"\"");
 		if(error!=0)	
-			result+=" error=\""+error+"\"";
-		result+=">\n";
+			result.append(" error=\""+error+"\"");
+		result.append(">\n");
 		
 
-		if(this.layers==null || this.layers.size()==0)
-			return result;
+		if(this.layers==null || this.layers.isEmpty())
+			return result.toString();
 		for(final List<Neuron> currentLayer: this.layers){
 			for(final Neuron neuron:currentLayer){
 				if(neuron!=null){
 					if(neuron instanceof Network)
-						result+=((Network)neuron).toSaveString(prefix+"\t",null);
-					else result+=neuron.toSaveString(prefix+"\t");
+						result.append(((Network)neuron).toSaveString(prefix+"\t",null));
+					else result.append(neuron.toSaveString(prefix+"\t"));
 				}
 			}
 		}
@@ -1459,18 +1471,19 @@ public class Network extends Neuron implements Serializable{
 			for(final Neuron neuron:currentLayer){
 				if(neuron!=null && neuron.obtainChildren()!=null){
 					for(final Synapse synapse:neuron.obtainChildren())
-						result+=synapse.toSaveString(prefix+"\t");
+						result.append(synapse.toSaveString(prefix+"\t"));
 				}
 			}
 		}
 		if(strategies!=null){
 			for(final ITrainingStrategy strategy:strategies)
-				result+=strategy.toSaveString(prefix+"\t");
+				result.append(strategy.toSaveString(prefix+"\t"));
 		}
-		result+=prefix+"</network>\n";
-		return result;
+		result.append(prefix+"</network>\n");
+		return result.toString();
 	}
 	
+	@Override
 	public String toString(){
 		return toSaveString();
 	}
@@ -1484,7 +1497,7 @@ public class Network extends Neuron implements Serializable{
 	public int getLayerBiases(int layer) {
 		if(layers==null || layer>=layers.size() || layer<0)
 			return 0;
-		int bias=0;;
+		int bias=0;
 		for(final Neuron neuron:layers.get(layer)){
 			if(neuron.isBias())
 				bias++;
@@ -1535,8 +1548,8 @@ public class Network extends Neuron implements Serializable{
 		if (nnm!=null){
 			for (int i=0;i<node.getAttributes().getLength();i++){
 				final String paramName = node.getAttributes().item(i).getNodeName();
-				final Node node_nnm =	nnm.getNamedItem(paramName);
-				String sNodeValue = node_nnm.getNodeValue();
+				final Node nodeNnm =	nnm.getNamedItem(paramName);
+				String sNodeValue = nodeNnm.getNodeValue();
 				if(sNodeValue!=null){
 					sNodeValue=sNodeValue.replace('\n', ' ').replace('\r', ' ');
 					sNodeValue = sNodeValue.replace(" ", "");
@@ -1551,9 +1564,9 @@ public class Network extends Neuron implements Serializable{
 						network.setOrder(Integer.valueOf(sNodeValue));
 					}catch(Exception e){
 					}
-				}else if(paramName.equalsIgnoreCase("function"))
+				}else if(paramName.equalsIgnoreCase("function")) {
 					network.setFunction(Neuron.create(sNodeValue, logger));
-				else if(paramName.equalsIgnoreCase("error")){
+				}else if(paramName.equalsIgnoreCase("error")){
 					try{
 						network.setError(Float.valueOf(sNodeValue));
 					}catch(Exception e){
@@ -1589,26 +1602,26 @@ public class Network extends Neuron implements Serializable{
 			if(algorithm!=null && !algorithm.trim().equals("")){
 				if(algorithm.indexOf("algorithm=")==0)
 					algorithm = algorithm.replace("algorithm=", "");
-				if(algorithm.indexOf("{")==-1){
-					if(algorithm.indexOf(".")>-1)
+				if(algorithm.indexOf('{')==-1){
+					if(algorithm.indexOf('.')>-1)
 						trainingAlgorithm = (ITrainingAlgorithm)Class.forName(algorithm).newInstance();
 					else
 						trainingAlgorithm = (ITrainingAlgorithm)Class.forName("it.sijinn.perceptron.algorithms."+algorithm).newInstance();
 				}else{
-					final String parameters = algorithm.substring(algorithm.indexOf("{")+1, algorithm.lastIndexOf("}"));
-					algorithm = algorithm.substring(0, algorithm.indexOf("{"));
+					final String parameters = algorithm.substring(algorithm.indexOf('{')+1, algorithm.lastIndexOf('}'));
+					algorithm = algorithm.substring(0, algorithm.indexOf('{'));
 					StringTokenizer stp = new StringTokenizer(parameters, "|");
-					final List<Float> param = new ArrayList<Float>();
+					final List<Float> param = new ArrayList<>();
 					while(stp.hasMoreTokens())
 						param.add(Float.valueOf(stp.nextToken()));
 					Float[] fParam = new Float[param.size()];
 					fParam = param.toArray(fParam);
 					
 					Class<?> clazz = null;
-					if(algorithm.indexOf(".")>-1)
-						clazz = (Class<?>)Class.forName(algorithm).asSubclass(ITrainingAlgorithm.class);
+					if(algorithm.indexOf('.')>-1)
+						clazz = Class.forName(algorithm).asSubclass(ITrainingAlgorithm.class);
 					else
-						clazz = (Class<?>)Class.forName("it.sijinn.perceptron.algorithms."+algorithm);
+						clazz = Class.forName("it.sijinn.perceptron.algorithms."+algorithm);
 					
 					Constructor<?> clazzConstructor = null;
 					for(final Constructor<?> constructor: (Constructor<?>[])clazz.getConstructors()){
@@ -1647,10 +1660,10 @@ public class Network extends Neuron implements Serializable{
 		ITrainingStrategy trainingStrategy = null;
 		try{
 			if(strategy!=null && !strategy.trim().equals("")){
-				if(strategy.indexOf(";")==0)
-					strategy = strategy.substring(0, strategy.indexOf(";"));
+				if(strategy.indexOf(';')==0)
+					strategy = strategy.substring(0, strategy.indexOf(';'));
 
-				if(strategy.indexOf(".")>-1)
+				if(strategy.indexOf('.')>-1)
 					trainingStrategy = (ITrainingStrategy)Class.forName(strategy).newInstance();
 				else
 					trainingStrategy = (ITrainingStrategy)Class.forName("it.sijinn.perceptron.strategies."+strategy).newInstance();

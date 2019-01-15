@@ -49,12 +49,12 @@ public class Species implements Serializable{
 
     @Override
     public String toString() {
-        String geneString = fitness+",{";
+    	StringBuilder geneString = new StringBuilder(fitness+",{");
         for (float weight:weights) 
-            geneString += weight+",";
-        geneString+="}";
+            geneString.append(weight+',');
+        geneString.append('}');
         
-        return geneString;
+        return geneString.toString();
     }
 
 	public float[] getWeights() {

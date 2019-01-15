@@ -30,10 +30,10 @@ public class SimpleLineDataAggregator implements IReadLinesAggregator {
 
 	@Override
 	public PairIO getData(Network network, Object[] objs) {
-		if(objs==null && !(objs instanceof String[]))
+		if(objs==null || !(objs instanceof String[]))
 			return new PairIO(new float[0],new float[0]);
 		final String[] lines = (String[])objs;
-		if(lines!=null && lines.length>0){
+		if(lines.length>0){
 
 			final float[] input = new float[network.getLayers().get(0).size() - network.getLayerBiases(0)];
 			final float[] target = new float[network.getLayers().get(network.getLayers().size()-1).size()];
@@ -44,9 +44,9 @@ public class SimpleLineDataAggregator implements IReadLinesAggregator {
 			while(st.hasMoreTokens()){
 				try{
 					if(currentIndex<pairIO.getInput().length)
-						pairIO.getInput()[currentIndex] = Float.valueOf(st.nextToken()).floatValue();
+						pairIO.getInput()[currentIndex] = Float.parseFloat(st.nextToken());
 					else
-						pairIO.getOutput()[currentIndex-pairIO.getInput().length] = Float.valueOf(st.nextToken()).floatValue();
+						pairIO.getOutput()[currentIndex-pairIO.getInput().length] = Float.parseFloat(st.nextToken());
 				}catch(Exception e){
 				}
 				currentIndex++;
@@ -67,10 +67,10 @@ public class SimpleLineDataAggregator implements IReadLinesAggregator {
 
 	@Override
 	public Object getRowData(Network network, Object[] objs) {
-		if(objs==null && !(objs instanceof String[]))
+		if(objs==null || !(objs instanceof String[]))
 			return null;
 		final String[] lines = (String[])objs;
-		if(lines!=null && lines.length>0)
+		if(lines.length>0)
 			return lines[0];
 		return null;
 	}

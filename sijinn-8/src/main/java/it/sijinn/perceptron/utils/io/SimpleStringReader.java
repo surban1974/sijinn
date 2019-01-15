@@ -65,8 +65,6 @@ public class SimpleStringReader implements IDataReader{
 			breader.close();
 		if(stream!=null)
 			stream.close();
-//		if(input!=null)
-//			input=null;
 		return true;
 	}
 

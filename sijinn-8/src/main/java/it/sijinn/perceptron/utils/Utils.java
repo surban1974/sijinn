@@ -14,54 +14,49 @@ import java.lang.reflect.ParameterizedType;
 
 
 public class Utils {
-	static public <T extends Object> T clone(T oldObj, Class<T> type) throws Exception {
+	public static <T extends Object> T clone(T oldObj, Class<T> type) throws Exception {
 		
 		Object retVal = null;
-		ObjectOutputStream oos = null;
-		ObjectInputStream ois = null;
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			oos = new ObjectOutputStream(bos);
+		
+		try (
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos);
+		){		
 			oos.writeObject(oldObj); 
 			oos.flush(); 
-	
-			ByteArrayInputStream bin = new ByteArrayInputStream(bos.toByteArray()); 
-			ois = new ObjectInputStream(bin); 
-			retVal = ois.readObject(); 
+			try (
+					ByteArrayInputStream bin = new ByteArrayInputStream(bos.toByteArray()); 
+					ObjectInputStream ois = new ObjectInputStream(bin); 
+			){
+				retVal = ois.readObject(); 
+			}
 	
 		} catch (Exception e) {
 			throw (e);
-		} finally {
-			try {
-				oos.close();
-				ois.close();
-			} catch (java.io.IOException e) {
-				throw (e);
-			}
 		}
 		
 		return type.cast(retVal);
 	}
 
-public static <T extends Object> Class<?> getClass(T type){
-	if (type instanceof Class){
-		return (Class<?>)type;
-	}else if (type instanceof ParameterizedType){
-		return getClass(((ParameterizedType)type).getRawType());
-	}else if (type instanceof GenericArrayType){
-		Class<?> componentClass = getClass(((GenericArrayType)type).getGenericComponentType());
-		if (componentClass != null){
-			return Array.newInstance(componentClass, 0).getClass();
+	public static <T extends Object> Class<?> getClass(T type){
+		if (type instanceof Class){
+			return (Class<?>)type;
+		}else if (type instanceof ParameterizedType){
+			return getClass(((ParameterizedType)type).getRawType());
+		}else if (type instanceof GenericArrayType){
+			Class<?> componentClass = getClass(((GenericArrayType)type).getGenericComponentType());
+			if (componentClass != null){
+				return Array.newInstance(componentClass, 0).getClass();
+			}else{
+				return null;
+			}
 		}else{
 			return null;
 		}
-	}else{
-		return null;
 	}
-}
 
 	
-	static public byte[] serialize(Object obj) throws IOException {
+	public static byte[] serialize(Object obj) throws IOException {
         try(ByteArrayOutputStream b = new ByteArrayOutputStream()){
             try(ObjectOutputStream o = new ObjectOutputStream(b)){
                 o.writeObject(obj);
@@ -70,7 +65,7 @@ public static <T extends Object> Class<?> getClass(T type){
         }
     }
 
-	static public Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+	public static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
         try(ByteArrayInputStream b = new ByteArrayInputStream(bytes)){
             try(ObjectInputStream o = new ObjectInputStream(b)){
                 return o.readObject();
@@ -78,40 +73,34 @@ public static <T extends Object> Class<?> getClass(T type){
         }
     }
 	
-	static public int sizeByte(Object oldObj) throws Exception {
-		ObjectOutputStream oos = null;
-		try {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			oos = new ObjectOutputStream(bos);
+	public static int sizeByte(Object oldObj) throws Exception {		
+		try (
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos);
+		){
 			oos.writeObject(oldObj); 
 			oos.flush();
 			return bos.toByteArray().length; 
 		} catch (Exception e) {
 			throw (e);
-		} finally {
-			try {
-				oos.close();	
-			} catch (java.io.IOException e) {
-				throw (e);
-			}
-		}	
+		}
 	}
 	
-	static public String print(float[] array, String separator){
-		String result = "";
+	public static String print(float[] array, String separator){
+		StringBuilder result = new StringBuilder("");
 		for(float f:array)
-			result+=f+separator;
-		return result;
+			result.append(f+separator);
+		return result.toString();
 	}
 	
-	static public String print(float[][] array, String[] separators){
-		String result = "";
+	public static String print(float[][] array, String[] separators){
+		StringBuilder result = new StringBuilder("");
 		for(float[] f:array)
-			result+=print(f,separators[0])+separators[1];
-		return result;
+			result.append(print(f,separators[0])+separators[1]);
+		return result.toString();
 	}
 	
-	static public String normalXML(String input, String charSet) {
+	public static String normalXML(String input, String charSet) {
 		
 		if (input==null) return input;
 		
@@ -125,30 +114,29 @@ public static <T extends Object> Class<?> getClass(T type){
 
 		}
 
-		String result="";
-		if (input.indexOf("&")>-1 ||
-			input.indexOf("\\")>-1 ||
-			input.indexOf(">")>-1 ||
-			input.indexOf("<")>-1 ||
-			input.indexOf("\"")>-1) { 
+		StringBuilder result = new StringBuilder("");
+		if (input.indexOf('&')>-1 ||
+			input.indexOf('\\')>-1 ||
+			input.indexOf('>')>-1 ||
+			input.indexOf('<')>-1 ||
+			input.indexOf('"')>-1) { 
 
 			for (int i=0;i<input.length();i++) {
-				if (input.charAt(i)=='&') result+="&amp;";
-//				else if (input.charAt(i)=='\'') result+="&apos;";
-				else if (input.charAt(i)=='>') result+="&gt;";
-				else if (input.charAt(i)=='<') result+="&lt;";
-				else if (input.charAt(i)=='"') result+="&quot;";
-				else result+=input.charAt(i);
+				if (input.charAt(i)=='&') result.append("&amp;");
+				else if (input.charAt(i)=='>') result.append("&gt;");
+				else if (input.charAt(i)=='<') result.append("&lt;");
+				else if (input.charAt(i)=='"') result.append("&quot;");
+				else result.append(input.charAt(i));
 			}
-			return result;
+			return result.toString();
 		}
 		else 
 			return input;
 	}
 
-	static public String normalASCII(String input){
+	public static String normalASCII(String input){
 		if(input==null || input.length()==0) return "";
-		String result="";
+		StringBuilder result = new StringBuilder("");
 		for(int i=0;i<input.length();i++){
 			char c = input.charAt(i); 
 			int ascii = (int)c;
@@ -159,12 +147,12 @@ public static <T extends Object> Class<?> getClass(T type){
 	            ((ascii >= 0x20) && (ascii <= 0xD7FF)) ||
 	            ((ascii >= 0xE000) && (ascii <= 0xFFFD)) ||
 	            ((ascii >= 0x10000) && (ascii <= 0x10FFFF))){
-				result+="&#"+ascii+";";
+				result.append("&#"+ascii+';');
 	        }		
 			
 		}
 		
-		return result;
+		return result.toString();
 		
 	}
 
@@ -177,48 +165,46 @@ public static <T extends Object> Class<?> getClass(T type){
 
 		}
 
-		String result="";
-		if (input.indexOf("&")>-1 ||
-			input.indexOf("\\")>-1 ||
-			input.indexOf(">")>-1 ||
-			input.indexOf("<")>-1 ||
-			input.indexOf("\"")>-1) { 
+		StringBuilder result = new StringBuilder("");
+		if (input.indexOf('&')>-1 ||
+			input.indexOf('\\')>-1 ||
+			input.indexOf('>')>-1 ||
+			input.indexOf('<')>-1 ||
+			input.indexOf('"')>-1) { 
 
 			for (int i=0;i<input.length();i++) {
-				if (input.charAt(i)=='&') result+="&amp;";
-				else if (input.charAt(i)=='\'') result+="&apos;";
-				else if (input.charAt(i)=='>') result+="&gt;";
-				else if (input.charAt(i)=='<') result+="&lt;";
-				else if (input.charAt(i)=='"') result+="&quot;";
-				else result+=input.charAt(i);
+				if (input.charAt(i)=='&') result.append("&amp;");
+				else if (input.charAt(i)=='\'') result.append("&apos;");
+				else if (input.charAt(i)=='>') result.append("&gt;");
+				else if (input.charAt(i)=='<') result.append("&lt;");
+				else if (input.charAt(i)=='"') result.append("&quot;");
+				else result.append(input.charAt(i));
 			}
-			return result;
+			return result.toString();
 		}
 		else 
 			return input;
 	}
 	
-	static public byte[] getBytesFromFile(File file) throws Exception {
+	public static byte[] getBytesFromFile(File file) throws Exception {
 
 		 if(!file.exists()){
 			 throw new IOException("File "+file.getAbsolutePath()+" non exist");
 		 }
-	     InputStream is = new FileInputStream(file);
-	     long length = file.length();
-	     if (length > Integer.MAX_VALUE) {
-	     }
-	     byte[] bytes = new byte[(int)length];
-	     int offset = 0;
-	     int numRead = 0;
-	     while (offset < bytes.length
-	           && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-	           offset += numRead;
-	     }
-	     if (offset < bytes.length) {
-    		 is.close();
-    		 throw new IOException("Could not completely read file "+file.getName());
-	     }
-	     is.close();
-	     return bytes;
+		 try(InputStream is = new FileInputStream(file)){		     
+		     long length = file.length();
+		     byte[] bytes = new byte[(int)length];
+		     int offset = 0;
+		     int numRead = 0;
+		     while (offset < bytes.length
+		           && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+		           offset += numRead;
+		     }
+		     if (offset < bytes.length) {
+	    		 throw new IOException("Could not completely read file "+file.getName());
+		     }
+		     return bytes;
+		 }
+	     
 	 }	
 }

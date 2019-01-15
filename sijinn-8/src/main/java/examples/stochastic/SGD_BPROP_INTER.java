@@ -55,7 +55,7 @@ public class SGD_BPROP_INTER {
 				new BPROP().
 				setLearningRate(learningRate).
 				setLearningMomentum(learningMomentum).
-				setParallel(true)
+				setParallel(false)
 			)
 			.setReversed(false)	
 			.setErrorFunction(new MSE());

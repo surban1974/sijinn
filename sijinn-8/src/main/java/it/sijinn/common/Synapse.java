@@ -162,15 +162,15 @@ public class Synapse implements Serializable{
 			float weight = 0;
 
 			if(st.hasMoreTokens())
-				layerFrom = Integer.valueOf(st.nextToken()).intValue();
+				layerFrom = Integer.parseInt(st.nextToken());
 			if(st.hasMoreTokens())
-				orderFrom = Integer.valueOf(st.nextToken()).intValue();
+				orderFrom = Integer.parseInt(st.nextToken());
 			if(st.hasMoreTokens())
-				layerTo = Integer.valueOf(st.nextToken()).intValue();
+				layerTo = Integer.parseInt(st.nextToken());
 			if(st.hasMoreTokens())
-				orderTo = Integer.valueOf(st.nextToken()).intValue();
+				orderTo = Integer.parseInt(st.nextToken());
 			if(st.hasMoreTokens())
-				weight = Float.valueOf(st.nextToken()).floatValue();
+				weight = Float.parseFloat(st.nextToken());
 			
 			if(layerFrom>-1 && orderFrom>-1 && layerTo>-1 && orderTo>-1)
 				return new Synapse(layerFrom,orderFrom,layerTo,orderTo, weight);

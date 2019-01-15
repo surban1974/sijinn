@@ -60,7 +60,7 @@ public class SGD_RPROP_INTER {
 								return 0.1f;
 							}
 						})
-				.setParallel(true)
+				.setParallel(false)
 				.setParallelLimit(2)
 				.setDeferredAgregateFunction(new SUMMATOR())
 				

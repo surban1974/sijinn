@@ -28,7 +28,7 @@ public class SimpleGaussian implements IFunctionApplied {
 	@Override
 	public float execution(float[] param) {
 		if(param.length>0)
-			return new Float(Math.exp(-Math.pow(param[0], 2) / (2*Math.pow(sigma, 2)))).floatValue();
+			return new Float(Math.exp(-Math.pow(param[0], 2) / (2*Math.pow(sigma, 2))));
 		return 0;
 	}
 	@Override

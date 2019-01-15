@@ -26,7 +26,7 @@ public class GENE implements IGeneticAlgorithm{
 	}
 
 	public ITrainingAlgorithm calculate(Network network, boolean reversed) throws Exception{		
-		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
+		if(network==null || network.getLayers()==null || network.getLayers().isEmpty())
 			return this;
 
 		if(neuralBreeding!=null){
@@ -40,7 +40,7 @@ public class GENE implements IGeneticAlgorithm{
 	
 	
 	public ITrainingAlgorithm updateWeights(Network network, boolean reversed) throws Exception{		
-		if(network==null || network.getLayers()==null || network.getLayers().size()==0)
+		if(network==null || network.getLayers()==null || network.getLayers().isEmpty())
 			return this;
 
 		final Species fittest = population.getFittest(neuralBreeding);

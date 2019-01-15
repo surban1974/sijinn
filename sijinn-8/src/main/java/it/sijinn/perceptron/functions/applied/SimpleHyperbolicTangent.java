@@ -22,7 +22,7 @@ public class SimpleHyperbolicTangent implements IFunctionApplied {
 						(Math.pow(Math.E, param[0]) - Math.pow(Math.E, -1*param[0]))
 						/
 						(Math.pow(Math.E, param[0])+Math.pow(Math.E, -1*param[0]))
-					).floatValue();
+					);
 		return 0;
 	}
 	

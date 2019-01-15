@@ -11,13 +11,13 @@ public class SimpleSin implements IFunctionApplied {
 	@Override
 	public float derivative(float delta, float[] o) {
 		if(o.length>0)
-			return new Float(Math.cos(o[0])).floatValue();
+			return new Float(Math.cos(o[0]));
 		return 0;
 	}
 	@Override
 	public float execution(float[] param) {
 		if(param.length>0)
-			 return new Float(Math.sin(param[0])).floatValue();
+			 return new Float(Math.sin(param[0]));
 		
 		return 0;
 	}	

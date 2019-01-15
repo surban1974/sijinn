@@ -1,8 +1,6 @@
 package it.sijinn.perceptron.algorithms;
 
 
-
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import it.sijinn.common.Neuron;
@@ -21,6 +19,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 
 	
 	protected class RPROPSynapseProperty implements ISynapseProperty{
+		private static final long serialVersionUID = 1L;
 		private float sigma = 0;
 		private float delta = 0;
 		private float weightChange = 0;
@@ -110,7 +109,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 		return new RPROPSynapseProperty();
 	}
 	
-	
+	@Override
 	protected void backPropagation(Neuron neuron, boolean lastLayer){
 
 		if(lastLayer){
@@ -121,11 +120,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainParents()!=null){
 				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
-				stream.forEachOrdered(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEachOrdered(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									
 									float delta = 0;
@@ -152,14 +148,13 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 									((RPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(sigmaBP);					
 									((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
 								}
-							}
 					);
 			}			
 		}else{
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				sigmaBP=0;
 				for(final Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+					if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());
 	
 					sigmaBP+=relation.getWeight()*((RPROPSynapseProperty)relation.getProperty()).getSigma();
@@ -167,11 +162,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				
 				sigmaBP*=((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigmaBP,new float[]{neuron.getOutput()}):0);
 				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
-				stream.forEachOrdered(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEachOrdered(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									
 									float delta = 0;
@@ -198,22 +190,18 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 									((RPROPSynapseProperty)relation.getProperty()).setPreviousAggregated(sigmaBP);					
 									((RPROPSynapseProperty)relation.getProperty()).setWeightChange(weightChange);
 								}
-							}
 					);
 			}
 		}
 	}	
 	
-	
+	@Override
 	protected void updateWeights(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
 			if(neuron.obtainParents()!=null){
 				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									
 									float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregated();
@@ -243,17 +231,13 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											relation.getWeight()+weightChange
 											);
 								}
-							}
 					);
 			}			
 		}else{
 			if(neuron.obtainParents()!=null){
 				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									
 									float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregated();
@@ -288,22 +272,19 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											);
 	
 								}
-							}
 					);
 			}
 		}
 
 	}
 
+	@Override
 	protected void updateWeightsReversed(Neuron neuron, boolean lastLayer){
 		if(lastLayer){
 			if(neuron.obtainChildren()!=null){
 				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregated();
 									float delta = 0;
@@ -332,17 +313,13 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											relation.getWeight()+weightChange
 											);
 								}
-							}
 					);
 			}			
 		}else{
 			if(neuron.obtainChildren()!=null){
 				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									float sigma = ((RPROPSynapseProperty)relation.getProperty()).getAggregated();
 									float delta = 0;
@@ -375,13 +352,13 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											relation.getWeight()+weightChange
 											);
 								}
-							}
 					);
 			}
 		}
 
 	}	
 	
+	@Override
 	protected void updateGradients(Neuron neuron, boolean lastLayer){
 		
 		if(lastLayer){
@@ -392,11 +369,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainParents()!=null){
 				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 									final float newDelta = sigma * relation.getFrom().getOutput();
@@ -407,14 +381,13 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
 										);
 								}
-							}
 					);
 			}			
 		}else{
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
 				for(final Synapse relation:neuron.obtainChildren()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+					if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());					
 					sigma+=relation.getWeight()*((RPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
@@ -422,11 +395,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				final float sigma_ = sigma;
 				final Stream<Synapse> stream = (neuron.obtainParents().size()>1 && isParallel())?neuron.obtainParents().parallelStream():neuron.obtainParents().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma_);								
 									final float newDelta = sigma_ * relation.getFrom().getOutput();					
@@ -437,12 +407,12 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
 										);
 								}
-							}
 					);
 			}
 		}
 	}
 	
+	@Override
 	protected void updateGradientsReversed(Neuron neuron, boolean lastLayer){
 		
 		if(lastLayer){
@@ -453,11 +423,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 					);
 			if(neuron.obtainChildren()!=null){
 				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma);
 									final float newDelta = sigma * relation.getTo().getOutput();
@@ -468,14 +435,13 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
 										);
 								}
-							}
 					);
 			}			
 		}else{
 			if(neuron.obtainParents()!=null && neuron.obtainChildren()!=null){
 				float sigma=0;
 				for(final Synapse relation:neuron.obtainParents()){
-					if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+					if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 						relation.setProperty(new RPROPSynapseProperty());					
 					sigma+=relation.getWeight()*((RPROPSynapseProperty)relation.getProperty()).getSigma();
 				}
@@ -483,11 +449,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 				sigma*=(((neuron.getFunction()!=null)?neuron.getFunction().derivative(sigma,new float[]{neuron.getOutput()}):0)+((neuron.getFunction()!=null)?neuron.getFunction().flatspot():0));
 				final float sigma_ = sigma;
 				final Stream<Synapse> stream = (neuron.obtainChildren().size()>1 && isParallel())?neuron.obtainChildren().parallelStream():neuron.obtainChildren().stream();
-				stream.forEach(
-							new Consumer<Synapse>() {
-								@Override
-								public void accept(Synapse relation) {
-									if(relation.getProperty()==null || !(relation.getProperty() instanceof RPROPSynapseProperty))
+				stream.forEach(relation -> {
+									if(!(relation.getProperty() instanceof RPROPSynapseProperty))
 										relation.setProperty(new RPROPSynapseProperty());
 									((RPROPSynapseProperty)relation.getProperty()).setSigma(sigma_);
 									
@@ -499,7 +462,6 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 											deferredAgregateFunction.apply(((RPROPSynapseProperty)relation.getProperty()).getAggregated(), newDelta)
 										);
 								}
-							}
 						);
 			}
 		}
@@ -508,10 +470,7 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 	
 
 	public String getDefinition(){
-//		return "algorithm="+this.getClass().getSimpleName()+","+etaNegative+","+etaPositive+","+minDelta+","+maxDelta+
-//				((deferredAgregateFunction==null)?"":","+deferredAgregateFunction.getDefinition()+"");
 		return "algorithm="+this.getClass().getSimpleName()+"{"+etaNegative+"|"+etaPositive+"|"+minDelta+"|"+maxDelta+"}";
-
 	}
 
 

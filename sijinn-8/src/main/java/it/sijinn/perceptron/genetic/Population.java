@@ -54,6 +54,6 @@ public class Population implements Serializable{
 		if(species!=null)
 			return Arrays.asList(species);
 		else 
-			return Arrays.asList(new Species[0]);
+			return Arrays.asList();
 	}
 }

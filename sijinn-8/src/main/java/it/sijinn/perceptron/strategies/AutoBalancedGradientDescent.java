@@ -47,7 +47,6 @@ public class AutoBalancedGradientDescent extends OnlineGradientDescent implement
 						network.setOutputValues(0, param.getOutput());
 						network.setOutputValuesReversed(0, param.getOutput());
 					}
-					linenumber++;
 				}
 				dataReader.close();
 				if(listener!=null) 

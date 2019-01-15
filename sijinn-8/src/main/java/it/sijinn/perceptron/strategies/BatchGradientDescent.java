@@ -2,7 +2,6 @@ package it.sijinn.perceptron.strategies;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import it.sijinn.common.Network;
@@ -17,7 +16,6 @@ import it.sijinn.perceptron.utils.parser.PairIO;
 public class BatchGradientDescent extends OnlineGradientDescent implements ITrainingStrategy { 
 	
 	private int parallelLimit=0; 
-//	private long parallelTimeout=1000;
 	
 	public BatchGradientDescent(){
 		super();
@@ -41,7 +39,7 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 		Object next=null;
 		int linenumber=0;
 		if(dataReader.open()){
-			next=null;
+
 			linenumber=0;
 			if(parallelLimit<=1){
 				while((next = dataReader.readNext()) !=null){
@@ -62,19 +60,17 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 					linenumber++;
 				}
 			}else{				
-				final List<PairIO> accumulator = new ArrayList<PairIO>();
+				final List<PairIO> accumulator = new ArrayList<>();
 				next = dataReader.readNext();
-				while(next!=null || (next==null && accumulator.size()>0)){
+				while(next!=null || (next==null && !accumulator.isEmpty())){
 					
-					if((next!=null && accumulator.size()==parallelLimit) || (next==null && accumulator.size()>0)){
+					if((next!=null && accumulator.size()==parallelLimit) || (next==null && !accumulator.isEmpty())){
 						
 
 						final Stream<PairIO> stream = accumulator.parallelStream();
 						
-						stream.forEachOrdered(new Consumer<PairIO>() {
-
-							@Override
-							public void accept(PairIO pair) {
+						stream.forEachOrdered(pair ->
+							{
 								try {
 									final Network cNetwork = new Network(network);
 									final PairIO cPair = new PairIO(pair.getInput(), pair.getOutput(), pair.getLinenumber());
@@ -94,7 +90,6 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 									network.obtainLogger().error(e);
 								}
 								
-							}
 						});
 				
 						accumulator.clear();
@@ -125,14 +120,12 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 			algorithm.updateWeights(network,reversed);
 			if(listener!=null) 
 				listener.onAfterAlgorithmUpdated(network,algorithm,linenumber,null, reversed);
-//			algorithm.clear(network);
 		}
 			
 		
 		
 		if(dataReader.open()){
 				if(listener!=null) listener.onAfterReaderOpen(network,dataReader);
-			next=null;
 			linenumber=0;
 			while((next = dataReader.readNext()) !=null){
 				final Object[] aggregated = dataAggregator.aggregate(next,linenumber);
@@ -180,7 +173,6 @@ public class BatchGradientDescent extends OnlineGradientDescent implements ITrai
 
 
 	public BatchGradientDescent setParallelTimeout(long parallelTimeout) {
-//		this.parallelTimeout = parallelTimeout;
 		return this;
 	}
 	

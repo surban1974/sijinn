@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import it.sijinn.common.Network;
@@ -31,7 +30,6 @@ public class GeneticBreeding implements ITrainingStrategy {
 	protected IStrategyListener listener;
 	protected boolean reversed = false;
 	private int parallelLimit=0;
-//	private long parallelTimeout=1000;
 
 	public GeneticBreeding(){
 		super();
@@ -90,28 +88,23 @@ public class GeneticBreeding implements ITrainingStrategy {
 			for(final Species entity: ((IGeneticAlgorithm)algorithm).getPopulation().getSpecies())
 				calculateFitness(network, dataReader, dataAggregator, entity);
 		}else{
-			final List<Species> accumulator = new ArrayList<Species>();
+			final List<Species> accumulator = new ArrayList<>();
 			Species next = null;
 			final Iterator<Species> it = ((IGeneticAlgorithm)algorithm).getPopulation().getSpeciesIterable().iterator();
 
 
-			while((next= (it.hasNext())?it.next():null)!=null || accumulator.size()>0){
-				if((next!=null && accumulator.size()==parallelLimit) || (next==null && accumulator.size()>0)){
+			while((next= (it.hasNext())?it.next():null)!=null || !accumulator.isEmpty()){
+				if((next!=null && accumulator.size()==parallelLimit) || (next==null && !accumulator.isEmpty())){
 
 					final Stream<Species> stream = accumulator.parallelStream();
 					
-					stream.forEachOrdered(new Consumer<Species>() {
-
-						@Override
-						public void accept(Species species) {
+					stream.forEachOrdered(species-> {
 							try {
-								final Network networkclone = new Network(network);
-								calculateFitness(networkclone, dataReader, dataAggregator, species);								
+								calculateFitness(new Network(network), dataReader, dataAggregator, species);								
 							}catch (Exception e) {
 								network.obtainLogger().error(e);
 							}
 							
-						}
 					});
 					accumulator.clear();
 				}
@@ -233,7 +226,6 @@ public class GeneticBreeding implements ITrainingStrategy {
 	}
 
 	public GeneticBreeding setParallelTimeout(long parallelTimeout) {
-//		this.parallelTimeout = parallelTimeout;
 		return this;
 	}
 

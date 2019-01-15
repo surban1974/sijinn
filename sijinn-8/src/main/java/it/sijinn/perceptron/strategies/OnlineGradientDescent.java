@@ -98,7 +98,6 @@ public class OnlineGradientDescent extends TrainingStrategy implements ITraining
 			dataReader.finalizer();
 				if(listener!=null) listener.onAfterReaderFinalize(network,dataReader);
 		}
-//		algorithm.clear(network);
 		
 		return error;
 	}

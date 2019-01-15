@@ -21,13 +21,13 @@ public class Neuron implements Serializable{
 	protected int layer=-1;
 	protected int order=-1;
 	protected IFunctionApplied function;
-	protected List<Synapse> children;
-	protected List<Synapse> parents;
+	private List<Synapse> children;
+	private List<Synapse> parents;
 	protected float output=0;
 	protected float target=0;
 	protected boolean bias=false;
 	
-	final protected Logger logger = LogManager.getLogger(this.getClass());
+	protected transient final Logger logger = LogManager.getLogger(this.getClass());
 	
 	
 	public Neuron(){
@@ -85,7 +85,7 @@ public class Neuron implements Serializable{
 		for(final Neuron neuron:layer){
 			final Synapse relation = new Synapse(this, neuron, initialWeight);
 			if(children==null)
-				children = new ArrayList<Synapse>();
+				children = new ArrayList<>();
 			children.add(relation);
 			if(!neuron.isBias())
 				neuron.addParentRelation(relation);
@@ -99,7 +99,7 @@ public class Neuron implements Serializable{
 		for(final Neuron neuron:layer){
 			final Synapse relation = new Synapse(this, neuron, weightGenerator);
 			if(children==null)
-				children = new ArrayList<Synapse>();
+				children = new ArrayList<>();
 			children.add(relation);
 			if(!neuron.isBias())
 				neuron.addParentRelation(relation);
@@ -117,7 +117,7 @@ public class Neuron implements Serializable{
 			Synapse relation = null;
 			relation = new Synapse(this, neuron, 0);
 			if(children==null)
-				children = new ArrayList<Synapse>();
+				children = new ArrayList<>();
 			children.add(relation);
 			if(!neuron.isBias())
 				neuron.addParentRelation(relation);
@@ -131,7 +131,7 @@ public class Neuron implements Serializable{
 
 		final Synapse relation = new Synapse(this, neuron, initialWeight);
 		if(children==null)
-			children = new ArrayList<Synapse>();
+			children = new ArrayList<>();
 		children.add(relation);
 		if(!neuron.isBias())
 			neuron.addParentRelation(relation);
@@ -144,7 +144,7 @@ public class Neuron implements Serializable{
 
 		final Synapse relation = new Synapse(this, neuron, weightGenerator);
 		if(children==null)
-			children = new ArrayList<Synapse>();
+			children = new ArrayList<>();
 		children.add(relation);
 		if(!neuron.isBias())
 			neuron.addParentRelation(relation);
@@ -157,7 +157,6 @@ public class Neuron implements Serializable{
 			for(final Synapse synapse:children){
 				synapse.setWeight(0f);
 				if(clearProperties && synapse.getProperty()!=null)
-//					synapse.getProperty().clear();
 					synapse.setProperty(null);
 			}
 		}
@@ -169,7 +168,6 @@ public class Neuron implements Serializable{
 			for(final Synapse synapse:children){
 				synapse.setWeight(weight);
 				if(clearProperties && synapse.getProperty()!=null)
-//					synapse.getProperty().clear();
 					synapse.setProperty(null);
 			}
 		}
@@ -183,7 +181,6 @@ public class Neuron implements Serializable{
 			for(final Synapse synapse:children){
 				synapse.setWeight(weightGenerator.generate(synapse.getFrom(), synapse.getTo()));
 				if(clearProperties && synapse.getProperty()!=null)
-//					synapse.getProperty().clear();
 					synapse.setProperty(null);
 			}
 		}
@@ -197,7 +194,7 @@ public class Neuron implements Serializable{
 		if(isBias())
 			return false;
 		if(parents==null)
-			parents = new ArrayList<Synapse>();
+			parents = new ArrayList<>();
 		parents.add(relation);
 		return true;
 	}
@@ -215,7 +212,7 @@ public class Neuron implements Serializable{
 					output = outputs[0];
 			}
 			output = ((getFunction()!=null)?getFunction().execution(new float[]{output}):0);
-		}else if(parents==null && this instanceof Network && !isBias()){
+		}else if(this instanceof Network && !isBias()){
 			final float[] outputs = ((Network)this).compute();
 			if(outputs!=null && outputs.length>0)
 				output = outputs[0];
@@ -249,7 +246,7 @@ public class Neuron implements Serializable{
 		if(synapse==null)
 			return false;
 		if(children==null)
-			children = new ArrayList<Synapse>();
+			children = new ArrayList<>();
 		if(updateIfExist){
 			boolean found=false;
 			for(final Synapse present:children){
@@ -271,7 +268,7 @@ public class Neuron implements Serializable{
 		if(synapse==null)
 			return false;
 		if(parents==null)
-			parents = new ArrayList<Synapse>();
+			parents = new ArrayList<>();
 		if(updateIfExist){
 			boolean found=false;
 			for(final Synapse present:parents){
@@ -412,14 +409,14 @@ public class Neuron implements Serializable{
 			boolean bias = false;
 			IFunctionApplied functionApplied = null;
 			if(st.hasMoreTokens())
-				layer = Integer.valueOf(st.nextToken()).intValue();
+				layer = Integer.parseInt(st.nextToken());
 			if(st.hasMoreTokens())
-				order = Integer.valueOf(st.nextToken()).intValue();
+				order = Integer.parseInt(st.nextToken());
 			if(st.hasMoreTokens())
 				functionApplied = create(st.nextToken(), logger);
 			if(st.hasMoreTokens()){
 				try{
-					bias = Boolean.valueOf(st.nextToken()).booleanValue();
+					bias = Boolean.parseBoolean(st.nextToken());
 				}catch(Exception e){
 				}
 			}
@@ -447,16 +444,16 @@ public class Neuron implements Serializable{
 		String input = function;
 		try{
 			if(function!=null && !function.trim().equals("")){
-				if(function.indexOf("{")==-1){
-					if(function.indexOf(".")>-1)
+				if(function.indexOf('{')==-1){
+					if(function.indexOf('.')>-1)
 						functionApplied = (IFunctionApplied)Class.forName(function).newInstance();
 					else
 						functionApplied = (IFunctionApplied)Class.forName("it.sijinn.perceptron.functions.applied."+function).newInstance();
 				}else{
-					String parameters = function.substring(function.indexOf("{")+1, function.lastIndexOf("}"));
-					function = function.substring(0, function.indexOf("{"));
+					String parameters = function.substring(function.indexOf('{')+1, function.lastIndexOf('}'));
+					function = function.substring(0, function.indexOf('{'));
 					StringTokenizer stp = new StringTokenizer(parameters, "|");
-					List<Float> param = new ArrayList<Float>();
+					List<Float> param = new ArrayList<>();
 					while(stp.hasMoreTokens())
 						param.add(Float.valueOf(stp.nextToken()));
 					Float[] fParam = new Float[param.size()];
@@ -464,10 +461,10 @@ public class Neuron implements Serializable{
 	
 					
 					Class<?> clazz = null;
-					if(function.indexOf(".")>-1)
-						clazz = (Class<?>)Class.forName(function).asSubclass(IFunctionApplied.class);
+					if(function.indexOf('.')>-1)
+						clazz = Class.forName(function).asSubclass(IFunctionApplied.class);
 					else
-						clazz = (Class<?>)Class.forName("it.sijinn.perceptron.functions.applied."+function);
+						clazz = Class.forName("it.sijinn.perceptron.functions.applied."+function);
 					
 					Constructor<?> clazzConstructor = null;
 					for(Constructor<?> constructor: (Constructor<?>[])clazz.getConstructors()){
