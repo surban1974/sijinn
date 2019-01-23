@@ -8,8 +8,10 @@ import java.io.InputStreamReader;
 
 
 public class SimpleStreamReader implements IDataReader{
-	private InputStream stream = null;
-	private BufferedReader breader = null;
+
+	private static final long serialVersionUID = 1L;
+	private transient InputStream stream = null;
+	private transient BufferedReader breader = null;
 	private IStreamWrapper streamWrapper = null;
 	private IStreamWrapper wrapper = null;
 	

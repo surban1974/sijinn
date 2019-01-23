@@ -1,8 +1,10 @@
 package it.sijinn.perceptron.functions.error;
 
+import java.io.Serializable;
+
 import it.sijinn.common.Network;
 
-public interface IErrorFunctionApplied {
+public interface IErrorFunctionApplied extends Serializable{
 	float compute(Network network, float initialError, boolean reversed);
 	String getDefinition();
 	String getId();

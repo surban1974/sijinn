@@ -3,6 +3,9 @@ package it.sijinn.perceptron.utils.parser;
 import it.sijinn.common.Network;
 
 public class SimpleArrayDataAggregator implements IReadLinesAggregator{
+
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public PairIO getData(Network network, Object[] lines) {
 		if(lines==null || lines.length==0)

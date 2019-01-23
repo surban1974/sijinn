@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 
 public class SimpleFileWriter implements IDataWriter {
 
+	private static final long serialVersionUID = 1L;
 	private File file = null;
 	private FileOutputStream fileOutputStream = null;
 	private boolean append = false;

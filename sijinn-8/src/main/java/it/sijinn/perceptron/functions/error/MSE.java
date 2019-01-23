@@ -4,7 +4,8 @@ import it.sijinn.common.Network;
 import it.sijinn.common.Neuron;
 
 public class MSE implements IErrorFunctionApplied {
-	
+
+	private static final long serialVersionUID = 1L;
 	protected boolean regularizationL1=false;
 	protected float regularizationL1Alfa=1;
 	protected boolean regularizationL2=false;

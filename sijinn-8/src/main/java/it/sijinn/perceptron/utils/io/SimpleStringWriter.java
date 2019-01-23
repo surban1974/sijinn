@@ -6,6 +6,7 @@ package it.sijinn.perceptron.utils.io;
 
 public class SimpleStringWriter implements IDataWriter {
 
+	private static final long serialVersionUID = 1L;
 	private String output = null;
 	
 	public SimpleStringWriter(){

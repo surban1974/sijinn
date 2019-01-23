@@ -8,12 +8,13 @@ import it.sijinn.common.Synapse;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
 public class BPROP extends TrainAlgorithm implements ITrainingAlgorithm {
-	
+	private static final long serialVersionUID = 1L;
 	protected float learningRate=0.1f;
 	protected float learningMomentum=0;
 	
 	protected class BPROPSynapseProperty implements ISynapseProperty{
-		private static final long serialVersionUID = 1L;
+
+		private static final long serialVersionUID = -5832214517012665237L;
 		private float sigma = 0;
 		private float delta = 0;
 		private float aggregated = 0;

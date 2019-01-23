@@ -1,6 +1,7 @@
 package it.sijinn.perceptron.strategies;
 
 import java.io.File;
+import java.io.Serializable;
 
 import it.sijinn.common.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
@@ -10,7 +11,7 @@ import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.io.IStreamWrapper;
 import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 
-public interface ITrainingStrategy {
+public interface ITrainingStrategy extends Serializable{
 	float apply(Network network, float[][][] data) throws Exception;
 	float apply(Network network, File file, IReadLinesAggregator dataAggregator) throws Exception;
 	float apply(Network network, IStreamWrapper streamWrapper, IReadLinesAggregator dataAggregator) throws Exception;

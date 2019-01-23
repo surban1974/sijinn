@@ -8,10 +8,12 @@ import java.io.InputStreamReader;
 
 
 public class SimpleStringReader implements IDataReader{
+
+	private static final long serialVersionUID = 1L;
 	private String input = null;
-	private InputStream stream = null;
+	private transient InputStream stream = null;
 	private String encoding = null;
-	private BufferedReader breader = null;
+	private transient BufferedReader breader = null;
 	
 	public SimpleStringReader(String _input, String _encoding) {
 		super();

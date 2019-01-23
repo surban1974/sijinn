@@ -1,6 +1,8 @@
 package it.sijinn.perceptron.utils;
 
-public interface IExtLogger {
+import java.io.Serializable;
+
+public interface IExtLogger extends Serializable{
 	public static String log_DEBUG = 				"DEBUG";
 	public static String log_INFO = 				"INFO";
 	public static String log_WARN = 				"WARN";

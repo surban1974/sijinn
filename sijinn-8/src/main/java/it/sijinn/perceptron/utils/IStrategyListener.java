@@ -1,12 +1,14 @@
 package it.sijinn.perceptron.utils;
 
+import java.io.Serializable;
+
 import it.sijinn.common.Network;
 import it.sijinn.perceptron.algorithms.ITrainingAlgorithm;
 import it.sijinn.perceptron.strategies.ITrainingStrategy;
 import it.sijinn.perceptron.utils.io.IDataReader;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
-public interface IStrategyListener {
+public interface IStrategyListener extends Serializable{
 	IStrategyListener setTrainingStrategy(ITrainingStrategy strategy);
 	void onAfterReaderOpen(Network network,IDataReader reader) throws Exception;
 	void onAfterReaderClose(Network network,IDataReader reader) throws Exception;

@@ -9,7 +9,9 @@ import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
 public class StochasticGradientDescent extends OnlineGradientDescent implements ITrainingStrategy { 
-	
+
+	private static final long serialVersionUID = 1L;
+
 	public StochasticGradientDescent(){
 		super();
 	}

@@ -8,6 +8,7 @@ import it.sijinn.perceptron.utils.Utils;
 
 public abstract class TrainingStrategy implements ITrainingStrategy {
 
+	private static final long serialVersionUID = 1L;
 	protected ITrainingAlgorithm algorithm;
 	protected IErrorFunctionApplied errorFunction;
 	protected IStrategyListener listener;

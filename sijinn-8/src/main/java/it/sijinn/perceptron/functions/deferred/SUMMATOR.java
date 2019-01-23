@@ -1,7 +1,9 @@
 package it.sijinn.perceptron.functions.deferred;
 
 public class SUMMATOR implements IDAFloatFunction {
-	
+
+	private static final long serialVersionUID = 1L;
+
 	public SUMMATOR() {
 		super();
 	}

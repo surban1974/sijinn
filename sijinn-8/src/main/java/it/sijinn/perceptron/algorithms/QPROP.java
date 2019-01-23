@@ -8,14 +8,15 @@ import it.sijinn.perceptron.utils.ISynapseProperty;
 
 
 public class QPROP extends TrainAlgorithm implements ITrainingAlgorithm {
-	
+	private static final long serialVersionUID = 1L;
 	protected float learningRate=0.1f;
 	protected float decay=0.0001f;
 	protected float epsilon=0.35f;
 
 	
 	protected class QPROPSynapseProperty implements ISynapseProperty{
-		private static final long serialVersionUID = 1L;
+
+		private static final long serialVersionUID = 3903426404757028892L;
 		private float sigma = 0;
 		private float delta = 0;
 		private float aggregated = 0;

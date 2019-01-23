@@ -1,8 +1,9 @@
 package it.sijinn.perceptron.genetic;
 
 public class NeuralBreeding implements INeuralBreeding {
-	
-    private float uniformRate = 0.5f;
+
+	private static final long serialVersionUID = 1L;
+	private float uniformRate = 0.5f;
     private float mutationRate = 0.015f;
     private int tournamentSize = 5;
     private boolean elitism = true;	

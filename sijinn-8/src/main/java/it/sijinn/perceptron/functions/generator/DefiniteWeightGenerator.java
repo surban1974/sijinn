@@ -5,7 +5,8 @@ import it.sijinn.common.Neuron;
 import it.sijinn.common.Synapse;
 
 public class DefiniteWeightGenerator implements IGenerator {
-	
+
+	private static final long serialVersionUID = 1L;
 	private Network network;
 	
 	public DefiniteWeightGenerator(Network network){

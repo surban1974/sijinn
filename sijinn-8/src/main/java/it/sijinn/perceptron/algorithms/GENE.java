@@ -8,6 +8,7 @@ import it.sijinn.perceptron.genetic.Species;
 
 public class GENE implements IGeneticAlgorithm{
 
+	private static final long serialVersionUID = 1L;
 	protected IDAFloatFunction deferredAgregateFunction;
 	protected INeuralBreeding neuralBreeding;
 	protected int populationSize=50;

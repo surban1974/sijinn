@@ -24,7 +24,8 @@ import it.sijinn.perceptron.utils.parser.PairIO;
 import it.sijinn.perceptron.utils.parser.SimpleArrayDataAggregator;
 
 public class GeneticBreeding implements ITrainingStrategy {
-	
+
+	private static final long serialVersionUID = 1L;
 	protected ITrainingAlgorithm algorithm;
 	protected IErrorFunctionApplied errorFunction;
 	protected IStrategyListener listener;

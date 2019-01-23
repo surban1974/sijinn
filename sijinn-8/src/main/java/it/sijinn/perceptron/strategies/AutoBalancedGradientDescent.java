@@ -9,7 +9,8 @@ import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
 public class AutoBalancedGradientDescent extends OnlineGradientDescent implements ITrainingStrategy { 
-	
+
+	private static final long serialVersionUID = 1L;
 	private boolean initialised=false;
 	private PairIO parameters=null;
 	

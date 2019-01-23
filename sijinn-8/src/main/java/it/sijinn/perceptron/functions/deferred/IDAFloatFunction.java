@@ -1,6 +1,8 @@
 package it.sijinn.perceptron.functions.deferred;
 
-public interface IDAFloatFunction {
+import java.io.Serializable;
+
+public interface IDAFloatFunction extends Serializable{
 	float apply(float first, float second);
 	void init();
 	String getDefinition();

@@ -53,6 +53,8 @@ public class BGD_RPROP_N {
 				new RPROP().
 				setInitialDeltaGenarator(
 						new IGenerator() {			
+							private static final long serialVersionUID = 1L;
+
 							@Override
 							public float generate(Neuron from, Neuron to) {
 								return 0.1f;

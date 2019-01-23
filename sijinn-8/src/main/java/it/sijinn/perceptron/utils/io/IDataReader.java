@@ -1,6 +1,8 @@
 package it.sijinn.perceptron.utils.io;
 
-public interface IDataReader {
+import java.io.Serializable;
+
+public interface IDataReader extends Serializable{
 	boolean open() throws Exception;
 	boolean close() throws Exception;
 	Object readNext() throws Exception;

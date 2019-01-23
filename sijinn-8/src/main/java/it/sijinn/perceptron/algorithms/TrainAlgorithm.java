@@ -8,6 +8,7 @@ import it.sijinn.perceptron.utils.ISynapseProperty;
 
 public abstract class TrainAlgorithm implements ITrainingAlgorithm {
 
+	private static final long serialVersionUID = 1L;
 	protected IDAFloatFunction deferredAgregateFunction;
 	protected boolean reversed = false;
 	protected boolean parallel = false;

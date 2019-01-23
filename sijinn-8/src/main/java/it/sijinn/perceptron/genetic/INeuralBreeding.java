@@ -1,6 +1,8 @@
 package it.sijinn.perceptron.genetic;
 
-public interface INeuralBreeding {
+import java.io.Serializable;
+
+public interface INeuralBreeding extends Serializable{
 	Population evolve(Population population);
 	Species crossover(Species single1, Species single2);
 	Species mutate(Species single);

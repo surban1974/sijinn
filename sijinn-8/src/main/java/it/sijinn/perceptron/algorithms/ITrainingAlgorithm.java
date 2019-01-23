@@ -1,9 +1,11 @@
 package it.sijinn.perceptron.algorithms;
 
+import java.io.Serializable;
+
 import it.sijinn.common.Network;
 import it.sijinn.perceptron.functions.deferred.IDAFloatFunction;
 
-public interface ITrainingAlgorithm {
+public interface ITrainingAlgorithm extends Serializable{
 	final int SYNC_WEIGHT_DELTA = 1;
 	ITrainingAlgorithm updateWeights(Network network, boolean reversed) throws Exception;
 	ITrainingAlgorithm calculate(Network network, boolean reversed) throws Exception;

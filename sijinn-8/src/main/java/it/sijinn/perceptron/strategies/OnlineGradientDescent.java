@@ -17,7 +17,9 @@ import it.sijinn.perceptron.utils.parser.PairIO;
 import it.sijinn.perceptron.utils.parser.SimpleArrayDataAggregator;
 
 public class OnlineGradientDescent extends TrainingStrategy implements ITrainingStrategy { 
-	
+
+	private static final long serialVersionUID = 1L;
+
 	public OnlineGradientDescent(){
 		super();
 	}

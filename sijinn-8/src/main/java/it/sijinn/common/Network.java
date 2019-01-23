@@ -864,7 +864,9 @@ public class Network extends Neuron implements Serializable{
 		final IDataReader dataReader = new SimpleArrayReader(testData);
 		
 		final IReadLinesAggregator dataAggregator = new IReadLinesAggregator() {
-			
+
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public PairIO getData(Network network, Object[] lines) {
 				if(lines==null || lines.length==0)

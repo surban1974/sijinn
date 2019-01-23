@@ -27,7 +27,7 @@ public class Neuron implements Serializable{
 	protected float target=0;
 	protected boolean bias=false;
 	
-	protected transient final Logger logger = LogManager.getLogger(this.getClass());
+	protected final Logger logger = LogManager.getLogger(this.getClass());
 	
 	
 	public Neuron(){

@@ -6,8 +6,9 @@ import java.io.InputStream;
 
 public class ResourceStreamWrapper implements IStreamWrapper {
 
+	private static final long serialVersionUID = 1L;
 	protected String path = null;
-	protected InputStream stream = null;
+	protected transient InputStream stream = null;
 	
 	public ResourceStreamWrapper(String _path){
 		super();

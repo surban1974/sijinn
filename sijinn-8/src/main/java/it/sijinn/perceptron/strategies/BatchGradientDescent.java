@@ -14,7 +14,8 @@ import it.sijinn.perceptron.utils.parser.IReadLinesAggregator;
 import it.sijinn.perceptron.utils.parser.PairIO;
 
 public class BatchGradientDescent extends OnlineGradientDescent implements ITrainingStrategy { 
-	
+
+	private static final long serialVersionUID = 1L;
 	private int parallelLimit=0; 
 	
 	public BatchGradientDescent(){

@@ -10,8 +10,9 @@ import it.sijinn.perceptron.utils.Utils;
 
 public class SimpleFileReader implements IDataReader {
 
+	private static final long serialVersionUID = 1L;
 	private File file = null;
-	private BufferedReader breader = null;
+	private transient BufferedReader breader = null;
 	
 	
 	public SimpleFileReader(File _file){

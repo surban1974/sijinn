@@ -9,7 +9,7 @@ import it.sijinn.perceptron.functions.generator.IGenerator;
 import it.sijinn.perceptron.utils.ISynapseProperty;
 
 public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
-	
+	private static final long serialVersionUID = 1L;
 	protected float etaPositive=1.2f;
 	protected float etaNegative=0.5f;
 	protected float maxDelta=50f;
@@ -19,7 +19,8 @@ public class RPROP extends TrainAlgorithm implements ITrainingAlgorithm {
 
 	
 	protected class RPROPSynapseProperty implements ISynapseProperty{
-		private static final long serialVersionUID = 1L;
+
+		private static final long serialVersionUID = 8880098966124062691L;
 		private float sigma = 0;
 		private float delta = 0;
 		private float weightChange = 0;

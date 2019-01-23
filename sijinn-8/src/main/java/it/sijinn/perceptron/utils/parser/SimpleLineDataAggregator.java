@@ -5,7 +5,8 @@ import java.util.StringTokenizer;
 import it.sijinn.common.Network;
 
 public class SimpleLineDataAggregator implements IReadLinesAggregator {
-	
+
+	private static final long serialVersionUID = 1L;
 	protected String separator = " ";
 	protected int start = 0;
 	protected int finish = -1;

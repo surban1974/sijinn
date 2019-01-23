@@ -3,6 +3,8 @@ package it.sijinn.perceptron.utils.io;
 import it.sijinn.perceptron.utils.Utils;
 
 public class SimpleArrayReader implements IDataReader{
+
+	private static final long serialVersionUID = 1L;
 	private int current = 0;
 	private int finish = 0;
 	private float[][][] data = new float[0][0][0];

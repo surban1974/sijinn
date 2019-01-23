@@ -2,6 +2,7 @@ package it.sijinn.perceptron.functions.deferred;
 
 public class MMA implements IDAFloatFunction {
 
+	private static final long serialVersionUID = 1L;
 	private long counter=0;
 	
 	public MMA(){
