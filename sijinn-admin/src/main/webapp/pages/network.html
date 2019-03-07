@@ -205,9 +205,9 @@
 												    	<option value="BPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">Back Propagation</option>
 												    	<option value="BPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">&nbsp;&nbsp;- BPROP Parallel</option>
 												    	<option value="QPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">Quick Propagation</option>
-												    	<option value="QPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">&nbsp;&nbsp;- QPROP Parallel</option>
+												    	<option value="QPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">&nbsp;&nbsp;- QPROP Parallel</option>
 												    	<option value="RPROP" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">Resilient Propagation</option>
-												    	<option value="RPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1">&nbsp;&nbsp;- RPROP Parallel</option>
+												    	<option value="RPROP-true" ng-if="view.model.strategy.indexOf('GeneticBreeding') == -1 && view.model.strategy != 'StochasticGradientDescent'">&nbsp;&nbsp;- RPROP Parallel</option>
 												    	<option value="GENE" ng-if="view.model.strategy.indexOf('GeneticBreeding') == 0">Genetic Neural</option>
 													</select>
 											  	</td>
