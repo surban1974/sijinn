@@ -158,13 +158,13 @@
   	</repositories>   
   
   <dependencies>  
- 
+ <!-- 
    	 	<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-base-7</artifactId>
 			<version>1.5.6</version>
 		</dependency>
-		
+ -->		
    	 	<dependency>
 			<groupId>com.github.surban1974.sijinn</groupId>
 			<artifactId>sijinn-base-8</artifactId>
@@ -189,23 +189,27 @@
 			<version>2.3</version>
 		</dependency>
 		
-	  <dependency>
-	    <groupId>org.apache.logging.log4j</groupId>
-	    <artifactId>log4j-api</artifactId>
-	    <version>2.5</version>
-	  </dependency>
-	  <dependency>
-	    <groupId>org.apache.logging.log4j</groupId>
-	    <artifactId>log4j-core</artifactId>
-	    <version>2.5</version>
-	  </dependency>
-	  
-	<dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>	  
+	  	<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-api</artifactId>
+		    <version>2.5</version>
+	  	</dependency>
+	  	<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>2.5</version>
+	  	</dependency>
+		<dependency>
+		    <groupId>com.eclipsesource.minimal-json</groupId>
+		    <artifactId>minimal-json</artifactId>
+		    <version>0.9.5</version>
+		</dependency>	  
+		<dependency>
+	      <groupId>junit</groupId>
+	      <artifactId>junit</artifactId>
+	      <version>4.11</version>
+	      <scope>test</scope>
+	    </dependency>	  
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
 		<dependency>
