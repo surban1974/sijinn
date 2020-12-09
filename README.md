@@ -1,6 +1,8 @@
 # sijinn
 Simple Java Implementation of Neural Network (perceptron) - alfa
 
+Demo: https://sijinn.herokuapp.com/
+
 Network structure: perseptron
 
 Training strategies:
