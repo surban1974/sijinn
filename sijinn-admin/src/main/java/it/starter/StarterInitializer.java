@@ -20,7 +20,7 @@ public class StarterInitializer {
 				put(app_init.id_actioncall_separator,"-");
 				put(app_init.id_external_loader,"it.sijinn.admin.loaders.ExternalLoader");
 				put(app_init.id_package_annotated,"it.sijinn.admin.components");
-				put(app_init.id_package_annotated+".0","it.dycomodel.admin.components");
+//				put(app_init.id_package_annotated+".0","it.dycomodel.admin.components");
 				put(app_init.id_async_provider_servlet,"/AsyncController");
 			}};
 	}
