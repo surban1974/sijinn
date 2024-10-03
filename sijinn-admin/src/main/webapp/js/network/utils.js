@@ -122,8 +122,8 @@
 						if(label)
 							addClass(label,'synapse-hover');
 						try{
-							if(this.popover)	
-								this.popover.removePopover();
+//							if(this.popover)	
+//								this.popover.removePopover();
 							
 							var popover = new Popover(this,
 								{
@@ -137,7 +137,8 @@
 									  + '</div>'
 									  + '</div>'
 							});	
-							this.popover = popover;
+							
+//							this.popover = popover;
 						}catch(e){
 							
 						}
@@ -147,8 +148,8 @@
 					line.addEventListener("mouseout", function(){
 						removeClass(label,'synapse-hover');
 						try{
-							if(this.popover)	
-								this.popover.removePopover();
+//							if(this.popover)	
+//								this.popover.removePopover();
 						}catch(e){
 							
 						}

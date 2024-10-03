@@ -354,7 +354,8 @@
 			
 			
 				 					<button data-ng-if="$index > 0 && $index < view.model.network.neurons.length-1" type="button"  data-toggle="button" data-loading-text="x" class="btn btn-danger btn-border" autocomplete="off" 
-				 						ng-click="removeLayerPopup($index,$event)"
+				 						ng-click_="removeLayerPopup($index,$event)"
+				 						ng-click="removeLayer($index,$event)"
 				 						ng-disabled="view.model.worker.executionState == 1"
 				 						title="Remove layer"
 				 					>x</button>						
@@ -381,7 +382,8 @@
 								<td style="width:87px; " align="right">
 									<nobr>
 									<button type="button" data-toggle="button" data-loading-text="x" class="btn btn-danger btn-border" autocomplete="off"
-				 						ng-click="removeNeuronPopup($index,-1,$event)"
+				 						ng-click_="removeNeuronPopup($index,-1,$event)"
+				 						ng-click="removeNeuron($index,-1,$event)"
 				 						ng-disabled="view.model.worker.executionState == 1"
 				 						title="Remove last neuron from current layer"
 				 						data-ng-if="layer.length > 1" 
@@ -424,8 +426,23 @@
 						</table>	
 					</div>
 			
-					<cycle data-ng-repeat="synapse in view.model.network.synapses"  >			
-						<div id="sl{{synapse.direction}}" class="synapse btn btn-default" ng-click="removeSynapsePopup(synapse,$event)">{{synapse.weight}}</div>			
+					<cycle data-ng-repeat="synapse in view.model.network.synapses"  >	
+						<div >		
+							<div id="sl{{synapse.direction}}" class="synapse btn_ btn-default_"
+								ng-click_="removeSynapsePopup(synapse,$event)"							
+							>{{synapse.weight}}								
+								<button type="button"  
+									data-toggle="button" 
+									data-loading-text="x" 
+									class="btn btn-danger btn-border_" 
+									autocomplete="off" 
+				 						ng-click="removeSynapseByDirection(synapse.direction,$event)"
+				 						ng-disabled="view.model.worker.executionState == 1"
+				 						ng-if="view.model.worker.executionState != 1"
+				 						title="Remove Synapse"
+				 				>x</button>								
+							
+						</div>			
 					</cycle>	
 	 		
 				</div> 		

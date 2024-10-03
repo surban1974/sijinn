@@ -43,11 +43,11 @@
 							'mouseover',
 							function() {
 								try{
-									if(this.popover)	
-										this.popover.removePopover();
+//									if(this.popover)	
+//										this.popover.removePopover();
 									
 									var popover = new Popover(this);	
-									this.popover = popover;
+//									this.popover = popover;
 								}catch(e){
 									
 								}

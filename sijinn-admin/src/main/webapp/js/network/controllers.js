@@ -290,7 +290,20 @@ app.controller('networksCtrl',
 					});
 	    	}
 	    	
-	    }	   
+	    }	
+	    
+		$scope.removeSynapseByDirection = function(direction){
+				direction.split('|')[0].split(',')[0]/1
+				var appElement = document.querySelector('[ng-app=networksApp]');
+				$scope.removeSynapse(
+						direction.split('|')[0].split(',')[0]/1,
+						direction.split('|')[0].split(',')[1]/1,
+						direction.split('|')[1].split(',')[0]/1,
+						direction.split('|')[1].split(',')[1]/1,
+						direction
+						);
+		
+			}	       
 
 		$scope.removeSynapse = function(fromlayer,fromorder,tolayer,toorder, direction){
 
